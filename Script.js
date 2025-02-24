@@ -145,7 +145,7 @@ function submitExam() {
         comparisonHtml += `العلامة الحالية: <span class="current-score">${totalScore}</span><br>`;
         comparisonHtml += `الفرق: <span class="${scoreDifference > 0 ? 'improved' : scoreDifference < 0 ? 'declined' : 'no-change'}">${scoreDifference > 0 ? '+' : ''}${scoreDifference}</span> علامة</p>`;
         if (scoreDifference > 0) {
-            comparisonHtml += `<p class="feedback improved">تهنئة! لقد تحسنت علامتك!</p>`;
+            comparisonHtml += `<p class="feedback improved">أحسنــت ! لقد تحسنت علامتك!</p>`;
         } else if (scoreDifference < 0) {
             comparisonHtml += `<p class="feedback declined">للأسف، انخفضت علامتك.</p>`;
         } else {
