@@ -58,7 +58,7 @@ function fetchQuestionsFromGoogleSheet() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('حدث خطأ: ' + error.message);
+            document.getElementById('questionContainer').innerHTML = `<div class="error">حدث خطأ أثناء جلب الأسئلة: ${error.message}</div>`;
         });
 }
 
@@ -70,33 +70,72 @@ function startExam() {
     }
     document.getElementById('startSection').style.display = 'none';
     document.getElementById('examSection').style.display = 'block';
-    document.getElementById('submitBtn').style.display = 'none';
+    document.getElementById('questionContainer').innerHTML = '<div id="loading"><div class="spinner"></div>جاري التحميل...</div>';
     fetchQuestionsFromGoogleSheet();
 }
 
 function loadQuestion() {
-    if (currentQuestionIndex < questions.length) {
-        const questionContainer = document.getElementById('questionContainer');
-        const question = questions[currentQuestionIndex];
-        questionContainer.innerHTML = `
-            <div class="question">
-                <h3>سؤال ${currentQuestionIndex + 1}: ${question.question}</h3>
-                ${question.options.map((option, index) => `
-                    <div class="option" onclick="selectAnswer('${option}', ${currentQuestionIndex})">
-                        ${String.fromCharCode(65 + index)}. ${option}
-                    </div>
-                `).join('')}
+    if (currentQuestionIndex < 0) currentQuestionIndex = 0;
+    if (currentQuestionIndex >= questions.length) currentQuestionIndex = questions.length - 1;
+
+    const questionContainer = document.getElementById('questionContainer');
+    const question = questions[currentQuestionIndex];
+    const selectedAnswer = userAnswers[currentQuestionIndex] || null;
+
+    questionContainer.innerHTML = `
+        <div class="question">
+            <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${question.question}</h3>
+            ${question.options.map((option, index) => `
+                <div class="option ${selectedAnswer === option ? 'selected' : ''}" onclick="selectAnswer('${option}', ${currentQuestionIndex})">
+                    ${String.fromCharCode(65 + index)}. ${option}
+                </div>
+            `).join('')}
+        </div>
+        <div class="navigation">
+            <div>
+                <button onclick="previousQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>السابق</button>
             </div>
-        `;
-        document.getElementById('submitBtn').style.display = (currentQuestionIndex === questions.length - 1) ? 'block' : 'none';
-    } else {
-        submitExam();
-    }
+            <div>
+                <span>سؤال ${currentQuestionIndex + 1} من ${questions.length}</span>
+            </div>
+            <div>
+                ${currentQuestionIndex < questions.length - 1 ?
+            `<button onclick="nextQuestion()">التالي</button>` :
+            `<button class="submit-btn" onclick="submitExam()">إنهاء الامتحان</button>`
+        }
+            </div>
+        </div>
+        <div class="question-indicators">
+            ${questions.map((_, index) => `
+                <div class="indicator ${userAnswers[index] ? 'answered' : 'unanswered'} ${index === currentQuestionIndex ? 'current' : ''}" onclick="goToQuestion(${index})">
+                    ${index + 1}
+                </div>
+            `).join('')}
+        </div>
+    `;
 }
 
 function selectAnswer(answer, qIndex) {
     userAnswers[qIndex] = answer;
-    currentQuestionIndex++;
+    loadQuestion();
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+}
+
+function goToQuestion(index) {
+    currentQuestionIndex = index;
     loadQuestion();
 }
 
@@ -122,6 +161,16 @@ function showMessage(message, type = 'success') {
 }
 
 function submitExam() {
+    const unansweredQuestions = questions.map((_, index) => !userAnswers[index] ? index + 1 : null)
+        .filter(index => index !== null);
+
+    if (unansweredQuestions.length > 0) {
+        const confirmation = confirm(`لديك ${unansweredQuestions.length} أسئلة غير محلولة: ${unansweredQuestions.join(', ')}. هل تريد إنهاء الامتحان؟`);
+        if (!confirmation) {
+            return;
+        }
+    }
+
     let totalScore = 0;
     let resultsHtml = `<h2 class="result-title">نتيجة ${studentName}</h2><ul class="result-list">`;
 
@@ -160,7 +209,6 @@ function submitExam() {
     resultsHtml += `<button onclick="returnToStart()" class="return-button">رجوع إلى البداية</button>`;
 
     document.getElementById('questionContainer').style.display = 'none';
-    document.getElementById('submitBtn').style.display = 'none';
     document.getElementById('resultSection').innerHTML = resultsHtml;
     document.getElementById('resultSection').style.display = 'block';
 
@@ -172,7 +220,6 @@ function submitExam() {
         time: now.toLocaleTimeString()
     }));
 
-    // حفظ البيانات في Firestore
     const examData = {
         name: studentName,
         score: totalScore,
@@ -184,15 +231,10 @@ function submitExam() {
     db.collection("examResults").add(examData)
         .then((docRef) => {
             console.log("تم الحفظ في Firebase بمعرف:", docRef.id);
-            // showMessage("تم حفظ النتائج بنجاح في قاعدة البيانات!", "success");
-            alert('تم حفظ النتائج بنجاح في قاعدة البيانات!')
+            alert('تم حفظ النتائج بنجاح في قاعدة البيانات!');
         })
         .catch((error) => {
             console.error("خطأ في الحفظ:", error);
-            showMessage("حدث خطأ أثناء حفظ النتائج!", "error");
-            alert('حدث خطأ أثناء حفظ النتائج!')
-
+            alert('حدث خطأ أثناء حفظ النتائج!');
         });
 }
-
-fetchQuestionsFromGoogleSheet();
