@@ -3,7 +3,7 @@ let encryptedCorrectAnswers = [];
 let currentQuestionIndex = 0;
 let userAnswers = [];
 let studentName = '';
-const encryptionKey = 'secretkey123';
+const encryptionKey = 'res123dd75';
 
 // تهيئة Firebase
 const firebaseConfig = {
@@ -42,7 +42,9 @@ function fetchQuestionsFromGoogleSheet() {
                 const columns = row.split(',');
                 return {
                     question: columns[0].trim(),
-                    options: [columns[1].trim(), columns[2].trim(), columns[3].trim(), columns[4].trim()].sort(() => Math.random() - 0.5),
+                    options: [columns[1].trim(), columns[2].trim(), columns[3].trim(), columns[4].trim()]
+                        .filter(option => option !== '')
+                        .sort(() => Math.random() - 0.5),
                     correctAnswer: columns[5].trim(),
                     score: parseFloat(columns[6].trim() || 1)
                 };
@@ -230,11 +232,9 @@ function submitExam() {
 
     db.collection("examResults").add(examData)
         .then((docRef) => {
-            console.log("تم الحفظ في Firebase بمعرف:", docRef.id);
             alert('تم حفظ النتائج بنجاح في قاعدة البيانات!');
         })
         .catch((error) => {
-            console.error("خطأ في الحفظ:", error);
             alert('حدث خطأ أثناء حفظ النتائج!');
         });
 }
