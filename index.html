@@ -1,35 +1,143 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان الطالب</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>الاختبارات الالكترونية</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7fc;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #8d9bdc, #3327d6);
+      padding: 60px 20px;
+      text-align: center;
+      color: rgb(255, 251, 251);
+      text-shadow: 1px 1px 4px #4a6fc1,
+        2px 2px 2px #405ce6;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+
+    .hero button {
+      background: #ffcc00;
+      color: #333;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: background 0.3s ease;
+    }
+
+    .hero button:hover {
+      background: #e6b800;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* Cards Grid */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+      color: #667eea;
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: #666;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="message" class="message" style="display: none;"></div>
-    <div class="container">
-        <h1>امتحان الطالب</h1>
-        <div id="startSection">
-            <label for="studentName">أدخل اسمك الرباعي:</label>
-            <input type="text" id="studentName" placeholder="الاسم الرباعي" required>
-            <button onclick="startExam()">بدء الامتحان</button>
-        </div>
-        <div id="examSection" style="display:none;">
-            <div id="questionContainer"></div>
-            <button onclick="submitExam()" id="submitBtn" style="display:none;">إنهاء الامتحان</button>
-            <div id="resultSection" style="display:none;"></div>
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>أهلاً بكم في موقع الاختبارات الالكترونية</h1>
+    <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
+  </header>
+
+  <!-- Main Container with Cards -->
+  <div class="container">
+    <h2 style="text-align:center; margin-bottom: 20px;">الصف الدراسي</h2>
+    <div class="cards">
+      <div class="card" data-class="الصف السابع">
+        <h3>الصف السابع </h3>
+        <p> ...... سيتم التفعيل قريباً </p>
+      </div>
+      <div class="card" data-class="الصف الثامن">
+        <h3>الصف الثامن</h3>
+        <p> ...... سيتم التفعيل قريباً </p>
+      </div>
+      <a class="card-link" href="page/9th.html" style="display: block; text-decoration: none;">
+        <div class="card" data-class="الصف التاسع">
+          <h3>الصف التاسع</h3>
+          <p> انقر للتفاصيل </p>
         </div>
     </div>
-    <footer>
-        جميع الحقوق محفوظة © Teacher Osama Omar
-    </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="Script.js"></script>
+
+
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+      function startTest() {
+        alert("Let's start exploring tests and exams!");
+      }
+
+    // Attach click events to each class card
+   // document.querySelectorAll('.card').forEach(card => {
+   //   card.addEventListener('click', function () {
+    //    const className = this.getAttribute('data-class');
+   //     alert("قمت بالدخول الى " + className + " سيتم التفعيل قريبا !");
+   //   });
+  // });
+    </script>
 </body>
 
 </html>

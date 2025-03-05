@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحانات الصف التاسع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            /* لتجنب تداخل الفوتر مع المحتوى */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 36px;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .unit-section {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .lesson-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border-radius: 50%;
+            text-decoration: none;
+            color: #fff;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #2980b9, #1abc9c);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .lesson-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.4s ease;
+        }
+
+        .lesson-btn:hover::before {
+            left: 100%;
+        }
+
+        .lesson-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .lesson-title {
+            font-size: 14px;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+
+
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .lesson-btn {
+                width: 100px;
+                height: 100px;
+            }
+
+            .lesson-number {
+                font-size: 20px;
+            }
+
+            .lesson-title {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .lessons-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .lesson-btn {
+                width: 90px;
+                height: 90px;
+            }
+
+            .lesson-number {
+                font-size: 18px;
+            }
+
+            .lesson-title {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1> الصف التاسع</h1>
+        <!-- الوحدة الأولى -->
+        <div class="unit-section">
+            <h2>كتاب الطالب</h2>
+            <div class="lessons-grid">
+                <a href="files/9.pdf" class="lesson-btn" target="_blank">
+                    <span class="lesson-number">📚</span>
+                    <span class="lesson-title">كتاب الطالب </span>
+                </a>
+
+            </div>
+        </div>
+        <!-- الوحدة الأولى -->
+        <div class="unit-section">
+            <h2>الوحدة الأولى</h2>
+            <div class="lessons-grid">
+                <a href="9-2-1.html" class="lesson-btn">
+                    <span class="lesson-number">1</span>
+                    <span class="lesson-title">الدرس الأول</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">2</span>
+                    <span class="lesson-title">الدرس الثاني</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">3</span>
+                    <span class="lesson-title">الدرس الثالث</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">4</span>
+                    <span class="lesson-title">الدرس الرابع</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">5</span>
+                    <span class="lesson-title">الدرس الخامس</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- الوحدة الثانية -->
+        <div class="unit-section">
+            <h2>الوحدة الثانية</h2>
+            <div class="lessons-grid">
+                <a href="9-2-1.html" class="lesson-btn">
+                    <span class="lesson-number">1</span>
+                    <span class="lesson-title">الدرس الأول</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">2</span>
+                    <span class="lesson-title">الدرس الثاني</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">3</span>
+                    <span class="lesson-title">الدرس الثالث</span>
+                </a>
+                <a href="#" class="lesson-btn">
+                    <span class="lesson-number">4</span>
+                    <span class="lesson-title">الدرس الرابع</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
