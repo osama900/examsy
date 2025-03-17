@@ -5,25 +5,17 @@
     font-family: 'Cairo', sans-serif;
 }
 
-/*body {
-    background-color: #f0f0f0;
-    line-height: 1.6;
-    font-size: 16px;
-}*/
-
 body {
     background: linear-gradient(135deg, #7fc6b8, #2d839f);
     color: #333;
     line-height: 1.6;
     min-height: 100vh;
     padding-bottom: 60px;
-    /* لتجنب تداخل الفوتر مع المحتوى */
 }
 
 .main-header {
     background: linear-gradient(135deg, #74ebd5, #acb6e5);
     padding: auto;
-
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
@@ -33,7 +25,6 @@ body {
 
 .headerdiv {
     margin-bottom: 65px;
-
 }
 
 .header-content {
@@ -43,6 +34,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    padding: 10px 20px;
 }
 
 .logo-link {
@@ -91,15 +83,9 @@ main {
     text-align: center;
 }
 
-
-
 /* Hero Section */
 .hero {
-    /*background: linear-gradient(135deg, #8d9bdc, #3327d6);
-    
-     text-shadow: 1px 1px 4px #4a6fc1,
-        2px 2px 2px #405ce6;
-    */
+    margin-top: 20px;
     padding: 60px 20px;
     text-align: center;
     color: rgb(255, 255, 255);
@@ -113,13 +99,9 @@ main {
 
 .hero p {
     font-size: 1.2rem;
-    margin-bottom: 30px;
 }
 
-
-
-/* 9--------------- */
-
+/* Existing styles for units, lessons, etc. */
 .h29 {
     color: #2c3e50;
     font-size: 28px;
@@ -137,7 +119,6 @@ main {
     margin-bottom: 30px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
-
 
 .lessons-grid {
     display: grid;
@@ -185,9 +166,8 @@ main {
 }
 
 .lesson-number {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: bolder;
 }
 
 .lesson-title {
@@ -196,12 +176,252 @@ main {
     padding: 0 10px;
 }
 
+/* Rail Fence Cipher Styles */
+.rail-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
 
+.io-container {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
+textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: vertical;
+}
 
-/* تصميم متجاوب */
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#rails {
+    width: 60px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#rails:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.visualization {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.zigzag-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.rail-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    position: relative;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    background-color: #fff;
+}
+
+.cell.active {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: #fff;
+    border: none;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cell:hover {
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.rail-number {
+    width: 40px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 5px;
+    font-size: 1em;
+    flex-shrink: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.index {
+    position: absolute;
+    top: -15px;
+    font-size: 0.7em;
+    color: #666;
+}
+
+.arrow {
+    position: absolute;
+    color: #e74c3c;
+    font-size: 1.2em;
+    z-index: 2;
+    right: -12px;
+    top: 50%;
+    transform-origin: center;
+}
+
+/* Caesar Cipher Styles */
+.caesar-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.tab {
+    overflow: hidden;
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.tab button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: background 0.3s ease;
+    font-size: 17px;
+    color: #fff;
+}
+
+.tab button:hover {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+.tab button.active {
+    background: linear-gradient(45deg, #2980b9, #1abc9c);
+    color: #fff;
+}
+
+.tabcontent {
+    display: none;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.combined-table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.combined-table th,
+.combined-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.combined-table th {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: #fff;
+    font-weight: bold;
+}
+
+.combined-table td {
+    background-color: #fff;
+    color: #666;
+}
+
+.combined-table td:hover {
+    background: linear-gradient(45deg, #2980b9, #1abc9c);
+    color: #fff;
+}
+
+.output {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #2ecc71;
+    font-weight: bold;
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.switch-button {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease;
+}
+
+.switch-button:hover {
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .container {
+
+    .container,
+    .rail-container,
+    .caesar-container {
         margin: 20px;
         padding: 10px;
     }
@@ -225,6 +445,22 @@ main {
 
     .lesson-title {
         font-size: 12px;
+    }
+
+    .rail-container {
+        grid-template-columns: 1fr;
+    }
+
+    textarea {
+        height: 80px;
+    }
+
+    .controls {
+        justify-content: center;
+    }
+
+    .caesar-container textarea {
+        width: 90%;
     }
 }
 
@@ -253,8 +489,41 @@ main {
     .lesson-title {
         font-size: 10px;
     }
+
+    button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    #rails,
+    input[type="number"] {
+        width: 50px;
+        padding: 8px;
+    }
+
+    .cell,
+    .rail-number {
+        width: 25px;
+        height: 25px;
+        font-size: 0.9em;
+    }
+
+    .index {
+        font-size: 0.6em;
+        top: -12px;
+    }
+
+    .arrow {
+        font-size: 1em;
+        right: -10px;
+    }
+
+    .combined-table {
+        font-size: 0.9em;
+    }
 }
 
+/* Rest of the original styles remain unchanged */
 .h19 {
     text-align: center;
     color: #fff;
@@ -263,14 +532,12 @@ main {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Container */
 .container {
     max-width: 1200px;
     margin: 40px auto;
     padding: 20px 20px;
 }
 
-/* Cards Grid */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -304,7 +571,6 @@ main {
 }
 
 .h2container {
-
     color: white;
     text-align: center;
     margin-bottom: 50px;
@@ -355,22 +621,27 @@ select:focus {
 
 button {
     padding: 12px;
-    background-color: #3498db;
+    background: linear-gradient(45deg, #3498db, #2980b9);
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
-    background-color: #2980b9;
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #2980b9, #1abc9c);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
 }
 
 #questionContainer {
     margin: 20px 0;
 }
 
+/* Remaining styles unchanged */
 .question {
     background-color: #e3e3e3;
     padding: 15px;
@@ -497,6 +768,11 @@ button:hover {
     }
 }
 
+.h1rail {
+
+    padding-top: 50px;
+}
+
 .error {
     color: red;
     text-align: center;
@@ -618,7 +894,6 @@ button:hover {
     margin: 20px auto;
     padding: 12px 25px;
     background-color: #2ecc71;
-    /* لون أخضر لتمييزه */
     color: white;
     text-align: center;
     text-decoration: none;

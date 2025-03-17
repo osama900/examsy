@@ -29,40 +29,55 @@ function decryptData(encryptedData) {
     return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-function fetchQuestionsFromGoogleSheet() {
-    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('فشل في جلب الأسئلة من Google Sheet.');
-            }
-            return response.text();
-        })
-        .then(csv => {
-            const rows = csv.split('\n').slice(1);
-            const allData = rows.map(row => {
-                const columns = row.split(',');
-                return {
-                    question: columns[0].trim(),
-                    options: [columns[1].trim(), columns[2].trim(), columns[3].trim(), columns[4].trim()]
-                        .filter(option => option !== '')
-                        .sort(() => Math.random() - 0.5),
-                    correctAnswer: columns[5].trim(),
-                    score: parseFloat(columns[6].trim() || 1)
-                };
-            }).sort(() => Math.random() - 0.5);
+async function fetchQuestionsFromGoogleSheet() {
+    try {
+        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv');
+        if (!response.ok) {
+            throw new Error('فشل في جلب الأسئلة من Google Sheet.');
+        }
+        const csv = await response.text();
+        const rows = csv.split('\n').slice(1); // تخطي الصف الأول (الرأس)
 
-            questions = allData.map(q => ({
-                question: q.question,
-                options: q.options,
-                score: q.score
-            }));
-            encryptedCorrectAnswers = allData.map(q => encryptData(q.correctAnswer));
-            loadQuestion();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('questionContainer').innerHTML = `<div class="error">حدث خطأ أثناء جلب الأسئلة: ${error.message}</div>`;
-        });
+        // استخراج اسم الاختبار من عنوان الصفحة
+        let title = document.title;
+        let testName = title.split(' - ')[0].trim(); // افتراض أن العنوان هو "اسم الاختبار - نص آخر"
+
+        // تصفية الصفوف بناءً على تطابق test_name (العمود الأول الآن)
+        const filteredRows = rows.map(row => row.split(',')).filter(columns => columns[0].trim() === testName);
+
+        // التحقق مما إذا كانت هناك أسئلة مطابقة
+        if (filteredRows.length === 0) {
+            document.getElementById('questionContainer').innerHTML = `<div class="error">لم يتم العثور على أسئلة لهذا الاختبار.</div>`;
+            return;
+        }
+
+        // تحليل الصفوف المصفاة مع تعديل فهارس الأعمدة بسبب إضافة test_name
+        const allData = filteredRows.map(columns => {
+            const question = columns[1].trim(); // السؤال الآن في العمود 1
+            const options = columns.slice(2, 6) // الخيارات من العمود 2 إلى 5
+                .map(option => option.trim())
+                .filter(option => option !== '')
+                .sort(() => Math.random() - 0.5); // خلط الخيارات عشوائيًا
+            const correctAnswer = columns[6].trim(); // الإجابة الصحيحة في العمود 6
+            const score = parseFloat(columns[7].trim() || 1); // الدرجة في العمود 7، افتراضيًا 1 إذا فارغ
+            return { question, options, correctAnswer, score };
+        }).sort(() => Math.random() - 0.5); // خلط الأسئلة عشوائيًا
+
+        // تحضير الأسئلة والإجابات المشفرة
+        questions = allData.map(q => ({
+            question: q.question,
+            options: q.options,
+            score: q.score
+        }));
+        encryptedCorrectAnswers = allData.map(q => encryptData(q.correctAnswer));
+        
+        // تحميل السؤال الأول
+        currentQuestionIndex = 0;
+        loadQuestion();
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('questionContainer').innerHTML = `<div class="error">حدث خطأ أثناء جلب الأسئلة: ${error.message}</div>`;
+    }
 }
 
 function startExam() {
@@ -210,24 +225,32 @@ function submitExam() {
     resultsHtml += `<h3 class="total-score">العلامة الإجمالية: ${totalScore} من ${questions.reduce((sum, q) => sum + q.score, 0)}</h3>`;
     resultsHtml += comparisonHtml;
     resultsHtml += `<button onclick="returnToStart()" class="return-button">رجوع إلى البداية</button>`;
-    resultsHtml += `<a href="../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`; // إضافة زر العودة إلى الصفحة الرئيسية
+    resultsHtml += `<a href="../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`;
 
     document.getElementById('questionContainer').style.display = 'none';
     document.getElementById('resultSection').innerHTML = resultsHtml;
     document.getElementById('resultSection').style.display = 'block';
 
     const now = new Date();
+    // استخراج اسم الاختبار من عنوان الصفحة لتخزينه في Firebase
+    let title = document.title;
+    let testName = title.split(' - ')[0].trim();
+
+    // حفظ اسم الاختبار في localStorage مع بقية البيانات
     localStorage.setItem('examResults_' + studentName + '_' + studentClass, JSON.stringify({
         name: studentName,
         class: studentClass,
+        testName: testName, // إضافة اسم الاختبار
         score: totalScore,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString()
     }));
 
+    // إضافة اسم الاختبار إلى البيانات المرسلة إلى Firebase
     const examData = {
         name: studentName,
         class: studentClass,
+        testName: testName, // إضافة اسم الاختبار
         score: totalScore,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString(),

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-1-5-1</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <div class="headerdiv">
+
+        <header class="main-header">
+            <div class="header-content">
+                <a href="../index.html" class="logo-link">
+                    <span class="logo-emoji">📚</span>
+                    <span class="logo-text">الاختبارات الالكترونية</span>
+                </a>
+            </div>
+        </header>
+    </div>
+
+    <div id="message" class="message" style="display: none;"></div>
+    <div class="containerstd">
+        <h1>امتحان الطالب</h1>
+        <div id="startSection">
+            <label for="studentName">أدخل اسمك الرباعي:</label>
+            <input type="text" id="studentName" placeholder="الاسم الرباعي" required>
+            <label for="studentClass">اختر الشعبة:</label>
+            <select id="studentClass" required>
+                <option value="">-- اختر الشعبة --</option>
+                <option value="أ">أ</option>
+                <option value="ب">ب</option>
+                <option value="ج">ج</option>
+            </select>
+            <button onclick="startExam()">بدء الامتحان</button>
+        </div>
+        <div id="examSection" style="display:none;">
+            <div id="questionContainer"></div>
+            <button onclick="submitExam()" id="submitBtn" style="display:none;">إنهاء الامتحان</button>
+            <div id="resultSection" style="display:none;"></div>
+        </div>
+    </div>
+    <footer>
+        جميع الحقوق محفوظة © Teacher Osama Omar
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="../js/Script.js"></script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'91b7fbeaeaf2bd3f',t:'MTc0MTE2MDYyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تشفير وفك تشفير قيصر</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Adjust the path as needed -->
+</head>
+
+<body>
+    <div class="headerdiv">
+        <header class="main-header">
+            <div class="header-content">
+                <a href="../index.html" class="logo-link">
+                    <span class="logo-emoji">📚</span>
+                    <span class="logo-text">الاختبارات الالكترونية</span>
+                </a>
+            </div>
+        </header>
+    </div>
+
+    <div class="caesar-container">
+        <h1>التشفير وفك التشفير بطريقة قيصر </h1>
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Encrypt')">تشفير</button>
+            <button class="tablinks" onclick="openTab(event, 'Decrypt')">فك التشفير</button>
+        </div>
+
+        <!-- محتوى التشفير -->
+        <div id="Encrypt" class="tabcontent">
+            <table class="combined-table" id="combinedTableEncrypt">
+                <!-- سيتم ملء الجدول ديناميكيًا -->
+            </table>
+            <label for="inputTextEncrypt">أدخل النص:</label>
+            <textarea id="inputTextEncrypt" placeholder="اكتب النص هنا..."></textarea><br>
+            <label for="keyEncrypt">أدخل المفتاح (عدد الخطوات):</label>
+            <input type="number" id="keyEncrypt" placeholder="مثال: 3" oninput="updateCombinedTableEncrypt()"><br>
+            <button onclick="encrypt()">تشفير</button>
+            <div class="output" id="outputEncrypt"></div>
+        </div>
+
+        <!-- محتوى فك التشفير -->
+        <div id="Decrypt" class="tabcontent">
+            <table class="combined-table" id="combinedTableDecrypt">
+                <!-- سيتم ملء الجدول ديناميكيًا -->
+            </table>
+            <label for="inputTextDecrypt">أدخل النص المشفر:</label>
+            <textarea id="inputTextDecrypt" placeholder="اكتب النص المشفر هنا..."></textarea><br>
+            <label for="keyDecrypt">أدخل المفتاح (عدد الخطوات):</label>
+            <input type="number" id="keyDecrypt" placeholder="مثال: 3" oninput="updateCombinedTableDecrypt()"><br>
+            <button onclick="decrypt()">فك التشفير</button>
+            <div class="output" id="outputDecrypt"></div>
+        </div>
+    </div>
+    <footer>
+        جميع الحقوق محفوظة © Teacher Osama Omar
+    </footer>
+
+    <script>
+        const alphabet = "ابتثجحخدرزسشصضطظعغفقكلمنهوي";
+
+        // تحديث الجدول الموحد للتشفير
+        function updateCombinedTableEncrypt() {
+            const key = parseInt(document.getElementById("keyEncrypt").value) || 0;
+            const table = document.getElementById("combinedTableEncrypt");
+            table.innerHTML = ""; // مسح محتويات الجدول
+
+            // الصف الأول: الحروف/الأرقام الأصلية
+            const headerRow = document.createElement("tr");
+            const headerCell = document.createElement("th");
+            headerCell.innerText = "الحرف الأصلي";
+            headerRow.appendChild(headerCell);
+            for (let char of alphabet) {
+                const cell = document.createElement("td");
+                cell.innerText = char;
+                headerRow.appendChild(cell);
+            }
+            table.appendChild(headerRow);
+
+            // الصف الثاني: الحروف/الأرقام بعد الإزاحة (طرح المفتاح)
+            const shiftedRow = document.createElement("tr");
+            const shiftedHeaderCell = document.createElement("th");
+            shiftedHeaderCell.innerText = "الحرف بعد الإزاحة";
+            shiftedRow.appendChild(shiftedHeaderCell);
+            for (let i = 0; i < alphabet.length; i++) {
+                const newIndex = (i - key + alphabet.length) % alphabet.length;
+                const cell = document.createElement("td");
+                cell.innerText = alphabet[newIndex];
+                shiftedRow.appendChild(cell);
+            }
+            table.appendChild(shiftedRow);
+        }
+
+        // تحديث الجدول الموحد لفك التشفير بنفس طريقة الإزاحة (طرح المفتاح)
+        function updateCombinedTableDecrypt() {
+            const key = parseInt(document.getElementById("keyDecrypt").value) || 0;
+            const table = document.getElementById("combinedTableDecrypt");
+            table.innerHTML = ""; // مسح محتويات الجدول
+
+            // الصف الأول: الحروف/الأرقام الأصلية
+            const headerRow = document.createElement("tr");
+            const headerCell = document.createElement("th");
+            headerCell.innerText = "الحرف الأصلي";
+            headerRow.appendChild(headerCell);
+            for (let char of alphabet) {
+                const cell = document.createElement("td");
+                cell.innerText = char;
+                headerRow.appendChild(cell);
+            }
+            table.appendChild(headerRow);
+
+            // الصف الثاني: الحروف/الأرقام بعد الإزاحة (طرح المفتاح)
+            const shiftedRow = document.createElement("tr");
+            const shiftedHeaderCell = document.createElement("th");
+            shiftedHeaderCell.innerText = "الحرف بعد الإزاحة";
+            shiftedRow.appendChild(shiftedHeaderCell);
+            for (let i = 0; i < alphabet.length; i++) {
+                const newIndex = (i - key + alphabet.length) % alphabet.length;
+                const cell = document.createElement("td");
+                cell.innerText = alphabet[newIndex];
+                shiftedRow.appendChild(cell);
+            }
+            table.appendChild(shiftedRow);
+        }
+
+        // دالة التشفير
+        function encrypt() {
+            const inputText = document.getElementById("inputTextEncrypt").value;
+            const key = parseInt(document.getElementById("keyEncrypt").value) || 0;
+            let result = "";
+            for (let i = 0; i < inputText.length; i++) {
+                const char = inputText[i];
+                const index = alphabet.indexOf(char);
+                if (index !== -1) {
+                    const newIndex = (index - key + alphabet.length) % alphabet.length;
+                    result += alphabet[newIndex];
+                } else {
+                    result += char;
+                }
+            }
+            document.getElementById("outputEncrypt").innerText = "النص المشفر: " + result;
+        }
+
+        // دالة فك التشفير (يستخدم عملية معاكسة للتشفير)
+        function decrypt() {
+            const inputText = document.getElementById("inputTextDecrypt").value;
+            const key = parseInt(document.getElementById("keyDecrypt").value) || 0;
+            let result = "";
+            for (let i = 0; i < inputText.length; i++) {
+                const char = inputText[i];
+                const index = alphabet.indexOf(char);
+                if (index !== -1) {
+                    // لاستعادة النص الأصلي نضيف المفتاح
+                    const newIndex = (index + key) % alphabet.length;
+                    result += alphabet[newIndex];
+                } else {
+                    result += char;
+                }
+            }
+            document.getElementById("outputDecrypt").innerText = "النص الأصلي: " + result;
+        }
+
+        // دالة فتح التبويبات
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // تهيئة الجداول عند تحميل الصفحة
+        window.onload = function () {
+            updateCombinedTableEncrypt();
+            updateCombinedTableDecrypt();
+            document.getElementsByClassName("tablinks")[0].click();
+        };
+    </script>
+
+</body>
+
+</html>

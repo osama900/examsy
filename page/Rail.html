@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طريقة التشفير باستخدام اسلوب السكة الحديدية</title>
+    <link rel="stylesheet" href="../css/style.css"> <!-- Adjust the path as needed -->
+</head>
+
+<body>
+    <div class="headerdiv">
+        <header class="main-header">
+            <div class="header-content">
+                <a href="../index.html" class="logo-link">
+                    <span class="logo-emoji">📚</span>
+                    <span class="logo-text">الاختبارات الالكترونية</span>
+                </a>
+            </div>
+        </header>
+    </div>
+    <h1 class="h1rail">طريقة التشفير باستخدام اسلوب السكة الحديدية</h1>
+
+    <div class="rail-container">
+        <div class="io-container">
+            <textarea id="inputText" placeholder="ادخل النص للتشفير - النص الاصلي"></textarea>
+            <div class="controls">
+                <input type="number" id="rails" min="2" value="3" placeholder="المفتاح ">
+                <label>ادخل المفتاح هنا</label>
+                <button onclick="encrypt()">تشفيــــر</button>
+                <button onclick="decrypt()">فـــك تشفيــــر</button>
+            </div>
+            <textarea id="outputText" readonly placeholder="النص المشفر سيكون هنا"></textarea>
+        </div>
+
+        <div class="visualization" id="visualization">
+            <p style="text-align: center; color: #666;">التمثيل المرشي للتشفير </p>
+        </div>
+    </div>
+    <footer>
+        جميع الحقوق محفوظة © Teacher Osama Omar
+    </footer>
+
+    <script>
+        function encrypt() {
+            const text = document.getElementById('inputText').value;
+            const rails = parseInt(document.getElementById('rails').value) || 3;
+            const { ciphertext, matrix, order } = railFenceEncrypt(text, rails);
+            document.getElementById('outputText').value = ciphertext;
+            visualizeZigzag(text, rails, order);
+        }
+
+        function decrypt() {
+            const text = document.getElementById('inputText').value;
+            const rails = parseInt(document.getElementById('rails').value) || 3;
+            const { plaintext, matrix, order } = railFenceDecrypt(text, rails);
+            document.getElementById('outputText').value = plaintext;
+            visualizeZigzag(plaintext, rails, order);
+        }
+
+        function railFenceEncrypt(text, rails) {
+            if (rails < 2) return { ciphertext: text, matrix: [], order: [] };
+            const matrix = Array.from({ length: rails }, () => Array(text.length).fill(''));
+            let row = 0, dir = 1;
+            const order = [];
+
+            for (let i = 0; i < text.length; i++) {
+                matrix[row][i] = text[i];
+                order.push({ row, col: i });
+                row += dir;
+                if (row === rails - 1 || row === 0) dir *= -1;
+            }
+
+            return {
+                ciphertext: matrix.flat().filter(c => c !== '').join(''),
+                matrix,
+                order
+            };
+        }
+
+        function railFenceDecrypt(ciphertext, rails) {
+            if (rails < 2) return { plaintext: ciphertext, matrix: [], order: [] };
+            const matrix = Array.from({ length: rails }, () => Array(ciphertext.length).fill(''));
+            let row = 0, dir = 1;
+            const order = [];
+
+            for (let i = 0; i < ciphertext.length; i++) {
+                order.push({ row, col: i });
+                row += dir;
+                if (row === rails - 1 || row === 0) dir *= -1;
+            }
+
+            let charIndex = 0;
+            for (let r = 0; r < rails; r++) {
+                for (let c = 0; c < ciphertext.length; c++) {
+                    if (matrix[r][c] === '' && order.some(o => o.row === r && o.col === c)) {
+                        matrix[r][c] = ciphertext[charIndex++];
+                    }
+                }
+            }
+
+            const plaintext = order.map(o => matrix[o.row][o.col]).join('');
+            return { plaintext, matrix, order };
+        }
+
+        function visualizeZigzag(text, rails, order) {
+            const vis = document.getElementById('visualization');
+            vis.innerHTML = '';
+
+            const grid = document.createElement('div');
+            grid.className = 'zigzag-grid';
+
+            const cellElements = [];
+
+            for (let r = 0; r < rails; r++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'rail-row';
+
+                const railNum = document.createElement('div');
+                railNum.className = 'rail-number';
+                railNum.textContent = `R${r + 1}`;
+                rowDiv.appendChild(railNum);
+
+                for (let c = 0; c < text.length; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    const pos = order.find(o => o.row === r && o.col === c);
+                    if (pos) {
+                        cell.className += ' active';
+                        cell.textContent = text[pos.col];
+                        const indexSpan = document.createElement('div');
+                        indexSpan.className = 'index';
+                        indexSpan.textContent = pos.col + 1;
+                        cell.appendChild(indexSpan);
+                        cell.dataset.row = r;
+                        cell.dataset.col = c;
+                    }
+                    rowDiv.appendChild(cell);
+                    if (pos) cellElements.push(cell);
+                }
+                grid.appendChild(rowDiv);
+            }
+
+            vis.appendChild(grid);
+
+            order.slice(0, -1).forEach((current, i) => {
+                const next = order[i + 1];
+                const currentEl = cellElements[i];
+                const nextEl = cellElements[i + 1];
+
+                if (currentEl && nextEl) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '→';
+
+                    const currRow = parseInt(currentEl.dataset.row);
+                    const currCol = parseInt(currentEl.dataset.col);
+                    const nextRow = parseInt(nextEl.dataset.row);
+                    const nextCol = parseInt(nextEl.dataset.col);
+
+                    const deltaRow = nextRow - currRow;
+                    const deltaCol = nextCol - currCol;
+                    let angle;
+
+                    if (deltaRow > 0 && deltaCol > 0) {
+                        angle = 45;
+                    } else if (deltaRow < 0 && deltaCol > 0) {
+                        angle = -45;
+                    } else {
+                        const deltaX = deltaCol * 35;
+                        const deltaY = deltaRow * 40;
+                        angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                    }
+
+                    arrow.style.transform = `translateY(-50%) rotate(${angle}deg)`;
+                    currentEl.appendChild(arrow);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
