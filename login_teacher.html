@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل دخول المعلمين</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>تسجيل دخول المعلمين</h2>
+        <input type="text" id="username" placeholder="اسم المستخدم" required>
+        <input type="password" id="password" placeholder="كلمة المرور" required>
+        <button onclick="teacherLogin()">تسجيل الدخول</button>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function teacherLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+
+            db.collection('teacehr_log')
+                .where('username', '==', username)
+                .where('password', '==', password)
+                .get()
+                .then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        window.location.href = 'teacher_dashboard.html';
+                    } else {
+                        errorDiv.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                    }
+                })
+                .catch((error) => {
+                    errorDiv.textContent = 'حدث خطأ: ' + error.message;
+                });
+        }
+    </script>
+</body>
+
+</html>
