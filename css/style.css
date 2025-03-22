@@ -21,6 +21,7 @@ body {
     width: 100%;
     top: 0;
     z-index: 1000;
+
 }
 
 .headerdiv {
@@ -28,13 +29,38 @@ body {
 }
 
 .header-content {
-    direction: ltr;
+    direction: rtl;
+    /* تغيير الاتجاه ليكون من اليمين إلى اليسار */
     max-width: 1200px;
     margin: auto;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: space-between;
+    /* توزيع العناصر على الجانبين */
     padding: 10px 20px;
+}
+
+.teacher_login {
+    font-weight: bold;
+    color: #2c3e50;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    /* لضبط الأيقونة والنص بجانب بعض */
+    align-items: center;
+}
+
+.teacher_login:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.teacher-icon {
+    font-size: 1.5rem;
+    margin-right: 5px;
+    /* مسافة بين الأيقونة والنص */
 }
 
 .logo-link {
@@ -85,8 +111,11 @@ main {
 
 /* Hero Section */
 .hero {
-    margin-top: 20px;
-    padding: 60px 20px;
+    margin-top: 40PX;
+    padding-top: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+
     text-align: center;
     color: rgb(255, 255, 255);
 }
@@ -999,4 +1028,29 @@ footer {
         line-height: 25px;
         font-size: 12px;
     }
+}
+
+.lesson-prep {
+    width: fit-content;
+    direction: rtl;
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+
+}
+
+.lessons-grid-prep {
+    text-align: right;
+
+}
+
+.teacher_login {
+    font-weight: bold;
+    align-content: flex-end;
+
+}
+
+.teacher_login :hover {
+    font-weight: bolder;
+    color: tomato;
 }

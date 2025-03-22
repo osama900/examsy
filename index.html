@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>الاختبارات الالكترونية</title>
   <link rel="stylesheet" href="css/style.css">
-
-
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.x/auth0-spa-js.production.js"></script>
 </head>
 
 <body>
@@ -17,14 +16,17 @@
         <span class="logo-emoji">📚</span>
         <span class="logo-text">الاختبارات الالكترونية</span>
       </a>
+      <a href="#" class="teacher_login" onclick="login(event)">
+        <span class="teacher-icon">👨🏼‍💻</span> دخول المعلمين
+      </a>
     </div>
+    <div id="errorMessage" class="error" style="display: none; color: red; margin-top: 10px;"></div>
   </header>
   <!-- Hero Section -->
   <header class="hero">
     <h1>أهلاً بكم في موقع الاختبارات الالكترونية</h1>
     <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
   </header>
-
   <!-- Main Container with Cards -->
   <div class="container">
     <h2 class="h2container">الصف الدراسي</h2>
@@ -34,23 +36,67 @@
           <h3>الصف السابع </h3>
           <p> انقر للتفاصيل </p>
         </div>
-        <a class="card-link" href="page/8th/8th.html" style="display: block; text-decoration: none;">
-
-          <div class="card" data-class="الصف الثامن">
-            <h3>الصف الثامن</h3>
-            <p> انقر للتفاصيل </p>
-          </div>
-          <a class="card-link" href="page/9th.html" style="display: block; text-decoration: none;">
-            <div class="card" data-class="الصف التاسع">
-              <h3>الصف التاسع</h3>
-              <p> انقر للتفاصيل </p>
-            </div>
+      </a>
+      <a class="card-link" href="page/8th/8th.html" style="display: block; text-decoration: none;">
+        <div class="card" data-class="الصف الثامن">
+          <h3>الصف الثامن</h3>
+          <p> انقر للتفاصيل </p>
+        </div>
+      </a>
+      <a class="card-link" href="page/9th.html" style="display: block; text-decoration: none;">
+        <div class="card" data-class="الصف التاسع">
+          <h3>الصف التاسع</h3>
+          <p> انقر للتفاصيل </p>
+        </div>
+      </a>
     </div>
-    <footer>
-      جميع الحقوق محفوظة © Teacher Osama Omar
-    </footer>
+  </div>
+  <footer>
+    جميع الحقوق محفوظة © Teacher Osama Omar
+  </footer>
 
+  <script>
+    // تهيئة Auth0
+    const auth0 = new auth0.WebAuth({
+      domain: 'dev-ftgp3cxjvdrj802q.us.auth0.com', // استبدل بمجالك
+      clientID: 'PDu8f1IxZKqpDJZkV2XSWP6aOG7x0Fk5', // استبدل بمعرف العميل
+      redirectUri: 'http://localhost:5500/index.html', // إعادة توجيه إلى الصفحة الرئيسية بعد تسجيل الدخول
+      responseType: 'token id_token',
+      scope: 'openid profile'
+    });
 
+    // دالة تسجيل الدخول
+    function login(event) {
+      event.preventDefault(); // منع الانتقال الافتراضي للرابط
+      if (!navigator.onLine) {
+        document.getElementById('errorMessage').textContent = 'خطأ: لا يوجد اتصال بالإنترنت.';
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+      }
+      try {
+        auth0.authorize(); // عرض نموذج تسجيل الدخول الخاص بـ Auth0
+      } catch (error) {
+        document.getElementById('errorMessage').textContent = 'خطأ أثناء محاولة تسجيل الدخول: ' + error.message;
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    }
+
+    // معالجة الرد بعد إعادة التوجيه
+    window.onload = function () {
+      auth0.parseHash((err, authResult) => {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          // نجاح تسجيل الدخول
+          sessionStorage.setItem('accessToken', authResult.accessToken);
+          sessionStorage.setItem('idToken', authResult.idToken);
+          window.location.href = 'teacher_dashboard.html'; // الانتقال إلى لوحة التحكم
+        } else if (err) {
+          // فشل تسجيل الدخول
+          document.getElementById('errorMessage').textContent = 'خطأ في تسجيل الدخول: ' + (err.errorDescription || err.error);
+          document.getElementById('errorMessage').style.display = 'block';
+        }
+      });
+    };
+  </script>
 </body>
 
 </html>

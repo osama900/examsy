@@ -70,7 +70,7 @@ async function fetchQuestionsFromGoogleSheet() {
             score: q.score
         }));
         encryptedCorrectAnswers = allData.map(q => encryptData(q.correctAnswer));
-        
+
         // تحميل السؤال الأول
         currentQuestionIndex = 0;
         loadQuestion();
@@ -225,7 +225,7 @@ function submitExam() {
     resultsHtml += `<h3 class="total-score">العلامة الإجمالية: ${totalScore} من ${questions.reduce((sum, q) => sum + q.score, 0)}</h3>`;
     resultsHtml += comparisonHtml;
     resultsHtml += `<button onclick="returnToStart()" class="return-button">رجوع إلى البداية</button>`;
-    resultsHtml += `<a href="../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`;
+    resultsHtml += `<a href="../../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`;
 
     document.getElementById('questionContainer').style.display = 'none';
     document.getElementById('resultSection').innerHTML = resultsHtml;
