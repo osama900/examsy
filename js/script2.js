@@ -5,8 +5,10 @@ let userAnswers = [];
 let studentName = '';
 let studentClass = '';
 const encryptionKey = 'res123dd75';
+let examTimer; // Timer interval
+let timeRemaining; // Time in seconds
 
-// تهيئة Firebase
+// Firebase config remains the same
 const firebaseConfig = {
     apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
     authDomain: "examsy-21dc3.firebaseapp.com",
@@ -20,6 +22,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Encrypt/decrypt functions remain the same
 function encryptData(data) {
     return CryptoJS.AES.encrypt(data, encryptionKey).toString();
 }
@@ -36,34 +39,30 @@ async function fetchQuestionsFromGoogleSheet() {
             throw new Error('فشل في جلب الأسئلة من Google Sheet.');
         }
         const csv = await response.text();
-        const rows = csv.split('\n').slice(1); // تخطي الصف الأول (الرأس)
+        const rows = csv.split('\n').slice(1);
 
-        // استخراج اسم الاختبار من عنوان الصفحة
         let title = document.title;
-        let testName = title.split(' - ')[0].trim(); // افتراض أن العنوان هو "اسم الاختبار - نص آخر"
+        let testName = title.split(' - ')[0].trim();
 
-        // تصفية الصفوف بناءً على تطابق test_name (العمود الأول الآن)
         const filteredRows = rows.map(row => row.split(',')).filter(columns => columns[0].trim() === testName);
 
-        // التحقق مما إذا كانت هناك أسئلة مطابقة
         if (filteredRows.length === 0) {
             document.getElementById('questionContainer').innerHTML = `<div class="error">لم يتم العثور على أسئلة لهذا الاختبار.</div>`;
             return;
         }
 
-        // تحليل الصفوف المصفاة مع تعديل فهارس الأعمدة بسبب إضافة test_name
         const allData = filteredRows.map(columns => {
-            const question = columns[1].trim(); // السؤال الآن في العمود 1
-            const options = columns.slice(2, 6) // الخيارات من العمود 2 إلى 5
+            const question = columns[1].trim();
+            const options = columns.slice(2, 6)
                 .map(option => option.trim())
                 .filter(option => option !== '')
-                .sort(() => Math.random() - 0.5); // خلط الخيارات عشوائيًا
-            const correctAnswer = columns[6].trim(); // الإجابة الصحيحة في العمود 6
-            const score = parseFloat(columns[7].trim() || 1); // الدرجة في العمود 7، افتراضيًا 1 إذا فارغ
-            return { question, options, correctAnswer, score };
-        }).sort(() => Math.random() - 0.5); // خلط الأسئلة عشوائيًا
+                .sort(() => Math.random() - 0.5);
+            const correctAnswer = columns[6].trim();
+            const score = parseFloat(columns[7].trim() || 1);
+            const examTime = parseInt(columns[8].trim() || 0); // Get time from column 8 (index 8)
+            return { question, options, correctAnswer, score, examTime };
+        }).sort(() => Math.random() - 0.5);
 
-        // تحضير الأسئلة والإجابات المشفرة
         questions = allData.map(q => ({
             question: q.question,
             options: q.options,
@@ -71,7 +70,9 @@ async function fetchQuestionsFromGoogleSheet() {
         }));
         encryptedCorrectAnswers = allData.map(q => encryptData(q.correctAnswer));
 
-        // تحميل السؤال الأول
+        // Set timer from the first row (assuming all rows have same exam time)
+        timeRemaining = allData[0].examTime * 60; // Convert minutes to seconds
+
         currentQuestionIndex = 0;
         loadQuestion();
     } catch (error) {
@@ -96,7 +97,38 @@ function startExam() {
     document.getElementById('startSection').style.display = 'none';
     document.getElementById('examSection').style.display = 'block';
     document.getElementById('questionContainer').innerHTML = '<div id="loading"><div class="spinner"></div>جاري التحميل...</div>';
-    fetchQuestionsFromGoogleSheet();
+
+    fetchQuestionsFromGoogleSheet().then(() => {
+        startTimer();
+    });
+}
+
+function startTimer() {
+    examTimer = setInterval(() => {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(examTimer);
+            alert('انتهى وقت الامتحان!');
+            submitExam();
+        }
+    }, 1000); // Update every second
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (timerDisplay) {
+        timerDisplay.textContent = `الوقت المتبقي :  ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        // Add warning class when 20 seconds or less remain
+        if (timeRemaining <= 20) {
+            timerDisplay.classList.add('warning');
+        } else {
+            timerDisplay.classList.remove('warning');
+        }
+    }
 }
 
 function loadQuestion() {
@@ -108,6 +140,7 @@ function loadQuestion() {
     const selectedAnswer = userAnswers[currentQuestionIndex] || null;
 
     questionContainer.innerHTML = `
+        <div class="timer" id="timerDisplay">الوقت المتبقي: تحميل...</div>
         <div class="question">
             <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${question.question}</h3>
             ${question.options.map((option, index) => `
@@ -138,56 +171,11 @@ function loadQuestion() {
             `).join('')}
         </div>
     `;
-}
-
-function selectAnswer(answer, qIndex) {
-    userAnswers[qIndex] = answer;
-    loadQuestion();
-}
-
-function nextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-        currentQuestionIndex++;
-        loadQuestion();
-    }
-}
-
-function previousQuestion() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        loadQuestion();
-    }
-}
-
-function goToQuestion(index) {
-    currentQuestionIndex = index;
-    loadQuestion();
-}
-
-function returnToStart() {
-    location.reload();
-}
-
-function showMessage(message, type = 'success') {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = message;
-    messageDiv.className = `message ${type}`;
-    messageDiv.classList.add('show');
-    setTimeout(() => {
-        messageDiv.classList.remove('show');
-    }, 3000);
+    updateTimerDisplay(); // Update timer immediately after loading
 }
 
 function submitExam() {
-    const unansweredQuestions = questions.map((_, index) => !userAnswers[index] ? index + 1 : null)
-        .filter(index => index !== null);
-
-    if (unansweredQuestions.length > 0) {
-        const confirmation = confirm(`لديك ${unansweredQuestions.length} أسئلة غير محلولة: ${unansweredQuestions.join(', ')}. هل تريد إنهاء الامتحان؟`);
-        if (!confirmation) {
-            return;
-        }
-    }
+    clearInterval(examTimer); // Stop the timer
 
     let totalScore = 0;
     let resultsHtml = `<h2 class="result-title">نتيجة ${studentName} - الشعبة ${studentClass}</h2><ul class="result-list">`;
@@ -232,25 +220,22 @@ function submitExam() {
     document.getElementById('resultSection').style.display = 'block';
 
     const now = new Date();
-    // استخراج اسم الاختبار من عنوان الصفحة لتخزينه في Firebase
     let title = document.title;
     let testName = title.split(' - ')[0].trim();
 
-    // حفظ اسم الاختبار في localStorage مع بقية البيانات
     localStorage.setItem('examResults_' + studentName + '_' + studentClass, JSON.stringify({
         name: studentName,
         class: studentClass,
-        testName: testName, // إضافة اسم الاختبار
+        testName: testName,
         score: totalScore,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString()
     }));
 
-    // إضافة اسم الاختبار إلى البيانات المرسلة إلى Firebase
     const examData = {
         name: studentName,
         class: studentClass,
-        testName: testName, // إضافة اسم الاختبار
+        testName: testName,
         score: totalScore,
         date: now.toLocaleDateString(),
         time: now.toLocaleTimeString(),
@@ -264,4 +249,43 @@ function submitExam() {
         .catch((error) => {
             alert('حدث خطأ أثناء حفظ النتائج!');
         });
+}
+// Rest of the functions (selectAnswer, nextQuestion, etc.) remain unchanged
+function selectAnswer(answer, qIndex) {
+    userAnswers[qIndex] = answer;
+    loadQuestion();
+}
+
+function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+    }
+}
+
+function goToQuestion(index) {
+    currentQuestionIndex = index;
+    loadQuestion();
+}
+
+function returnToStart() {
+    clearInterval(examTimer); // Clear timer on return
+    location.reload();
+}
+
+function showMessage(message, type = 'success') {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = message;
+    messageDiv.className = `message ${type}`;
+    messageDiv.classList.add('show');
+    setTimeout(() => {
+        messageDiv.classList.remove('show');
+    }, 3000);
 }

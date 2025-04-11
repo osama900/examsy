@@ -1054,3 +1054,37 @@ footer {
     font-weight: bolder;
     color: tomato;
 }
+
+.timer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: rgb(187, 128, 128);
+    transition: all 0.3s ease;
+    /* Smooth transition for size change */
+}
+
+.timer.warning {
+    color: rgb(255, 0, 0);
+    font-size: 1.5em;
+    /* Makes it bigger */
+    animation: pulse 1s infinite;
+    /* Pulse effect */
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
