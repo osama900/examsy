@@ -1094,14 +1094,14 @@ footer {
     /* Red background */
     color: white;
     /* White text */
-    padding: 8px 0;
+    padding: 2px 0;
     /* Vertical padding */
     overflow: hidden;
     /* Hide overflowing text */
     white-space: nowrap;
     /* Prevent text wrapping */
     box-sizing: border-box;
-    margin-top: 140px;
+    /*/margin-top: 140px;*/
     z-index: 5;
 }
 
