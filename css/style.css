@@ -1101,7 +1101,7 @@ footer {
     white-space: nowrap;
     /* Prevent text wrapping */
     box-sizing: border-box;
-    margin-top: 150px;
+    margin-top: 140px;
     z-index: 5;
 }
 
