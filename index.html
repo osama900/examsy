@@ -7,6 +7,8 @@
   <title>الاختبارات الالكترونية</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.auth0.com/js/auth0-spa-js/2.x/auth0-spa-js.production.js"></script>
+ 
+  
 </head>
 
 <body>
@@ -20,11 +22,25 @@
       <a href="login_teacher.html" class="teacher_login">
         <span class="teacher-icon">👨🏼‍💻</span> دخول المعلمين
       </a>
-
-
     </div>
     <div id="errorMessage" class="error" style="display: none; color: red; margin-top: 10px;"></div>
-  </header>
+  </header> <!-- End of main header -->
+
+  <!-- START: News Ticker -->
+  <div class="news-ticker">
+    <div class="ticker-text">
+      تنويه هام: للصفوف الثامن والتاسع تم اضافة باقي الدروس للوحدة الثانية . بالتوفيق للجميع!
+      &nbsp;📚&nbsp;
+      تنويه هام: للصفوف الثامن والتاسع تم اضافة باقي الدروس للوحدة الثانية . بالتوفيق للجميع!
+      &nbsp;📚&nbsp;
+      تنويه هام: للصفوف الثامن والتاسع تم اضافة باقي الدروس للوحدة الثانية . بالتوفيق للجميع!
+
+      &nbsp;📚&nbsp;
+    </div>
+  </div>
+  <!-- END: News Ticker -->
+
+
   <!-- Hero Section -->
   <header class="hero">
     <h1>أهلاً بكم في موقع الاختبارات الالكترونية</h1>
@@ -94,10 +110,20 @@
           window.location.href = 'teacher_dashboard.html'; // الانتقال إلى لوحة التحكم
         } else if (err) {
           // فشل تسجيل الدخول
-          document.getElementById('errorMessage').textContent = 'خطأ في تسجيل الدخول: ' + (err.errorDescription || err.error);
-          document.getElementById('errorMessage').style.display = 'block';
+          // لا تعرض رسالة الخطأ هنا إلا إذا كان الخطأ خاصًا بـ Auth0 حقًا
+          if (err.error && err.errorDescription) {
+            // Only show Auth0 specific errors, not generic "hash missing" errors on page load
+            document.getElementById('errorMessage').textContent = 'خطأ في تسجيل الدخول: ' + (err.errorDescription || err.error);
+            document.getElementById('errorMessage').style.display = 'block';
+          }
         }
       });
+
+      // Check network status on load as well
+      if (!navigator.onLine) {
+        document.getElementById('errorMessage').textContent = 'خطأ: لا يوجد اتصال بالإنترنت.';
+        document.getElementById('errorMessage').style.display = 'block';
+      }
     };
   </script>
 </body>

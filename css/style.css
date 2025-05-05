@@ -1088,3 +1088,43 @@ footer {
         transform: scale(1);
     }
 }
+
+.news-ticker {
+    background-color: red;
+    /* Red background */
+    color: white;
+    /* White text */
+    padding: 8px 0;
+    /* Vertical padding */
+    overflow: hidden;
+    /* Hide overflowing text */
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    box-sizing: border-box;
+    margin-top: 88px;
+    z-index: 5;
+}
+
+.ticker-text {
+    font-weight: bold;
+    display: inline-block;
+    /* Allow animation and prevent line breaks */
+    /* padding-left: 100%; <--- This line was removed or commented out */
+    animation: ticker-scroll 25s linear infinite;
+    /* Animation properties */
+}
+
+/* Define the scrolling animation (MODIFIED FOR LEFT-TO-RIGHT) */
+@keyframes ticker-scroll {
+    0% {
+        /* Start off-screen to the LEFT */
+        transform: translateX(-100%);
+    }
+
+    100% {
+        /* Move completely across and off-screen to the RIGHT */
+        /* Moves the element's left edge past the container's right edge */
+        transform: translateX(100vw);
+        /* Use 100vw to ensure it moves fully across viewport width */
+    }
+}
