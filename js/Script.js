@@ -31,7 +31,9 @@ function decryptData(encryptedData) {
 
 async function fetchQuestionsFromGoogleSheet() {
     try {
-        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv');
+        
+        const response = await fetch('https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv');
+
         if (!response.ok) {
             throw new Error('فشل في جلب الأسئلة من Google Sheet.');
         }
@@ -225,7 +227,7 @@ function submitExam() {
     resultsHtml += `<h3 class="total-score">العلامة الإجمالية: ${totalScore} من ${questions.reduce((sum, q) => sum + q.score, 0)}</h3>`;
     resultsHtml += comparisonHtml;
     resultsHtml += `<button onclick="returnToStart()" class="return-button">رجوع إلى البداية</button>`;
-    resultsHtml += `<a href="../../../../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`;
+    resultsHtml += `<a href="../../../index.html" class="home-button">العودة إلى الصفحة الرئيسية</a>`;
 
     document.getElementById('questionContainer').style.display = 'none';
     document.getElementById('resultSection').innerHTML = resultsHtml;
