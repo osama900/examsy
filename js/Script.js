@@ -267,3 +267,73 @@ function submitExam() {
             alert('حدث خطأ أثناء حفظ النتائج!');
         });
 }
+
+
+
+
+
+// notification
+function showToast(message, { duration = 4000 } = {}) {
+      const stack = document.getElementById('toast-stack');
+
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.setAttribute('role', 'alert');
+      toast.style.setProperty('--toast-duration', duration + 'ms');
+
+      const msg = document.createElement('div');
+      msg.className = 'toast__message';
+      msg.textContent = "سيتم فتح الدرس لاحقا...";
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'toast__close';
+      closeBtn.setAttribute('aria-label', 'Close notification');
+      closeBtn.innerHTML = '×';
+
+      const progress = document.createElement('div');
+      progress.className = 'toast__progress';
+
+      toast.appendChild(msg);
+      toast.appendChild(closeBtn);
+      toast.appendChild(progress);
+      stack.appendChild(toast);
+
+      let hideTimer = setTimeout(() => dismiss(), duration);
+
+      function dismiss() {
+        toast.classList.add('toast--leaving');
+        // remove from DOM after animation
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }
+
+      closeBtn.addEventListener('click', () => {
+        clearTimeout(hideTimer);
+        dismiss();
+      });
+
+      // Optional: Pause progress on hover
+      toast.addEventListener('mouseenter', () => {
+        progress.style.animationPlayState = 'paused';
+        clearTimeout(hideTimer);
+      });
+      toast.addEventListener('mouseleave', () => {
+        const computed = getComputedStyle(progress);
+        const remaining = (1 - parseFloat(computed.transform.split(',')[0]?.replace('matrix(', '') || 1)) * duration;
+        // Fallback if transform read fails
+        hideTimer = setTimeout(() => dismiss(), Math.max(200, remaining || 2000));
+        progress.style.animationPlayState = 'running';
+      });
+
+      return toast;
+    }
+
+    // Demo: trigger on button click
+    document.getElementById('btn').addEventListener('click', () => {
+      showToast('This is your orange notification. It will close in 4 seconds.');
+    });
+
+    // Also fire one automatically on load (you can remove this line in your app)
+    window.addEventListener('load', () => {
+      setTimeout(() => showToast('Saved successfully! ✅'), 500);
+    });
+    ////     done notification

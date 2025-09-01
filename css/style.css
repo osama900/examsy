@@ -24,6 +24,108 @@ body {
 
 }
 
+/*----------------------------------*/
+/*  show notification */
+:root {
+      --toast-bg: #ff8a00; /* orange */
+      --toast-text: #ffffff; /* white */
+      --toast-shadow: 0 12px 30px rgba(0,0,0,.18);
+      --toast-radius: 16px;
+      --toast-gap: 14px;
+      --toast-padding: 14px 18px;
+      --toast-duration: 4s; /* default duration */
+      --toast-width: min(92vw, 420px);
+    }
+
+    /* Container to stack multiple toasts if needed */
+    .toast-stack {
+      position: fixed;
+      right: 24px;
+      top: 24px;
+      display: grid;
+      gap: 12px;
+      z-index: 9999;
+    }
+
+    .toast {
+      width: var(--toast-width);
+      color: var(--toast-text);
+      background: var(--toast-bg);
+      font-weight: 800; /* bold */
+      border-radius: var(--toast-radius);
+      box-shadow: var(--toast-shadow);
+      padding: var(--toast-padding);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--toast-gap);
+      transform: translateY(24px);
+      opacity: 0;
+      will-change: transform, opacity;
+      overflow: hidden; /* clips progress bar corners */
+      animation: toast-in 280ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .toast--leaving {
+      animation: toast-out 240ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .toast__message { 
+      line-height: 1.35; 
+      letter-spacing: .2px; 
+    }
+
+    /* Simple close button for manual dismiss */
+    .toast__close {
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-weight: 900;
+      font-size: 18px;
+      padding: 6px 8px;
+      cursor: pointer;
+      opacity: .9;
+    }
+    .toast__close:hover { opacity: 1; }
+    .toast__close:focus { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
+
+    /* Progress bar */
+    .toast__progress {
+      position: absolute;
+      left: 0; bottom: 0;
+      height: 4px;
+      width: 100%;
+      background: rgba(255,255,255,.45);
+      transform-origin: left center;
+      animation: toast-progress var(--toast-duration) linear forwards;
+    }
+
+    @keyframes toast-in {
+      from { transform: translateY(24px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes toast-out {
+      from { transform: translateY(0);    opacity: 1; }
+      to   { transform: translateY(12px); opacity: 0; }
+    }
+    @keyframes toast-progress {
+      from { transform: scaleX(1); }
+      to   { transform: scaleX(0); }
+    }
+
+    /* Demo page chrome (not required for usage) */
+   /* body { 
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      margin: 0; display: grid; place-items: center; min-height: 100dvh; background: #0e0f11; color: #fff; 
+    }*/
+    .demo { text-align: center; }
+    .demo h1 { font-size: clamp(20px, 2.5vw, 34px); margin: 8px 0 16px; }
+    .demo button { 
+      padding: 12px 18px; border: 0; border-radius: 999px; font-weight: 700; cursor: pointer; 
+      background: #222; color: #fff; box-shadow: inset 0 0 0 2px #444; 
+    }
+    .demo button:active { transform: translateY(1px); }
+
 .message-box {
     display: none;
     background-color: #fff3cd;

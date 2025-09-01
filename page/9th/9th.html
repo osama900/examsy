@@ -12,6 +12,8 @@
 </head>
 
 <body>
+          <div id="toast-stack" class="toast-stack" aria-live="assertive" aria-atomic="true"></div>
+
     <div class="headerdiv">
         <header class="main-header">
             <div class="header-content">
@@ -40,31 +42,40 @@
 
             </div>
         </div>
-        <!-- الوحدة الأولى -->
+
+         <div class="unit-section" style="width: fit-content; height: fit-content;">
+            <h2 class=".h29">الفصل الأول</h2>
+            <div class="lessons-grid">
+               
+
+            </div>
+        </div>
+
+
         <div class="unit-section">
             <h2 class=".h29"> الوحدة الاولى - أثر الحوسبة</h2>
             <div class="lessons-grid">
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">1</span>
                     <span class="lesson-title">وسائل التكنولوجيا الحديثة</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">2</span>
                     <span class="lesson-title">التعلم الالكتروني الادوات والمنصات</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">3</span>
                     <span class="lesson-title">الجريمة الالكترونية</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">4</span>
                     <span class="lesson-title">التنمر الالكتروني</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">5</span>
                     <span class="lesson-title">الاعلام الرقمي</span>
@@ -72,26 +83,93 @@
             </div>
         </div>
 
-        <!-- الوحدة الثانية -->
         <div class="unit-section">
-            <h2 class=".h29">الوحدة الثانية - الذكاء الاصطناعي</h2>
+            <h2 class=".h29">الوحدة الثانية - الخوارزميات و البرمجة</h2>
             <div class="lessons-grid">
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">1</span>
-                    <span class="lesson-title">مقدمة ف الذكاء الاصطناعي</span>
+                    <span class="lesson-title">المتغيرات في سكراتش</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">2</span>
+                    <span class="lesson-title">الجمل الشرطية المركبة</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">3</span>
+                    <span class="lesson-title">حلقات التكرار</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">4</span>
+                    <span class="lesson-title">الدوال البرمجية</span>
+                </a>
+            </div>
+        </div>
+
+
+           <div class="unit-section" style="width: fit-content; height: fit-content;">
+            <h2 class=".h29">الفصل الثاني</h2>
+            <div class="lessons-grid">
+               
+
+            </div>
+        </div>
+
+
+
+          <div class="unit-section">
+            <h2 class=".h29"> الوحدة الثالثة - الأمن السيبراني</h2>
+            <div class="lessons-grid">
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">1</span>
+                    <span class="lesson-title">أمن البيانت و المعلومات</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">2</span>
+                    <span class="lesson-title">تهديدات الامن السيبراني</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">3</span>
+                    <span class="lesson-title">النقل الامن للبيانات</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">4</span>
+                    <span class="lesson-title">وسائل حماية البيانات</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">5</span>
+                    <span class="lesson-title">التشفير</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="unit-section">
+            <h2 class=".h29">الوحدة الرابعة - الذكاء الاصطناعي</h2>
+            <div class="lessons-grid">
+                <a class="lesson-btn" onclick="showToast()">
+                    <span class="lesson-title">الدرس</span>
+                    <span class="lesson-number">1</span>
+                    <span class="lesson-title">مقدمة في الذكاء الاصطناعي</span>
+                </a>
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">2</span>
                     <span class="lesson-title">تطبيقات الذكاء الاصطناعي</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">3</span>
                     <span class="lesson-title">الروبوت</span>
                 </a>
-                <a href="#" class="lesson-btn">
+                <a class="lesson-btn" onclick="showToast()">
                     <span class="lesson-title">الدرس</span>
                     <span class="lesson-number">4</span>
                     <span class="lesson-title">اساسيات برمجة روبوت</span>
@@ -102,6 +180,7 @@
     <footer>
         جميع الحقوق محفوظة © Teacher Osama Omar
     </footer>
+            <script src="../../js/Script.js"></script>
 
 </body>
 
