@@ -32,7 +32,7 @@ function decryptData(encryptedData) {
 async function fetchQuestionsFromGoogleSheet() {
     try {
         
-        const response = await fetch('https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv');
+        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQvVdN_lBHHITLxPdjVMhbv4idCn56TNvRbeUjjrL_p-LaljPhzXEFojJ6eX-yVASpi2cMhkoD53hi7/pub?output=csv');
 
         if (!response.ok) {
             throw new Error('فشل في جلب الأسئلة من Google Sheet.');
