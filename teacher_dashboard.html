@@ -1,325 +1,389 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>لوحة تحكم المعلم</title>
     <style>
-        body {
-            font-family: 'Tajawal', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            direction: rtl;
-        }
+      body {
+        font-family: "Tajawal", Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        direction: rtl;
+      }
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      .filter-section {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 200px;
+        background: #f9f9f9;
+      }
+      .logout-btn {
+        background: #e74c3c;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .download-btn,
+      .bulk-delete-btn {
+        background: #27ae60;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+        display: inline-block;
+      }
+      .bulk-delete-btn {
+        background: #e74c3c;
+        margin-right: 10px;
+      }
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .results-table th,
+      .results-table td {
+        padding: 5px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+      }
+      #resultsTable tbody tr:hover {
+        background-color: #dd8760; /* لون فاتح عند المرور */
+        cursor: pointer; /* يبين للمستخدم انه قابل للتفاعل */
+        transition: background-color 0.2s ease-in-out;
+      }
 
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 200px;
-            background: #f9f9f9;
-            transition: all 0.3s ease;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-
-        .logout-btn {
-            background: #e74c3c;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-
-        .download-btn {
-            background: #27ae60;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            transition: background 0.3s ease;
-        }
-
-        .download-btn:hover {
-            background: #219653;
-        }
-
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #fff;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .results-table th,
-        .results-table td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .results-table th {
-            background: #3498db;
-            color: white;
-            font-weight: bold;
-        }
-
-        .results-table tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .results-table tr:hover {
-            background: #ecf0f1;
-        }
-
-        .no-results {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .filter-section {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            select {
-                width: 100%;
-            }
-
-            .results-table th,
-            .results-table td {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
+      .results-table th {
+        background: #3498db;
+        color: white;
+      }
+      .results-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+      .delete-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .delete-btn:hover {
+        background: #c0392b;
+      }
+      .no-results {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 18px;
+        margin-top: 20px;
+      }
     </style>
-</head>
-
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>لوحة تحكم المعلم</h1>
-        <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+      <h1>لوحة تحكم المعلم</h1>
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
 
-        <div class="filter-section">
-            <select id="testNameFilter" onchange="filterResults()">
-                <option value="">كل الاختبارات</option>
-            </select>
-            <select id="classFilter" onchange="filterResults()">
-                <option value="">كل الشعب</option>
-            </select>
-        </div>
+      <div class="filter-section">
+        <select id="testNameFilter" onchange="filterResults()">
+          <option value="">كل الاختبارات</option>
+        </select>
+        <select id="classFilter" onchange="filterResults()">
+          <option value="">كل الشعب</option>
+        </select>
+        <select id="studentClassFilter" onchange="filterResults()">
+          <option value="">كل الصفوف</option>
+        </select>
+      </div>
 
-        <table class="results-table" id="resultsTable">
-            <thead>
-                <tr>
-                    <th>اسم الطالب</th>
-                    <th>اسم الاختبار</th>
-                    <th>الشعبة</th>
-                    <th>العلامة</th>
-                    <th>التاريخ</th>
-                    <th>الوقت</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-        </table>
-        <div id="noResults" class="no-results" style="display: none;">
-            لا توجد نتائج مطابقة لمعايير الفلترة
-        </div>
-        <button class="download-btn" onclick="downloadExcel()">تنزيل كـ Excel</button>
+      <table class="results-table" id="resultsTable">
+        <colgroup>
+          <col style="width: 5%" />
+          <!-- checkbox -->
+          <col style="width: 18%" />
+          <!-- اسم الطالب -->
+          <col style="width: 13%" />
+          <!-- اسم الاختبار -->
+          <col style="width: 10%" />
+          <!-- الشعبة -->
+          <col style="width: 10%" />
+          <!-- الصف -->
+          <col style="width: 10%" />
+          <!-- العلامة -->
+          <col style="width: 12%" />
+          <!-- التاريخ -->
+          <col style="width: 12%" />
+          <!-- الوقت -->
+          <col style="width: 10%" />
+          <!-- إجراءات -->
+        </colgroup>
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                id="selectAll"
+                onclick="toggleSelectAll(this)"
+              />
+            </th>
+            <th>اسم الطالب</th>
+            <th>اسم الاختبار</th>
+            <th>الشعبة</th>
+            <th>الصف</th>
+            <th>العلامة</th>
+            <th>التاريخ</th>
+            <th>الوقت</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+
+      <div id="noResults" class="no-results" style="display: none">
+        لا توجد نتائج مطابقة
+      </div>
+
+      <button class="bulk-delete-btn" onclick="deleteSelected()">
+        🗑 حذف المحدد
+      </button>
+      <button class="download-btn" onclick="downloadExcel()">
+        تنزيل كـ Excel
+      </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
-            authDomain: "examsy-21dc3.firebaseapp.com",
-            projectId: "examsy-21dc3",
-            storageBucket: "examsy-21dc3.firebasestorage.app",
-            messagingSenderId: "357464025229",
-            appId: "1:357464025229:web:b920c8290f985f54339ac4",
-            measurementId: "G-CWZ7MR4V26"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+        authDomain: "examsy-21dc3.firebaseapp.com",
+        projectId: "examsy-21dc3",
+        storageBucket: "examsy-21dc3.firebasestorage.app",
+        messagingSenderId: "357464025229",
+        appId: "1:357464025229:web:b920c8290f985f54339ac4",
+        measurementId: "G-CWZ7MR4V26",
+      };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-        let allResults = [];
-        let testNames = new Set();
-        let classes = new Set();
-        let filteredResults = [];
+      let allResults = [];
+      let testNames = new Set();
+      let classes = new Set();
+      let studentClasses = new Set();
+      let filteredResults = [];
 
-        // جلب البيانات من examResults
-        function fetchExamResults() {
-            db.collection('examResults')
-                .orderBy('timestamp', 'desc')
-                .get()
-                .then((querySnapshot) => {
-                    allResults = [];
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        allResults.push(data);
-                        testNames.add(data.testName);
-                        classes.add(data.class);
-                    });
+      function fetchExamResults() {
+        db.collection("examResults")
+          .orderBy("timestamp", "desc")
+          .get()
+          .then((querySnapshot) => {
+            allResults = [];
+            testNames.clear();
+            classes.clear();
+            studentClasses.clear();
 
-                    // ملء خيارات الفلترة
-                    populateFilters();
-                    // عرض النتائج الافتراضية
-                    filteredResults = allResults;
-                    displayResults(filteredResults);
-                })
-                .catch((error) => {
-                    console.error('Error fetching exam results:', error);
-                });
-        }
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              data.id = doc.id;
+              data.studentClass = data.testName
+                ? data.testName.split("-")[0]
+                : "غير معروف";
+              allResults.push(data);
 
-        // ملء خيارات الفلترة
-        function populateFilters() {
-            const testNameFilter = document.getElementById('testNameFilter');
-            const classFilter = document.getElementById('classFilter');
-
-            testNames.forEach((testName) => {
-                const option = document.createElement('option');
-                option.value = testName;
-                option.textContent = testName;
-                testNameFilter.appendChild(option);
+              if (data.testName) testNames.add(data.testName);
+              if (data.class) classes.add(data.class);
+              studentClasses.add(data.studentClass);
             });
 
-            classes.forEach((className) => {
-                const option = document.createElement('option');
-                option.value = className;
-                option.textContent = className;
-                classFilter.appendChild(option);
-            });
-        }
-
-        // فلترة النتائج
-        function filterResults() {
-            const selectedTestName = document.getElementById('testNameFilter').value;
-            const selectedClass = document.getElementById('classFilter').value;
-
-            filteredResults = allResults.filter((result) => {
-                const testNameMatch = selectedTestName ? result.testName === selectedTestName : true;
-                const classMatch = selectedClass ? result.class === selectedClass : true;
-                return testNameMatch && classMatch;
-            });
-
+            populateFilters();
+            filteredResults = allResults;
             displayResults(filteredResults);
+          })
+          .catch((error) => {
+            console.error("Error fetching:", error);
+          });
+      }
+
+      function populateFilters() {
+        const testNameFilter = document.getElementById("testNameFilter");
+        const classFilter = document.getElementById("classFilter");
+        const studentClassFilter =
+          document.getElementById("studentClassFilter");
+
+        testNameFilter.innerHTML = '<option value="">كل الاختبارات</option>';
+        classFilter.innerHTML = '<option value="">كل الشعب</option>';
+        studentClassFilter.innerHTML = '<option value="">كل الصفوف</option>';
+
+        testNames.forEach((t) => {
+          let o = document.createElement("option");
+          o.value = t;
+          o.textContent = t;
+          testNameFilter.appendChild(o);
+        });
+        classes.forEach((c) => {
+          let o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          classFilter.appendChild(o);
+        });
+        studentClasses.forEach((sc) => {
+          let o = document.createElement("option");
+          o.value = sc;
+          o.textContent = sc;
+          studentClassFilter.appendChild(o);
+        });
+      }
+
+      function filterResults() {
+        const t = document.getElementById("testNameFilter").value;
+        const c = document.getElementById("classFilter").value;
+        const sc = document.getElementById("studentClassFilter").value;
+
+        filteredResults = allResults.filter((r) => {
+          return (
+            (t ? r.testName === t : true) &&
+            (c ? r.class === c : true) &&
+            (sc ? r.studentClass === sc : true)
+          );
+        });
+
+        displayResults(filteredResults);
+      }
+
+      function displayResults(results) {
+        const body = document.getElementById("resultsBody");
+        const noRes = document.getElementById("noResults");
+        body.innerHTML = "";
+
+        if (results.length === 0) {
+          noRes.style.display = "block";
+          return;
         }
+        noRes.style.display = "none";
 
-        // عرض النتائج في الجدول
-        function displayResults(results) {
-            const resultsBody = document.getElementById('resultsBody');
-            const noResultsDiv = document.getElementById('noResults');
-            resultsBody.innerHTML = '';
+        results.forEach((r) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><input type="checkbox" class="rowCheckbox" data-id="${
+              r.id
+            }"></td>
+            <td>${r.name || ""}</td>
+            <td>${r.testName || ""}</td>
+            <td>${r.class || ""}</td>
+            <td>${r.studentClass || ""}</td>
+            <td>${r.score || ""}</td>
+            <td>${r.date || ""}</td>
+            <td>${r.time || ""}</td>
+            <td><button class="delete-btn" onclick="deleteResult('${
+              r.id
+            }')">🗑</button></td>
+          `;
+          body.appendChild(row);
+        });
+      }
 
-            if (results.length === 0) {
-                noResultsDiv.style.display = 'block';
-                return;
-            }
+      function toggleSelectAll(master) {
+        document
+          .querySelectorAll(".rowCheckbox")
+          .forEach((cb) => (cb.checked = master.checked));
+      }
 
-            noResultsDiv.style.display = 'none';
+      function deleteResult(id) {
+        if (!confirm("هل أنت متأكد من الحذف؟")) return;
+        db.collection("examResults")
+          .doc(id)
+          .delete()
+          .then(() => {
+            allResults = allResults.filter((r) => r.id !== id);
+            filteredResults = filteredResults.filter((r) => r.id !== id);
+            displayResults(filteredResults);
+          })
+          .catch((err) => console.error("خطأ بالحذف:", err));
+      }
 
-            results.forEach((result) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${result.name}</td>
-                    <td>${result.testName}</td>
-                    <td>${result.class}</td>
-                    <td>${result.score}</td>
-                    <td>${result.date}</td>
-                    <td>${result.time}</td>
-                `;
-                resultsBody.appendChild(row);
-            });
+      function deleteSelected() {
+        const selected = Array.from(
+          document.querySelectorAll(".rowCheckbox:checked")
+        ).map((cb) => cb.dataset.id);
+        if (selected.length === 0) {
+          alert("لم يتم تحديد أي صفوف!");
+          return;
         }
+        if (!confirm("هل تريد حذف العناصر المحددة؟")) return;
 
-        // تنزيل البيانات كملف Excel
-        function downloadExcel() {
-            if (filteredResults.length === 0) {
-                alert('لا توجد بيانات للتنزيل!');
-                return;
-            }
+        const promises = selected.map((id) =>
+          db.collection("examResults").doc(id).delete()
+        );
+        Promise.all(promises)
+          .then(() => {
+            allResults = allResults.filter((r) => !selected.includes(r.id));
+            filteredResults = filteredResults.filter(
+              (r) => !selected.includes(r.id)
+            );
+            displayResults(filteredResults);
+          })
+          .catch((err) => console.error("خطأ بالحذف المتعدد:", err));
+      }
 
-            // تحضير البيانات للتصدير
-            const data = filteredResults.map(result => ({
-                'اسم الطالب': result.name,
-                'اسم الاختبار': result.testName,
-                'الشعبة': result.class,
-                'العلامة': result.score,
-                'التاريخ': result.date,
-                'الوقت': result.time
-            }));
-
-            // إنشاء ورقة عمل (worksheet)
-            const ws = XLSX.utils.json_to_sheet(data);
-            // إنشاء ملف عمل (workbook)
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Exam Results');
-
-            // تنزيل الملف
-            XLSX.writeFile(wb, 'exam_results.xlsx');
+      function downloadExcel() {
+        if (filteredResults.length === 0) {
+          alert("لا توجد بيانات للتنزيل!");
+          return;
         }
+        const data = filteredResults.map((r) => ({
+          "اسم الطالب": r.name || "",
+          "اسم الاختبار": r.testName || "",
+          الشعبة: r.class || "",
+          الصف: r.studentClass || "",
+          العلامة: r.score || "",
+          التاريخ: r.date || "",
+          الوقت: r.time || "",
+        }));
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Exam Results");
+        XLSX.writeFile(wb, "exam_results.xlsx");
+      }
 
-        // تسجيل الخروج
-        function logout() {
-            window.location.href = 'index.html';
-        }
+      function logout() {
+        window.location.href = "index.html";
+      }
 
-        // جلب البيانات عند تحميل الصفحة
-        fetchExamResults();
+      fetchExamResults();
     </script>
-</body>
-
+  </body>
 </html>
