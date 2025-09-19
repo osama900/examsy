@@ -311,7 +311,14 @@
             <td><button class="delete-btn" onclick="deleteResult('${
               r.id
             }')">🗑</button></td>
-          `;
+        `;
+          // عند النقر على الصف، حدد أو ألغ تحديد الـ checkbox
+          row.addEventListener("click", function (e) {
+            if (e.target.tagName !== "INPUT" && e.target.tagName !== "BUTTON") {
+              const checkbox = this.querySelector(".rowCheckbox");
+              checkbox.checked = !checkbox.checked;
+            }
+          });
           body.appendChild(row);
         });
       }

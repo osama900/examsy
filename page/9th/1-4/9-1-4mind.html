@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الدرس الرابع - التنمر الالكتروني 📛</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../css/style.css" /> 
+    
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Markmap</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+          }
+          html {
+            font-family: ui-sans-serif, system-ui, sans-serif,
+              "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+              "Noto Color Emoji";
+          }
+          #mindmap {
+            align-items: center;
+            background-color: #27272a;
+            display: block;
+            width: 100vw;
+            height: 90vh;
+          }
+          .markmap-dark {
+            background: #27272a;
+            color: white;
+          }
+        </style>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css"
+        />
+    
+  </head>
+
+  <body style="background-color: #27272a; ">
+   
+       <div class="headerdiv" >
+        <header class="main-header">
+            <div class="header-content">
+                <a href="../../../index.html" class="logo-link">
+                    <span class="logo-emoji">📚</span>
+                    <span class="logo-text">الاختبارات الالكترونية</span>
+                </a>
+            </div>
+        </header>
+    </div>
+        <svg id="mindmap"></svg>
+        <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+        <script>
+          (() => {
+            setTimeout(() => {
+              const { markmap: S, mm: Q } = window,
+                $ = new S.Toolbar();
+              $.attach(Q);
+              const I = $.render();
+              I.setAttribute(
+                "style",
+                "position:absolute;bottom:20px;right:20px"
+              ),
+                document.body.append(I);
+            });
+          })();
+        </script>
+        <script>
+          ((l, U, M, R) => {
+            const N = l();
+            (window.mm = N.Markmap.create(
+              "svg#mindmap",
+              (U || N.deriveOptions)(R),
+              M
+            )),
+              window.matchMedia("(prefers-color-scheme: dark)").matches &&
+                document.documentElement.classList.add("markmap-dark");
+          })(
+            () => window.markmap,
+            null,
+            {
+              content:
+                "&#x627;&#x644;&#x62a;&#x646;&#x645;&#x651;&#x631; &#x627;&#x644;&#x625;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+              children: [
+                {
+                  content:
+                    "&#x62a;&#x639;&#x631;&#x64a;&#x641; &#x627;&#x644;&#x62a;&#x646;&#x645;&#x631; &#x627;&#x644;&#x627;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+                  children: [
+                    {
+                      content:
+                        "&#x633;&#x644;&#x648;&#x643; &#x639;&#x62f;&#x648;&#x627;&#x646;&#x64a; &#x64a;&#x633;&#x62a;&#x62e;&#x62f;&#x645; &#x627;&#x644;&#x648;&#x633;&#x627;&#x626;&#x644; &#x627;&#x644;&#x631;&#x642;&#x645;&#x64a;&#x629; &#x644;&#x625;&#x64a;&#x630;&#x627;&#x621; &#x627;&#x644;&#x622;&#x62e;&#x631;&#x64a;&#x646; &#x623;&#x648; &#x62a;&#x62e;&#x648;&#x64a;&#x641;&#x647;&#x645; &#x623;&#x648; &#x646;&#x634;&#x631; &#x627;&#x644;&#x634;&#x627;&#x626;&#x639;&#x627;&#x62a; &#x639;&#x646;&#x647;&#x645;.",
+                      children: [],
+                      payload: { tag: "li", lines: "13,16" },
+                    },
+                  ],
+                  payload: { tag: "h3", lines: "12,13" },
+                },
+                {
+                  content:
+                    "&#x623;&#x634;&#x643;&#x627;&#x644; &#x627;&#x644;&#x62a;&#x646;&#x645;&#x651;&#x631; &#x627;&#x644;&#x625;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+                  children: [
+                    {
+                      content:
+                        "&#x625;&#x631;&#x633;&#x627;&#x644; &#x631;&#x633;&#x627;&#x626;&#x644; &#x62a;&#x647;&#x62f;&#x64a;&#x62f; &#x623;&#x648; &#x62a;&#x639;&#x644;&#x64a;&#x642;&#x627;&#x62a; &#x645;&#x633;&#x64a;&#x626;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "19,20" },
+                    },
+                    {
+                      content:
+                        "&#x646;&#x634;&#x631; &#x635;&#x648;&#x631; &#x623;&#x648; &#x645;&#x642;&#x627;&#x637;&#x639; &#x645;&#x62d;&#x631;&#x62c;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "20,21" },
+                    },
+                    {
+                      content:
+                        "&#x646;&#x634;&#x631; &#x627;&#x644;&#x623;&#x643;&#x627;&#x630;&#x64a;&#x628; &#x648;&#x627;&#x644;&#x634;&#x627;&#x626;&#x639;&#x627;&#x62a;",
+                      children: [],
+                      payload: { tag: "li", lines: "21,22" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x633;&#x62a;&#x628;&#x639;&#x627;&#x62f; &#x634;&#x62e;&#x635; &#x645;&#x646; &#x645;&#x62c;&#x645;&#x648;&#x639;&#x629; &#x639;&#x644;&#x649; &#x627;&#x644;&#x625;&#x646;&#x62a;&#x631;&#x646;&#x62a;",
+                      children: [],
+                      payload: { tag: "li", lines: "22,24" },
+                    },
+                  ],
+                  payload: { tag: "h3", lines: "18,19" },
+                },
+                {
+                  content:
+                    "&#x623;&#x633;&#x628;&#x627;&#x628; &#x627;&#x644;&#x62a;&#x646;&#x645;&#x651;&#x631; &#x627;&#x644;&#x625;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+                  children: [
+                    {
+                      content:
+                        "&#x627;&#x644;&#x631;&#x63a;&#x628;&#x629; &#x641;&#x64a; &#x627;&#x644;&#x633;&#x64a;&#x637;&#x631;&#x629; &#x648;&#x625;&#x638;&#x647;&#x627;&#x631; &#x627;&#x644;&#x642;&#x648;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "27,28" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x644;&#x63a;&#x64a;&#x631;&#x629; &#x648;&#x627;&#x644;&#x62d;&#x633;&#x62f; &#x648;&#x627;&#x644;&#x634;&#x639;&#x648;&#x631; &#x628;&#x627;&#x644;&#x646;&#x642;&#x635;",
+                      children: [],
+                      payload: { tag: "li", lines: "28,29" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x644;&#x62a;&#x639;&#x628;&#x64a;&#x631; &#x639;&#x646; &#x627;&#x644;&#x63a;&#x636;&#x628; &#x648;&#x627;&#x644;&#x625;&#x62d;&#x628;&#x627;&#x637;",
+                      children: [],
+                      payload: { tag: "li", lines: "29,30" },
+                    },
+                    {
+                      content:
+                        "&#x639;&#x648;&#x627;&#x645;&#x644; &#x628;&#x64a;&#x626;&#x64a;&#x629; &#x645;&#x62b;&#x644; &#x627;&#x644;&#x639;&#x646;&#x641; &#x627;&#x644;&#x623;&#x633;&#x631;&#x64a; &#x623;&#x648; &#x627;&#x644;&#x62a;&#x647;&#x645;&#x64a;&#x634;",
+                      children: [],
+                      payload: { tag: "li", lines: "30,32" },
+                    },
+                  ],
+                  payload: { tag: "h3", lines: "26,27" },
+                },
+                {
+                  content:
+                    "&#x622;&#x62b;&#x627;&#x631; &#x627;&#x644;&#x62a;&#x646;&#x645;&#x651;&#x631; &#x627;&#x644;&#x625;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+                  children: [
+                    {
+                      content:
+                        "&#x627;&#x644;&#x642;&#x644;&#x642; &#x648;&#x627;&#x644;&#x62a;&#x648;&#x62a;&#x631;",
+                      children: [],
+                      payload: { tag: "li", lines: "35,36" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x644;&#x639;&#x632;&#x644;&#x629; &#x627;&#x644;&#x627;&#x62c;&#x62a;&#x645;&#x627;&#x639;&#x64a;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "36,37" },
+                    },
+                    {
+                      content:
+                        "&#x636;&#x639;&#x641; &#x627;&#x644;&#x62b;&#x642;&#x629; &#x628;&#x627;&#x644;&#x646;&#x641;&#x633;",
+                      children: [],
+                      payload: { tag: "li", lines: "37,38" },
+                    },
+                    {
+                      content:
+                        "&#x645;&#x634;&#x643;&#x644;&#x627;&#x62a; &#x646;&#x641;&#x633;&#x64a;&#x629; &#x648;&#x627;&#x62c;&#x62a;&#x645;&#x627;&#x639;&#x64a;&#x629; &#x648;&#x635;&#x62d;&#x64a;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "38,40" },
+                    },
+                  ],
+                  payload: { tag: "h3", lines: "34,35" },
+                },
+                {
+                  content:
+                    "&#x637;&#x631;&#x642; &#x627;&#x644;&#x648;&#x642;&#x627;&#x64a;&#x629; &#x648;&#x627;&#x644;&#x62a;&#x639;&#x627;&#x645;&#x644; &#x645;&#x639; &#x627;&#x644;&#x62a;&#x646;&#x645;&#x651;&#x631; &#x627;&#x644;&#x625;&#x644;&#x643;&#x62a;&#x631;&#x648;&#x646;&#x64a;",
+                  children: [
+                    {
+                      content:
+                        "&#x627;&#x644;&#x62a;&#x62d;&#x642;&#x642; &#x645;&#x645;&#x627; &#x64a;&#x64f;&#x646;&#x634;&#x631; &#x639;&#x644;&#x649; &#x627;&#x644;&#x625;&#x646;&#x62a;&#x631;&#x646;&#x62a;",
+                      children: [],
+                      payload: { tag: "li", lines: "43,44" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x633;&#x62a;&#x62e;&#x62f;&#x627;&#x645; &#x643;&#x644;&#x645;&#x627;&#x62a; &#x645;&#x631;&#x648;&#x631; &#x642;&#x648;&#x64a;&#x629; &#x648;&#x62a;&#x63a;&#x64a;&#x64a;&#x631;&#x647;&#x627; &#x628;&#x627;&#x646;&#x62a;&#x638;&#x627;&#x645;",
+                      children: [],
+                      payload: { tag: "li", lines: "44,45" },
+                    },
+                    {
+                      content:
+                        "&#x62a;&#x641;&#x639;&#x64a;&#x644; &#x625;&#x639;&#x62f;&#x627;&#x62f;&#x627;&#x62a; &#x627;&#x644;&#x62e;&#x635;&#x648;&#x635;&#x64a;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "45,46" },
+                    },
+                    {
+                      content:
+                        "&#x639;&#x62f;&#x645; &#x627;&#x644;&#x627;&#x633;&#x62a;&#x62c;&#x627;&#x628;&#x629; &#x644;&#x644;&#x645;&#x62a;&#x646;&#x645;&#x651;&#x631;&#x64a;&#x646; &#x648;&#x62d;&#x638;&#x631;&#x647;&#x645;",
+                      children: [],
+                      payload: { tag: "li", lines: "46,47" },
+                    },
+                    {
+                      content:
+                        "&#x62d;&#x641;&#x638; &#x627;&#x644;&#x623;&#x62f;&#x644;&#x629; &#x648;&#x627;&#x644;&#x62a;&#x628;&#x644;&#x64a;&#x63a; &#x644;&#x644;&#x62c;&#x647;&#x627;&#x62a; &#x627;&#x644;&#x645;&#x62e;&#x62a;&#x635;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "47,48" },
+                    },
+                    {
+                      content:
+                        "&#x627;&#x644;&#x62a;&#x62d;&#x62f;&#x62b; &#x645;&#x639; &#x634;&#x62e;&#x635; &#x645;&#x648;&#x62b;&#x648;&#x642; &#x648;&#x637;&#x644;&#x628; &#x627;&#x644;&#x645;&#x633;&#x627;&#x639;&#x62f;&#x629;",
+                      children: [],
+                      payload: { tag: "li", lines: "48,49" },
+                    },
+                  ],
+                  payload: { tag: "h3", lines: "42,43" },
+                },
+              ],
+              payload: { tag: "h2", lines: "7,8" },
+            },
+            { colorFreezeLevel: 3, initialExpandLevel: 2 }
+          );
+        </script>
+
+        <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+      </body>
+    </html>
+  </body>
+</html>
