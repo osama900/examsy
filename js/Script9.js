@@ -315,6 +315,7 @@ function submitExam() {
     class: studentClass,
     testName: testName, // إضافة اسم الاختبار
     score: totalScore,
+    maxScore: questions.reduce((sum, q) => sum + q.score, 0),
     date: now.toLocaleDateString(),
     time: now.toLocaleTimeString(),
     timestamp: firebase.firestore.Timestamp.fromDate(now),

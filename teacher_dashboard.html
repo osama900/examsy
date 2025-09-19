@@ -158,11 +158,12 @@
                 onclick="toggleSelectAll(this)"
               />
             </th>
-            <th>اسم الطالب</th>
             <th>اسم الاختبار</th>
-            <th>الشعبة</th>
+            <th>اسم الطالب</th>
             <th>الصف</th>
+            <th>الشعبة</th>
             <th>العلامة</th>
+            <th>الاجمالي</th>
             <th>التاريخ</th>
             <th>الوقت</th>
             <th>إجراءات</th>
@@ -301,11 +302,12 @@
             <td><input type="checkbox" class="rowCheckbox" data-id="${
               r.id
             }"></td>
-            <td>${r.name || ""}</td>
-            <td>${r.testName || ""}</td>
-            <td>${r.class || ""}</td>
-            <td>${r.studentClass || ""}</td>
+             <td>${r.testName || ""}</td>
+              <td>${r.name || ""}</td>
+             <td>${r.studentClass || ""}</td>
+              <td>${r.class || ""}</td>
             <td>${r.score || ""}</td>
+            <td>${r.maxScore || ""}</td>
             <td>${r.date || ""}</td>
             <td>${r.time || ""}</td>
             <td><button class="delete-btn" onclick="deleteResult('${
@@ -377,6 +379,7 @@
           الشعبة: r.class || "",
           الصف: r.studentClass || "",
           العلامة: r.score || "",
+          الاجمالي: r.maxScore || "",
           التاريخ: r.date || "",
           الوقت: r.time || "",
         }));
