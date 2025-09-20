@@ -308,6 +308,7 @@ function submitExam() {
       time: now.toLocaleTimeString(),
     })
   );
+  const maxScore = questions.reduce((sum, q) => sum + q.score, 0);
 
   // إضافة اسم الاختبار إلى البيانات المرسلة إلى Firebase
   const examData = {
@@ -315,7 +316,7 @@ function submitExam() {
     class: studentClass,
     testName: testName, // إضافة اسم الاختبار
     score: totalScore,
-    maxScore: questions.reduce((sum, q) => sum + q.score, 0),
+    maxScore: maxScore,
     date: now.toLocaleDateString(),
     time: now.toLocaleTimeString(),
     timestamp: firebase.firestore.Timestamp.fromDate(now),
