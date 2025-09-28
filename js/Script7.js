@@ -404,3 +404,27 @@ window.addEventListener("load", () => {
   setTimeout(() => showToast("Saved successfully! ✅"), 500);
 });
 ////     done notification
+window.addEventListener("load", () => {
+  const storedStudent = JSON.parse(
+    localStorage.getItem("loggedInStudent") || "{}"
+  );
+
+  if (!storedStudent.name) {
+    alert(
+      "يرجى تسجيل الدخول قبل بدء الامتحان.\nإذا لم يكن معك معلومات تسجيل الدخول يرجى مراجعة الأستاذ أسامة."
+    );
+    window.location.href = "../../../index.html"; // رجوع للصفحة الرئيسية
+  } else {
+    // إذا مسجل دخول
+    const studentNameInput = document.getElementById("studentName");
+    studentNameInput.value = storedStudent.name;
+    studentNameInput.setAttribute("readonly", true); // ما يخليه يقدر يعدل
+
+    // إذا حابب تعبي الشعبة كمان
+    if (storedStudent.class) {
+      const studentClassInput = document.getElementById("studentClass");
+      studentClassInput.value = storedStudent.class;
+      studentClassInput.setAttribute("readonly", true);
+    }
+  }
+});

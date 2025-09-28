@@ -96,9 +96,11 @@
             if (!querySnapshot.empty) {
               const studentData = querySnapshot.docs[0].data();
               const stdName = studentData.std_name; // جلب اسم الطالب
+              const stdClass = studentData.std_class; // جلب اسم الطالب
 
               // تخزين الاسم في Local Storage
               localStorage.setItem("std_name", stdName);
+              localStorage.setItem("std_class", stdClass);
 
               // الانتقال للصفحة الرئيسية
               window.location.href = "index.html";

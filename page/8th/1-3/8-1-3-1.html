@@ -92,6 +92,22 @@
           }
         }
       })();
+      // التحقق من وجود اسم الطالب عند تحميل صفحة الامتحان
+      window.addEventListener("load", () => {
+        const storedStudentName = localStorage.getItem("std_name");
+
+        if (!storedStudentName) {
+          alert(
+            "يرجى تسجيل الدخول قبل بدء الامتحان.\nإذا لم يكن معك معلومات تسجيل الدخول يرجى مراجعة الأستاذ أسامة."
+          );
+          window.location.href = "../../../index.html"; // ارجاع للصفحة الرئيسية
+        } else {
+          // تعبئة الاسم في حقل الإدخال وقفل التعديل
+          const studentNameInput = document.getElementById("studentName");
+          studentNameInput.value = storedStudentName;
+          studentNameInput.setAttribute("readonly", true);
+        }
+      });
     </script>
   </body>
 </html>

@@ -109,13 +109,21 @@
         font-size: 18px;
         margin-top: 20px;
       }
+    button {
+      margin: 5px;
+    }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>لوحة تحكم المعلم</h1>
       <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
-
+ <button class="bulk-delete-btn" onclick="deleteSelected()">
+        🗑 حذف المحدد
+      </button>
+      <button class="download-btn" onclick="downloadExcel()">
+        تنزيل كـ Excel
+      </button>
       <div class="filter-section">
         <select id="testNameFilter" onchange="filterResults()">
           <option value="">كل الاختبارات</option>
@@ -125,8 +133,13 @@
         </select>
         <select id="studentClassFilter" onchange="filterResults()">
           <option value="">كل الصفوف</option>
-        </select>
+        </select> 
+       
       </div>
+       </div>
+
+     
+    </div>
 
       <table class="results-table" id="resultsTable">
         <colgroup>
@@ -174,15 +187,7 @@
 
       <div id="noResults" class="no-results" style="display: none">
         لا توجد نتائج مطابقة
-      </div>
-
-      <button class="bulk-delete-btn" onclick="deleteSelected()">
-        🗑 حذف المحدد
-      </button>
-      <button class="download-btn" onclick="downloadExcel()">
-        تنزيل كـ Excel
-      </button>
-    </div>
+     
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>

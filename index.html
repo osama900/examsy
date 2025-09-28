@@ -30,22 +30,20 @@
           <span class="logo-emoji">📚</span>
           <span class="logo-text">الاختبارات الالكترونية</span>
         </a>
-        <!-- Paragraph element containing a welcome message 
-         
-         <p>
+
+        <p>
           <span
             id="std_welcome"
             style="padding: 10px; font-size: larger"
           ></span>
         </p>
-        -->
 
         <a href="login_teacher.html" class="teacher_login">
           <span class="teacher-icon">👨🏼‍💻</span> دخول المعلمين
         </a>
-        <!-- Link<a href="std_teacher.html" class="std_login">
+        <a href="std_teacher.html" class="std_login">
           <span class="teacher-icon">👨🏼</span> دخول الطلاب
-        </a> for student login with teacher icon -->
+        </a>
       </div>
       <div
         id="errorMessage"
@@ -96,20 +94,21 @@
     </div>
 
     <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
-
-    <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const studentName = localStorage.getItem("std_name");
-        const welcomeSpan = document.getElementById("std_welcome");
-        const logoutBtn = document.getElementById("logoutBtn");
-
-        if (studentName) {
-          welcomeSpan.textContent = "أهلاً " + studentName;
-          logoutBtn.style.display = "inline-block"; // إظهار زر تسجيل الخروج
-        } else {
-          welcomeSpan.textContent = "أهلاً زائر";
-        }
-      });
-    </script>
   </body>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const studentName = localStorage.getItem("std_name");
+      const welcomeSpan = document.getElementById("std_welcome");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const studentClass = localStorage.getItem("std_class");
+
+      if (studentName) {
+        welcomeSpan.textContent = "أهلاً " + studentName + " " + studentClass;
+        logoutBtn.style.display = "inline-block"; // إظهار زر تسجيل الخروج
+      } else {
+        welcomeSpan.textContent = "أهلاً زائر";
+      }
+    });
+  </script>
 </html>
