@@ -90,7 +90,7 @@
 
         db.collection("std_id")
           .where("std_email", "==", username)
-          .where("std_id", "==", password)
+          .where("std_password", "==", password)
           .get()
           .then((querySnapshot) => {
             if (!querySnapshot.empty) {
