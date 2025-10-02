@@ -5,22 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>الاختبارات الالكترونية</title>
     <link rel="stylesheet" href="css/style.css" />
-    <style>
-      /* زر تسجيل الخروج صغير ومرتبط بالهيدر */
-      .logout-btn {
-        background-color: #f44336;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-left: 10px;
-      }
-
-      .logout-btn:hover {
-        background-color: #d32f2f;
-      }
-    </style>
   </head>
 
   <body>
@@ -95,20 +79,4 @@
 
     <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
   </body>
-
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const studentName = localStorage.getItem("std_name");
-      const welcomeSpan = document.getElementById("std_welcome");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const studentClass = localStorage.getItem("std_class");
-
-      if (studentName) {
-        welcomeSpan.textContent = "أهلاً " + studentName + " " + studentClass;
-        logoutBtn.style.display = "inline-block"; // إظهار زر تسجيل الخروج
-      } else {
-        welcomeSpan.textContent = "أهلاً زائر";
-      }
-    });
-  </script>
 </html>

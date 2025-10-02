@@ -26,6 +26,12 @@
             <span class="logo-emoji">📚</span>
             <span class="logo-text">الاختبارات الالكترونية</span>
           </a>
+          <p>
+            <span
+              id="std_welcome"
+              style="padding: 10px; font-size: larger"
+            ></span>
+          </p>
         </div>
       </header>
     </div>
@@ -115,5 +121,20 @@
     </div>
     <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
     <script src="../../js/Script8.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const studentName = localStorage.getItem("std_name");
+        const welcomeSpan = document.getElementById("std_welcome");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const studentClass = localStorage.getItem("std_class");
+
+        if (studentName) {
+          welcomeSpan.textContent = "أهلاً " + studentName + " " + studentClass;
+          logoutBtn.style.display = "inline-block"; // إظهار زر تسجيل الخروج
+        } else {
+          welcomeSpan.textContent = "أهلاً زائر";
+        }
+      });
+    </script>
   </body>
 </html>

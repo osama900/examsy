@@ -479,7 +479,7 @@
         previewHeader.appendChild(headerRow);
 
         // Create data rows (limit to 20 rows for preview)
-        const previewData = data.slice(0, 20);
+        const previewData = data;
         previewData.forEach((row) => {
           const tr = document.createElement("tr");
           displayFields.forEach((field) => {
