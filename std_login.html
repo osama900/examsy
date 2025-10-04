@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f27f0d",
+              "background-light": "#f8f7f5",
+              "background-dark": "#221910",
+              "foreground-light": "#1c140d",
+              "foreground-dark": "#e8e3dd",
+              "input-light": "#f4ede7",
+              "input-dark": "#3a2d1f",
+              "placeholder-light": "#9c7349",
+              "placeholder-dark": "#a18a73",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
+      }
+      .error {
+        text-align: center;
+        color: red;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div class="flex items-center justify-center min-h-screen">
+      <div
+        class="w-full max-w-sm p-8 space-y-6 bg-background-light dark:bg-background-dark rounded-xl"
+      >
+        <div class="flex justify-center">
+          <div class="p-3 bg-primary/20 rounded-full">
+            <span
+              class="material-symbols-outlined text-primary"
+              style="font-size: 48px"
+            >
+              fingerprint
+            </span>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h1
+            class="text-3xl font-bold text-foreground-light dark:text-foreground-dark"
+          >
+            تسجيل دخول الطلاب
+          </h1>
+          <p class="text-foreground-light/70 dark:text-foreground-dark/70 mt-2">
+            سجل الدخول باستخدام بياناتك
+          </p>
+        </div>
+
+        <!-- استخدمت onsubmit لالتقاط الحدث ومنع السلوك الافتراضي -->
+        <form class="space-y-6" onsubmit="studentLogin(event)">
+          <div dir="rtl" class="space-y-2">
+            <label
+              class="text-sm font-medium text-foreground-light dark:text-foreground-dark"
+              for="username"
+              >البريد الالكتروني</label
+            >
+            <input
+              dir="ltr"
+              class="w-full px-4 py-3 bg-input-light dark:bg-input-dark border-transparent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground-light dark:text-foreground-dark placeholder-placeholder-light dark:placeholder-placeholder-dark"
+              id="username"
+              placeholder="you@zaid.com"
+              required
+              type="email"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <div dir="rtl" class="flex items-center justify-between">
+              <label
+                class="text-sm font-medium text-foreground-light dark:text-foreground-dark"
+                for="password"
+                >الرقم السري</label
+              >
+            </div>
+
+            <!-- حقل الباسوورد مع زر إظهار/إخفاء -->
+            <div class="relative">
+              <input
+                class="w-full px-4 py-3 pr-12 bg-input-light dark:bg-input-dark border-transparent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground-light dark:text-foreground-dark placeholder-placeholder-light dark:placeholder-placeholder-dark"
+                id="password"
+                placeholder="••••••••"
+                required
+                type="password"
+              />
+              <button
+                type="button"
+                onclick="togglePassword()"
+                class="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-300"
+                aria-label="Show password"
+              >
+                <span id="toggleIcon" class="material-symbols-outlined">
+                  visibility
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <button
+              id="loginBtn"
+              class="w-full px-4 py-3 font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background-light dark:focus:ring-offset-background-dark transition-colors duration-300"
+              type="submit"
+            >
+              تسجيل الدخول
+            </button>
+          </div>
+
+          <div id="error" class="error" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const toggleIcon = document.getElementById("toggleIcon");
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.textContent = "visibility_off";
+        } else {
+          passwordInput.type = "password";
+          toggleIcon.textContent = "visibility";
+        }
+      }
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+      // --- تأكد أن هذه القيم مطابقة للمشروع لديك ---
+      const firebaseConfig = {
+        apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+        authDomain: "examsy-21dc3.firebaseapp.com",
+        projectId: "examsy-21dc3",
+        storageBucket: "examsy-21dc3.firebasestorage.app",
+        messagingSenderId: "357464025229",
+        appId: "1:357464025229:web:b920c8290f985f54339ac4",
+        measurementId: "G-CWZ7MR4V26",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // الدالة الرئيسية لمعالجة تسجيل الدخول
+      function studentLogin(event) {
+        event.preventDefault(); // مهم جداً: يمنع إعادة تحميل الصفحة
+        const usernameEl = document.getElementById("username");
+        const passwordEl = document.getElementById("password");
+        const errorDiv = document.getElementById("error");
+        const loginBtn = document.getElementById("loginBtn");
+
+        errorDiv.textContent = "";
+        const username = usernameEl.value.trim();
+        const password = passwordEl.value.trim();
+
+        if (!username || !password) {
+          errorDiv.textContent = "الرجاء إدخال البريد الإلكتروني وكلمة المرور.";
+          return;
+        }
+
+        // تعطيل الزر أثناء الاستعلام لعدم تكرار الطلبات
+        loginBtn.disabled = true;
+        loginBtn.classList.add("opacity-70");
+
+        // استعلام Firestore
+        db.collection("std_id")
+          .where("std_email", "==", username)
+          .where("std_password", "==", password)
+          .get()
+          .then((querySnapshot) => {
+            console.log("Query size:", querySnapshot.size);
+            if (!querySnapshot.empty) {
+              const studentData = querySnapshot.docs[0].data();
+              const stdName = studentData.std_name || "";
+              const stdClass = studentData.std_class || "";
+              const stdGrade = String(studentData.std_grade || "");
+
+              // حفظ في LocalStorage
+              localStorage.setItem("std_name", stdName);
+              localStorage.setItem("std_class", stdClass);
+              localStorage.setItem("std_grade", stdGrade);
+
+              // إعادة التوجيه بحسب الصف (استخدمت else if لتجنّب تنفيذ الـ else العام)
+              if (stdGrade === "9") {
+                window.location.href = "page/9th/9th.html";
+                return;
+              } else if (stdGrade === "8") {
+                window.location.href = "page/8th/8th.html";
+                return;
+              } else if (stdGrade === "7") {
+                window.location.href = "page/7th/7th.html";
+                return;
+              } else {
+                errorDiv.textContent = "الصف غير معروف: " + stdGrade;
+              }
+            } else {
+              errorDiv.textContent =
+                "اسم المستخدم أو كلمة المرور غير صحيحة. إذا لم يكن لديك معلومات الدخول يرجى مراجعة الاستاذ أسامة عمر.";
+            }
+          })
+          .catch((error) => {
+            console.error("Firestore error:", error);
+            errorDiv.textContent = "حدث خطأ: " + error.message;
+          })
+          .finally(() => {
+            loginBtn.disabled = false;
+            loginBtn.classList.remove("opacity-70");
+          });
+      }
+    </script>
+  </body>
+</html>

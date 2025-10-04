@@ -5,6 +5,186 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>الاختبارات الالكترونية</title>
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      #main-container {
+        flex-grow: 1;
+        max-width: 80%;
+        margin: 0 auto;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #cards-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        width: 80%;
+        max-width: 900px;
+      }
+
+      @media (min-width: 768px) {
+        #cards-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* حركة وميض */
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* بطاقة الطلاب */
+      #student-card {
+        position: relative;
+        background: #f6f7f8;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+      }
+
+      #student-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+      }
+
+      #student-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #e3342f;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 0.25rem 0.75rem;
+        border-top-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        animation: blink 1s infinite;
+      }
+
+      .class-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #e3342f;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 0.25rem 0.75rem;
+        border-top-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+      }
+
+      #student-icon {
+        width: 64px;
+        height: 64px;
+        fill: #137fec;
+      }
+
+      #student-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      #student-desc {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 1.5rem;
+      }
+
+      #student-login-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #137fec;
+        color: #fff;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+      }
+
+      #student-login-btn:hover {
+        background: #0f6fcc;
+      }
+
+      /* بطاقة المعلمين */
+      #teacher-card {
+        position: relative;
+        background: #f6f7f8;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+      }
+
+      #teacher-card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+      }
+
+      #teacher-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #e3342f;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 0.25rem 0.75rem;
+        border-top-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        animation: blink 1s infinite;
+      }
+
+      #teacher-icon {
+        width: 64px;
+        height: 64px;
+        fill: #137fec;
+      }
+
+      #teacher-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      #teacher-desc {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 1.5rem;
+      }
+
+      #teacher-login-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #137fec;
+        color: #fff;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+      }
+
+      #teacher-login-btn:hover {
+        background: #0f6fcc;
+      }
+    </style>
   </head>
 
   <body>
@@ -14,26 +194,7 @@
           <span class="logo-emoji">📚</span>
           <span class="logo-text">الاختبارات الالكترونية</span>
         </a>
-
-        <p>
-          <span
-            id="std_welcome"
-            style="padding: 10px; font-size: larger"
-          ></span>
-        </p>
-
-        <a href="login_teacher.html" class="teacher_login">
-          <span class="teacher-icon">👨🏼‍💻</span> دخول المعلمين
-        </a>
-        <a href="std_teacher.html" class="std_login">
-          <span class="teacher-icon">👨🏼</span> دخول الطلاب
-        </a>
       </div>
-      <div
-        id="errorMessage"
-        class="error"
-        style="display: none; color: red; margin-top: 10px"
-      ></div>
     </header>
 
     <header class="hero">
@@ -41,20 +202,124 @@
       <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
     </header>
 
-    <div class="container">
-      <h2 class="h2container">الصف الدراسي</h2>
+    <main id="main-container">
+      <div id="cards-grid">
+        <!-- بطاقة الطلاب -->
+        <div id="student-card">
+          <div id="student-badge">جديد</div>
+          <svg id="student-icon" viewBox="0 0 24 24">
+            <path
+              d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
+                  3L1 9l11 6 9-4.91V17h2V9L12 3z"
+            ></path>
+          </svg>
+          <h4 id="student-title">تسجيل دخول الطلاب</h4>
+          <p id="student-desc">الوصول إلى التحضير والاختبارات</p>
+          <a href="std_login.html">
+            <button id="student-login-btn">تسجيل الدخول كطالب</button></a
+          >
+        </div>
+
+        <!-- بطاقة المعلمين -->
+        <div id="teacher-card">
+          <div id="teacher-badge">جديد</div>
+          <svg id="teacher-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 
+                  1.79-4 4 1.79 4 4 4zm0 2c-2.67 
+                  0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+            ></path>
+          </svg>
+          <h4 id="teacher-title">تسجيل دخول المعلمين</h4>
+          <p id="teacher-desc">إدارة الصفوف والطلاب والموارد</p>
+          <a href="login_teacher.html">
+            <button id="teacher-login-btn">تسجيل الدخول كمعلم</button>
+          </a>
+        </div>
+      </div>
+    </main>
+    <!--  <div class="container">
+      <h2 class="h2container">تسجيل الدخول</h2>
       <div class="cards">
         <a
           class="card-link"
-          href="page/7th/7th.html"
+          href="std_login.html"
           style="display: block; text-decoration: none"
         >
           <div class="card" data-class="الصف السابع">
-            <h3>الصف السابع</h3>
-            <p>انقر للتفاصيل</p>
+            <h5 class="new_login">جديد</h5>
+            <h3>👨🏼 تسجيل الدخول للطلاب</h3>
+            <p>انقر لتسجيل الدخول</p>
           </div>
         </a>
         <a
+          class="card-link"
+          href="login_teacher.html"
+          style="display: block; text-decoration: none"
+        >
+          <div class="card" data-class="الصف الثامن">
+            <h5 class="new_login">جديد</h5>
+
+            <h3>👨🏼‍💻 تسجيل الدخول للمعلمين</h3>
+            <p>انقر لتسجيل الدخول</p>
+          </div>
+        </a>
+      </div>
+    </div> -->
+    <div class="container">
+      <h2
+        style="color: wheat; text-align: center; margin: 20px; font-size: 40px"
+      >
+        الصف الدراسي
+      </h2>
+      <div class="cards">
+        <a href="page/7th/7th.html">
+          <div id="teacher-card">
+            <div class="class-badge">7</div>
+
+            <svg id="teacher-icon" viewBox="0 0 24 24">
+              <path
+                d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
+                  3L1 9l11 6 9-4.91V17h2V9L12 3z"
+              ></path>
+            </svg>
+            <h4 id="teacher-title">الصف السابع الاساسي</h4>
+            <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
+          </div>
+        </a>
+
+        <a href="page/8th/8th.html">
+          <div id="teacher-card">
+            <div class="class-badge">8</div>
+
+            <svg id="teacher-icon" viewBox="0 0 24 24">
+              <path
+                d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
+                  3L1 9l11 6 9-4.91V17h2V9L12 3z"
+              ></path>
+            </svg>
+            <h4 id="teacher-title">الصف الثامن الاساسي</h4>
+            <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
+          </div>
+        </a>
+
+        <a href="page/9th/9th.html">
+          <div id="teacher-card">
+            <div class="class-badge">9</div>
+
+            <svg id="teacher-icon" viewBox="0 0 24 24">
+              <path
+                d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
+                  3L1 9l11 6 9-4.91V17h2V9L12 3z"
+              ></path>
+            </svg>
+            <h4 id="teacher-title">الصف التاسع الاساسي</h4>
+            <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
+          </div>
+        </a>
+
+        <!-- ----------------- -->
+        <!-- <a
           class="card-link"
           href="page/8th/8th.html"
           style="display: block; text-decoration: none"
@@ -73,7 +338,7 @@
             <h3>الصف التاسع</h3>
             <p>انقر للتفاصيل</p>
           </div>
-        </a>
+        </a> -->
       </div>
     </div>
 
