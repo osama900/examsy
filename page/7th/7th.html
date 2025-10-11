@@ -82,7 +82,7 @@
             <span class="lesson-number">4</span>
             <span class="lesson-title">أنظمة التشغيل</span>
           </a>
-          <a class="lesson-btn" onclick="showToast()">
+          <a href="1-5/7c.html" class="lesson-btn">
             <span class="lesson-title">الدرس</span>
             <span class="lesson-number">5</span>
             <span class="lesson-title">تفاعل الانسان مع أجهزة الحاسوب</span>
@@ -189,9 +189,11 @@
         const welcomeSpan = document.getElementById("std_welcome");
         const logoutBtn = document.getElementById("logoutBtn");
         const studentClass = localStorage.getItem("std_class");
+        const studentGrade = localStorage.getItem("std_grade");
 
         if (studentName) {
-          welcomeSpan.textContent = "أهلاً " + studentName + " " + studentClass;
+          welcomeSpan.textContent =
+            "أهلاً " + studentName + " * " + studentGrade + " " + studentClass;
           logoutBtn.style.display = "inline-block"; // إظهار زر تسجيل الخروج
         } else {
           welcomeSpan.textContent = "أهلاً زائر";
