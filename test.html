@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>معلم الإنجليزي</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 800px;
+        padding: 30px;
+        direction: ltr;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .input-section {
+        margin-bottom: 25px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 120px;
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 12px;
+        font-size: 16px;
+        resize: vertical;
+        direction: ltr;
+        text-align: left;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .display-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border: 2px dashed #e9ecef;
+      }
+
+      .text-display {
+        font-size: 24px;
+        line-height: 1.6;
+        color: #333;
+        width: 100%;
+        word-wrap: break-word;
+      }
+
+      .word {
+        display: inline-block;
+        padding: 5px 8px;
+        margin: 2px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+      }
+
+      .word:hover {
+        background-color: #e9ecef;
+        border-color: #667eea;
+      }
+
+      .word.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-color: transparent;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 14px;
+      }
+
+      select,
+      input[type="range"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+      }
+
+      select:focus,
+      input[type="range"]:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
+
+      button {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        max-width: 200px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      #playBtn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      #pauseBtn {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+      }
+
+      #stopBtn {
+        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        color: white;
+      }
+
+      .speed-value {
+        text-align: center;
+        font-weight: bold;
+        color: #667eea;
+        font-size: 14px;
+      }
+
+      .instructions {
+        text-align: center;
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 15px;
+        font-style: italic;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .text-display {
+          font-size: 20px;
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+
+        button {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>معلم الإنجليزي - English Teacher</h1>
+
+      <div class="instructions">
+        اضغط على أي كلمة لسماع نطقها! Click on any word to hear its
+        pronunciation!
+      </div>
+
+      <div class="input-section">
+        <textarea
+          id="textInput"
+          placeholder="أدخل النص الإنجليزي هنا... Enter your English text here..."
+        >
+Hello students! Welcome to our English class. Today we will learn about reading and pronunciation. Practice makes perfect!</textarea
+        >
+      </div>
+
+      <div class="display-section">
+        <div class="text-display" id="textDisplay">
+          Hello students! Welcome to our English class. Today we will learn
+          about reading and pronunciation. Practice makes perfect!
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="fontSelect">نوع الخط / Font</label>
+          <select id="fontSelect">
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <option value="'Segoe UI'">Segoe UI</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="bgColor">لون الخلفية / Background Color</label>
+          <select id="bgColor">
+            <option value="#f8f9fa">فاتح / Light</option>
+            <option value="#e9ecef">رمادي / Gray</option>
+            <option value="#dee2e6">فضي / Silver</option>
+            <option value="#212529">داكن / Dark</option>
+            <option value="#343a40">أسود / Black</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="speedControl">سرعة النطق / Speech Speed</label>
+          <input
+            type="range"
+            id="speedControl"
+            min="100"
+            max="1000"
+            step="50"
+            value="500"
+          />
+          <div class="speed-value" id="speedValue">500ms</div>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="playBtn">▶ تشغيل / Play</button>
+        <button id="pauseBtn" disabled>⏸ إيقاف مؤقت / Pause</button>
+        <button id="stopBtn">⏹ إيقاف / Stop</button>
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const textInput = document.getElementById("textInput");
+      const textDisplay = document.getElementById("textDisplay");
+      const playBtn = document.getElementById("playBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const fontSelect = document.getElementById("fontSelect");
+      const bgColor = document.getElementById("bgColor");
+      const speedControl = document.getElementById("speedControl");
+      const speedValue = document.getElementById("speedValue");
+
+      let words = [];
+      let currentWordIndex = 0;
+      let isPlaying = false;
+      let isPaused = false;
+      const synth = window.speechSynthesis;
+
+      // ✅ قراءة كلمة مع دعم حدث الانتهاء
+      function readWord(word, onEndCallback = null) {
+        synth.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = "en-US";
+
+        // تحويل قيمة السرعة إلى معدل نطق (rate)
+        const speedValue = parseInt(speedControl.value); // 100 إلى 1000
+        // تحويل إلى rate بين 0.5 (بطيء) و 2.0 (سريع)
+        const rate = 2.0 - (speedValue / 1000) * 1.5;
+        utterance.rate = Math.max(0.5, Math.min(2.0, rate));
+
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        if (onEndCallback) {
+          utterance.onend = onEndCallback;
+        }
+
+        synth.speak(utterance);
+      }
+
+      // تأكد من تحميل الأصوات
+      function ensureVoicesLoaded() {
+        if (synth.getVoices().length === 0) {
+          synth.getVoices();
+          setTimeout(ensureVoicesLoaded, 300);
+        }
+      }
+
+      function updateDisplay() {
+        const text = textInput.value.trim();
+        if (!text) {
+          textDisplay.innerHTML =
+            '<span style="color: #6c757d;">أدخل نصًا للعرض... Enter text to display...</span>';
+          words = [];
+          return;
+        }
+        const wordRegex = /\S+/g;
+        words = text.match(wordRegex) || [];
+        const html = words
+          .map(
+            (word, index) =>
+              `<span class="word" data-index="${index}">${word}</span>`
+          )
+          .join(" ");
+        textDisplay.innerHTML = html;
+      }
+
+      function setupEventListeners() {
+        textInput.addEventListener("input", updateDisplay);
+        playBtn.addEventListener("click", startReading);
+        pauseBtn.addEventListener("click", pauseReading);
+        stopBtn.addEventListener("click", stopReading);
+        fontSelect.addEventListener("change", updateFont);
+        bgColor.addEventListener("change", updateBackground);
+        speedControl.addEventListener("input", updateSpeed);
+        textDisplay.addEventListener("click", handleWordClick);
+      }
+
+      function handleWordClick(e) {
+        if (e.target.classList.contains("word")) {
+          const index = parseInt(e.target.dataset.index);
+          if (isPlaying) stopReading();
+          highlightWord(index);
+          readWord(words[index]);
+        }
+      }
+
+      function updateFont() {
+        textDisplay.style.fontFamily = fontSelect.value;
+      }
+
+      function updateBackground() {
+        document.querySelector(".display-section").style.backgroundColor =
+          bgColor.value;
+      }
+
+      function updateSpeed() {
+        const speed = speedControl.value;
+        speedValue.textContent = `${speed}ms`;
+      }
+
+      function startReading() {
+        if (words.length === 0) return;
+        if (isPaused) {
+          resumeReading();
+          return;
+        }
+        isPlaying = true;
+        isPaused = false;
+        currentWordIndex = 0;
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+        readNextWord();
+      }
+
+      function readNextWord() {
+        if (currentWordIndex >= words.length) {
+          stopReading();
+          return;
+        }
+        highlightWord(currentWordIndex);
+        readWord(words[currentWordIndex], () => {
+          currentWordIndex++;
+          readNextWord();
+        });
+      }
+
+      function highlightWord(index) {
+        document
+          .querySelectorAll(".word")
+          .forEach((w) => w.classList.remove("active"));
+        const wordEl = document.querySelector(`.word[data-index="${index}"]`);
+        if (wordEl) {
+          wordEl.classList.add("active");
+          wordEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+
+      function pauseReading() {
+        if (!isPlaying) return;
+        isPaused = true;
+        isPlaying = false;
+        synth.cancel();
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+      }
+
+      function resumeReading() {
+        isPlaying = true;
+        isPaused = false;
+        playBtn.disabled = true;
+        pauseBtn.disabled = false;
+        readNextWord();
+      }
+
+      function stopReading() {
+        isPlaying = false;
+        isPaused = false;
+        currentWordIndex = 0;
+        synth.cancel();
+        document
+          .querySelectorAll(".word")
+          .forEach((w) => w.classList.remove("active"));
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+      }
+
+      function init() {
+        updateDisplay();
+        setupEventListeners();
+        ensureVoicesLoaded();
+      }
+
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
