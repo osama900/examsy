@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>9-1-4-1</title>
+    <title>7-2-2-1</title>
     <link rel="stylesheet" href="../../../css/style.css" />
   </head>
 
@@ -18,13 +18,11 @@
         </div>
       </header>
     </div>
-    <h1 class="h19"></h1>
 
     <div id="message" class="message" style="display: none"></div>
     <div class="containerstd">
-      <h1>الدرس الرابع - التنمر الالكتروني 📛</h1>
+      <h1>الدرس الثاني - مكونات شبكات الحاسوب 🛜</h1>
       <h1>امتحان الطالب</h1>
-
       <div id="startSection">
         <label for="studentName">أدخل اسمك الرباعي:</label>
         <input
@@ -34,8 +32,14 @@
           required
         />
         <label for="studentClass">اختر الشعبة:</label>
-        <input type="text" id="studentClass" placeholder="الشعبة" required />
-
+        <select id="studentClass" required>
+          <option value="">اختر الشعبة</option>
+          <option value="أ">أ</option>
+          <option value="ب">ب</option>
+          <option value="ج">ج</option>
+          <option value="د">د</option>
+          <option value="هـ">هـ</option>
+        </select>
         <button onclick="startExam()">بدء الامتحان</button>
       </div>
       <div id="examSection" style="display: none">
@@ -50,7 +54,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="../../../js/Script9.js"></script>
+    <script src="../../../js/Script7.js"></script>
     <script>
       (function () {
         function c() {
@@ -88,7 +92,6 @@
       // التحقق من وجود اسم الطالب عند تحميل صفحة الامتحان
       window.addEventListener("load", () => {
         const storedStudentName = localStorage.getItem("std_name");
-        const storedStudentClass = localStorage.getItem("std_class");
 
         if (!storedStudentName) {
           alert(
@@ -100,10 +103,6 @@
           const studentNameInput = document.getElementById("studentName");
           studentNameInput.value = storedStudentName;
           studentNameInput.setAttribute("readonly", true);
-
-          const studentClassInput = document.getElementById("studentClass");
-          studentClassInput.value = storedStudentClass;
-          studentClassInput.setAttribute("readonly", true);
         }
       });
     </script>

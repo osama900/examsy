@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Pronunciation Tool</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* General Reset & Base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: #f5f6f8;
+        color: #0d171b;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+      }
+
+      body.dark {
+        background-color: #0f1323;
+        color: #e2e8f0;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 896px;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1.1;
+        background: linear-gradient(90deg, #13a4ec, #8a2be2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+      }
+
+      @media (min-width: 640px) {
+        h2 {
+          font-size: 2.25rem;
+        }
+      }
+
+      p {
+        font-size: 1rem;
+        color: #4c809a;
+      }
+
+      body.dark p {
+        color: #7b8a93;
+      }
+
+      .card {
+        padding: 1.5rem;
+        background-color: #ffffff;
+        border: 1px solid #cfdfe7;
+        border-radius: 1rem;
+      }
+
+      body.dark .card {
+        background-color: #192730;
+        border-color: #313f48;
+        color: #e2e8f0;
+      }
+
+      .waveform-placeholder {
+        min-height: 120px;
+        background-color: rgba(96, 122, 251, 0.1);
+        border-radius: 1rem;
+      }
+
+      .word,
+      .arabic-word {
+        cursor: pointer;
+        padding: 0.25rem;
+        display: inline-block;
+        transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
+      }
+
+      .word:hover,
+      .arabic-word:hover {
+        opacity: 0.8;
+      }
+
+      .word.active,
+      .arabic-word.active {
+        transform: scale(1.05);
+        background: linear-gradient(
+          135deg,
+          rgba(19, 164, 236, 0.2),
+          rgba(138, 43, 226, 0.2)
+        );
+        color: #0d171b;
+        border-radius: 0.25rem;
+      }
+
+      body.dark .word.active,
+      body.dark .arabic-word.active {
+        color: #f6f7f8;
+      }
+
+      .english-text {
+        font-size: 1.5rem;
+        font-weight: normal;
+        line-height: 1.5;
+        text-align: left;
+        direction: ltr;
+      }
+
+      .arabic-text {
+        font-size: 1.5rem;
+        font-weight: normal;
+        line-height: 1.75;
+        text-align: right;
+        direction: rtl;
+        color: #4c809a;
+      }
+
+      body.dark .arabic-text {
+        color: #7b8a93;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        .controls {
+          flex-direction: row;
+          justify-content: center;
+          gap: 1.5rem;
+        }
+      }
+
+      .buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn {
+        padding: 0.75rem;
+        border-radius: 9999px;
+        background: none;
+        border: none;
+        color: #0d171b;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      body.dark .btn {
+        color: #e2e8f0;
+      }
+
+      .btn:hover {
+        background-color: rgba(96, 122, 251, 0.1);
+      }
+
+      .slider-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .slider-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 0.5rem;
+        background: rgba(96, 122, 251, 0.2);
+        border-radius: 0.5rem;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        background: #607afb;
+        cursor: pointer;
+      }
+
+      .slider-ticks {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: #4c809a;
+      }
+
+      body.dark .slider-ticks {
+        color: #7b8a93;
+      }
+
+      footer {
+        text-align: center;
+        padding-top: 2rem;
+        margin-top: 2rem;
+      }
+
+      footer p {
+        font-size: 0.875rem;
+      }
+
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        font-size: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <main>
+        <section>
+          <h2>Interactive Pronunciation Tool / أداة نطق تفاعلية</h2>
+          <p>
+            Click on any word to hear it, or use the controls to play the full
+            text.<br />
+            انقر على أي كلمة لسماعها، أو استخدم عناصر التحكم لتشغيل النص
+            بالكامل.
+          </p>
+        </section>
+
+        <div class="waveform-placeholder"></div>
+
+        <div class="card english-text" id="english-text">
+          <div>
+            <span class="word">The</span> <span class="word">quick</span>
+            <span class="word">brown</span> <span class="word">fox</span>
+          </div>
+          <div>
+            <span class="word">jumps</span> <span class="word">over</span>
+            <span class="word">the</span> <span class="word">lazy</span>
+          </div>
+          <div><span class="word">dog.</span></div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-weight: bold; margin-bottom: 1rem">
+            Translation / ترجمة
+          </h3>
+          <p class="arabic-text" id="arabic-text">
+            <span class="arabic-word">الثعلب</span>
+            <span class="arabic-word">البني</span>
+            <span class="arabic-word">السريع</span>
+            <span class="arabic-word">يقفز</span>
+            <span class="arabic-word">فوق</span>
+            <span class="arabic-word">الكلب</span>
+            <span class="arabic-word">الكسول.</span>
+          </p>
+        </div>
+
+        <div class="card controls">
+          <h3 style="text-align: center; width: 100%">
+            Controls / أدوات التحكم
+          </h3>
+          <div class="buttons">
+            <button class="btn" id="play-btn" aria-label="Play">
+              <span class="material-symbols-outlined">play_arrow</span>
+            </button>
+            <button class="btn" id="pause-btn" aria-label="Pause">
+              <span class="material-symbols-outlined">pause</span>
+            </button>
+            <button class="btn" id="stop-btn" aria-label="Stop">
+              <span class="material-symbols-outlined">stop</span>
+            </button>
+          </div>
+          <div class="slider-container">
+            <label class="slider-label" for="speed-slider"
+              >Speech Speed / سرعة النطق</label
+            >
+            <input
+              type="range"
+              id="speed-slider"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value="1"
+            />
+            <div class="slider-ticks">
+              <span>0.5x</span>
+              <span>1.0x</span>
+              <span>2.0x</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>© 2024 Pronunciation Practice Tool. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script>
+      const synth = window.speechSynthesis;
+      let currentUtterance = null;
+
+      // Utility: speak a phrase
+      function speak(text, lang, rate) {
+        if (synth.speaking) synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = parseFloat(rate);
+        synth.speak(utterance);
+        currentUtterance = utterance;
+      }
+
+      // Word click handlers
+      document.querySelectorAll(".word").forEach((word) => {
+        word.addEventListener("click", () => {
+          document
+            .querySelectorAll(".word, .arabic-word")
+            .forEach((w) => w.classList.remove("active"));
+          word.classList.add("active");
+          const speed = document.getElementById("speed-slider").value;
+          speak(word.textContent.trim(), "en-US", speed);
+        });
+      });
+
+      document.querySelectorAll(".arabic-word").forEach((word) => {
+        word.addEventListener("click", () => {
+          document
+            .querySelectorAll(".word, .arabic-word")
+            .forEach((w) => w.classList.remove("active"));
+          word.classList.add("active");
+          const speed = document.getElementById("speed-slider").value;
+          speak(word.textContent.trim(), "ar-SA", speed);
+        });
+      });
+
+      // Full text play
+      document.getElementById("play-btn").addEventListener("click", () => {
+        const fullText = "The quick brown fox jumps over the lazy dog.";
+        const speed = document.getElementById("speed-slider").value;
+        speak(fullText, "en-US", speed);
+      });
+
+      document.getElementById("pause-btn").addEventListener("click", () => {
+        if (synth.speaking) synth.pause();
+      });
+
+      document.getElementById("stop-btn").addEventListener("click", () => {
+        synth.cancel();
+      });
+    </script>
+  </body>
+</html>

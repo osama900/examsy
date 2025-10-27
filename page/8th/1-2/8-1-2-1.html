@@ -34,15 +34,8 @@
           required
         />
         <label for="studentClass">اختر الشعبة:</label>
-        <select id="studentClass" required>
-          <option value="">اختر الشعبة</option>
-          <option value="أ">أ</option>
-          <option value="ب">ب</option>
-          <option value="ج">ج</option>
-          <option value="د">د</option>
-          <option value="هـ">هـ</option>
-          <option value="و">و</option>
-        </select>
+        <input type="text" id="studentClass" placeholder="الشعبة" required />
+
         <button onclick="startExam()">بدء الامتحان</button>
       </div>
       <div id="examSection" style="display: none">
@@ -95,6 +88,7 @@
       // التحقق من وجود اسم الطالب عند تحميل صفحة الامتحان
       window.addEventListener("load", () => {
         const storedStudentName = localStorage.getItem("std_name");
+        const storedStudentClass = localStorage.getItem("std_class");
 
         if (!storedStudentName) {
           alert(
@@ -106,6 +100,10 @@
           const studentNameInput = document.getElementById("studentName");
           studentNameInput.value = storedStudentName;
           studentNameInput.setAttribute("readonly", true);
+
+          const studentClassInput = document.getElementById("studentClass");
+          studentClassInput.value = storedStudentClass;
+          studentClassInput.setAttribute("readonly", true);
         }
       });
     </script>
