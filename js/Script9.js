@@ -6,6 +6,10 @@ let studentName = "";
 let studentClass = "";
 const encryptionKey = "res123dd75";
 
+let totalTimeSeconds = 0;
+let timeLeftSeconds = 0;
+let timerInterval = null;
+
 // تهيئة Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
@@ -39,18 +43,15 @@ async function fetchQuestionsFromGoogleSheet() {
       throw new Error("فشل في جلب الأسئلة من Google Sheet.");
     }
     const csv = await response.text();
-    const rows = csv.split("\n").slice(1); // تخطي الصف الأول (الرأس)
+    const rows = csv.split("\n").slice(1);
 
-    // استخراج اسم الاختبار من عنوان الصفحة
     let title = document.title;
-    let testName = title.split(" - ")[0].trim(); // افتراض أن العنوان هو "اسم الاختبار - نص آخر"
+    let testName = title.split(" - ")[0].trim();
 
-    // تصفية الصفوف بناءً على تطابق test_name (العمود الأول الآن)
     const filteredRows = rows
       .map((row) => row.split(","))
       .filter((columns) => columns[0].trim() === testName);
 
-    // التحقق مما إذا كانت هناك أسئلة مطابقة
     if (filteredRows.length === 0) {
       document.getElementById(
         "questionContainer"
@@ -58,22 +59,29 @@ async function fetchQuestionsFromGoogleSheet() {
       return;
     }
 
-    // تحليل الصفوف المصفاة مع تعديل فهارس الأعمدة بسبب إضافة test_name
     const allData = filteredRows
       .map((columns) => {
-        const question = columns[1].trim(); // السؤال الآن في العمود 1
+        const question = columns[1].trim();
         const options = columns
-          .slice(2, 6) // الخيارات من العمود 2 إلى 5
+          .slice(2, 6)
           .map((option) => option.trim())
           .filter((option) => option !== "")
-          .sort(() => Math.random() - 0.5); // خلط الخيارات عشوائيًا
-        const correctAnswer = columns[6].trim(); // الإجابة الصحيحة في العمود 6
-        const score = parseFloat(columns[7].trim() || 1); // الدرجة في العمود 7، افتراضيًا 1 إذا فارغ
-        return { question, options, correctAnswer, score };
-      })
-      .sort(() => Math.random() - 0.5); // خلط الأسئلة عشوائيًا
+          .sort(() => Math.random() - 0.5);
+        const correctAnswer = columns[6].trim();
+        const score = parseFloat(columns[7].trim() || 1);
 
-    // تحضير الأسئلة والإجابات المشفرة
+        // قراءة الوقت: فقط إذا كان رقمًا موجبًا، وإلا 0
+        let timeInMinutes = 0;
+        const timeStr = columns[8]?.trim();
+        if (timeStr !== "" && !isNaN(timeStr)) {
+          const parsed = parseFloat(timeStr);
+          if (parsed > 0) timeInMinutes = parsed;
+        }
+
+        return { question, options, correctAnswer, score, timeInMinutes };
+      })
+      .sort(() => Math.random() - 0.5);
+
     questions = allData.map((q) => ({
       question: q.question,
       options: q.options,
@@ -81,14 +89,76 @@ async function fetchQuestionsFromGoogleSheet() {
     }));
     encryptedCorrectAnswers = allData.map((q) => encryptData(q.correctAnswer));
 
-    // تحميل السؤال الأول
+    // حساب الوقت الكلي بالثواني (قد يكون 0)
+    totalTimeSeconds = allData.reduce(
+      (sum, q) => sum + q.timeInMinutes * 60,
+      0
+    );
+    timeLeftSeconds = totalTimeSeconds;
+
     currentQuestionIndex = 0;
     loadQuestion();
+
+    // بدء المؤقّت فقط إذا كان هناك وقت محدد
+    if (totalTimeSeconds > 0) {
+      startTimer();
+    }
   } catch (error) {
     console.error("Error:", error);
     document.getElementById(
       "questionContainer"
     ).innerHTML = `<div class="error">حدث خطأ أثناء جلب الأسئلة: ${error.message}</div>`;
+  }
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    timeLeftSeconds--;
+    updateTimerDisplay();
+
+    if (timeLeftSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert("انتهى الوقت المخصص للاختبار!");
+      submitExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(timeLeftSeconds / 60);
+  const seconds = timeLeftSeconds % 60;
+  const display = `${String(minutes).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
+
+  let timerElement = document.getElementById("exam-timer");
+  if (!timerElement) {
+    const examSection = document.getElementById("examSection");
+    if (examSection) {
+      timerElement = document.createElement("div");
+      timerElement.id = "exam-timer";
+      timerElement.style.cssText = `
+        text-align: center;
+        margin: 10px 0;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-weight: bold;
+        color: #e74c3c;
+        font-size: 18px;
+      `;
+      examSection.insertBefore(
+        timerElement,
+        examSection.firstChild.nextSibling
+      );
+    }
+  }
+  if (timerElement) {
+    timerElement.innerHTML = `الوقت المتبقي: <span>${display}</span>`;
   }
 }
 
@@ -131,7 +201,10 @@ function loadQuestion() {
                 (option, index) => `
                 <div class="option ${
                   selectedAnswer === option ? "selected" : ""
-                }" onclick="selectAnswer('${option}', ${currentQuestionIndex})">
+                }" onclick="selectAnswer('${option.replace(
+                  /'/g,
+                  "\\'"
+                )}', ${currentQuestionIndex})">
                     ${String.fromCharCode(65 + index)}. ${option}
                 </div>
             `
@@ -200,6 +273,7 @@ function goToQuestion(index) {
 }
 
 function returnToStart() {
+  clearInterval(timerInterval);
   location.reload();
 }
 
@@ -214,6 +288,8 @@ function showMessage(message, type = "success") {
 }
 
 function submitExam() {
+  clearInterval(timerInterval);
+
   const unansweredQuestions = questions
     .map((_, index) => (!userAnswers[index] ? index + 1 : null))
     .filter((index) => index !== null);
@@ -227,6 +303,9 @@ function submitExam() {
       )}. هل تريد إنهاء الامتحان؟`
     );
     if (!confirmation) {
+      if (totalTimeSeconds > 0) {
+        startTimer(); // أعد تشغيل المؤقّت فقط إذا كان موجودًا
+      }
       return;
     }
   }
@@ -292,17 +371,15 @@ function submitExam() {
   document.getElementById("resultSection").style.display = "block";
 
   const now = new Date();
-  // استخراج اسم الاختبار من عنوان الصفحة لتخزينه في Firebase
   let title = document.title;
   let testName = title.split(" - ")[0].trim();
 
-  // حفظ اسم الاختبار في localStorage مع بقية البيانات
   localStorage.setItem(
     "examResults_" + studentName + "_" + studentClass,
     JSON.stringify({
       name: studentName,
       class: studentClass,
-      testName: testName, // إضافة اسم الاختبار
+      testName: testName,
       score: totalScore,
       date: now.toLocaleDateString(),
       time: now.toLocaleTimeString(),
@@ -310,13 +387,12 @@ function submitExam() {
   );
   const maxScore = questions.reduce((sum, q) => sum + q.score, 0);
 
-  // إضافة اسم الاختبار إلى البيانات المرسلة إلى Firebase
   const examData = {
     name: studentName,
     class: studentClass,
-    testName: testName, // إضافة اسم الاختبار
+    testName: testName,
     score: totalScore,
-    maxScore: maxScore, // إضافة العلامة القصوى
+    maxScore: maxScore,
     date: now.toLocaleDateString(),
     time: now.toLocaleTimeString(),
     timestamp: firebase.firestore.Timestamp.fromDate(now),
@@ -362,7 +438,6 @@ function showToast(message, { duration = 4000 } = {}) {
 
   function dismiss() {
     toast.classList.add("toast--leaving");
-    // remove from DOM after animation
     toast.addEventListener("animationend", () => toast.remove(), {
       once: true,
     });
@@ -373,20 +448,19 @@ function showToast(message, { duration = 4000 } = {}) {
     dismiss();
   });
 
-  // Optional: Pause progress on hover
   toast.addEventListener("mouseenter", () => {
     progress.style.animationPlayState = "paused";
     clearTimeout(hideTimer);
   });
   toast.addEventListener("mouseleave", () => {
     const computed = getComputedStyle(progress);
-    const remaining =
-      (1 -
-        parseFloat(
-          computed.transform.split(",")[0]?.replace("matrix(", "") || 1
-        )) *
-      duration;
-    // Fallback if transform read fails
+    const transformValue = computed.transform;
+    let progressValue = 1;
+    if (transformValue && transformValue !== "none") {
+      const matrix = transformValue.split(",")[0]?.replace("matrix(", "");
+      progressValue = parseFloat(matrix) || 1;
+    }
+    const remaining = (1 - progressValue) * duration;
     hideTimer = setTimeout(() => dismiss(), Math.max(200, remaining || 2000));
     progress.style.animationPlayState = "running";
   });
@@ -394,16 +468,14 @@ function showToast(message, { duration = 4000 } = {}) {
   return toast;
 }
 
-// Demo: trigger on button click
 document.getElementById("btn").addEventListener("click", () => {
   showToast("This is your orange notification. It will close in 4 seconds.");
 });
 
-// Also fire one automatically on load (you can remove this line in your app)
 window.addEventListener("load", () => {
   setTimeout(() => showToast("Saved successfully! ✅"), 500);
 });
-////     done notification
+
 window.addEventListener("load", () => {
   const storedStudent = JSON.parse(
     localStorage.getItem("loggedInStudent") || "{}"
@@ -413,14 +485,12 @@ window.addEventListener("load", () => {
     alert(
       "يرجى تسجيل الدخول قبل بدء الامتحان.\nإذا لم يكن معك معلومات تسجيل الدخول يرجى مراجعة الأستاذ أسامة."
     );
-    window.location.href = "../../../index.html"; // رجوع للصفحة الرئيسية
+    window.location.href = "../../../index.html";
   } else {
-    // إذا مسجل دخول
     const studentNameInput = document.getElementById("studentName");
     studentNameInput.value = storedStudent.name;
-    studentNameInput.setAttribute("readonly", true); // ما يخليه يقدر يعدل
+    studentNameInput.setAttribute("readonly", true);
 
-    // إذا حابب تعبي الشعبة كمان
     if (storedStudent.class) {
       const studentClassInput = document.getElementById("studentClass");
       studentClassInput.value = storedStudent.class;

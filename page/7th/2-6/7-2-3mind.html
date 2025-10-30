@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الدرس الثالث - نماذج الربط في شبكات الحاسوب 🌐</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../css/style.css" />
+
+    <!-- markmap toolbar css -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #mindmap {
+        flex: 1;
+        width: 100%;
+        background-color: #27272a;
+      }
+
+      .instructions {
+        padding: 10px;
+        padding-top: 80px;
+        background-color: #918971;
+        color: #333;
+        font-size: 16px;
+        text-align: center;
+        border-bottom: 1px solid #080606;
+        font-weight: bolder;
+      }
+
+      .markmap-dark {
+        background: #27272a;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="headerdiv">
+      <header class="main-header">
+        <div class="header-content">
+          <a href="../../../index.html" class="logo-link">
+            <span class="logo-emoji">📚</span>
+            <span class="logo-text">الاختبارات الالكترونية</span>
+          </a>
+        </div>
+      </header>
+    </div>
+
+    <div class="content">
+      <!-- التعليمات كنص مستقل -->
+      <div class="instructions">
+        📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+        و التصغير و التحريك
+      </div>
+
+      <!-- mindmap هنا -->
+      <svg id="mindmap"></svg>
+    </div>
+
+    <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+    <!-- مكتبات markmap -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+    <script>
+      (() => {
+        setTimeout(() => {
+          const { markmap: S, mm: Q } = window,
+            $ = new S.Toolbar();
+          $.attach(Q);
+          const I = $.render();
+          I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+          document.body.append(I);
+        });
+      })();
+    </script>
+
+    <script>
+      ((l, U, M, R) => {
+        const N = l();
+        (window.mm = N.Markmap.create(
+          "svg#mindmap",
+          (U || N.deriveOptions)(R),
+          M
+        )),
+          window.matchMedia("(prefers-color-scheme: dark)").matches &&
+            document.documentElement.classList.add("markmap-dark");
+      })(
+        () => window.markmap,
+        null,
+        {
+          content: "الدرس الثالث - نماذج الربط في الشبكات السلكية 🌐",
+          children: [
+            {
+              content: "مفهوم نموذج الربط",
+              children: [
+                {
+                  content:
+                    "هو الطريقة التي تُنظَّم بها عملية الاتصال بين أجهزة الحاسوب داخل الشبكة.",
+                },
+                {
+                  content:
+                    "تُؤثّر طريقة الربط في سرعة وكفاءة الاتصال بين الأجهزة.",
+                },
+              ],
+            },
+            {
+              content: "أنواع نماذج الربط",
+              children: [
+                {
+                  content: "نموذج الخط (Bus)",
+                  children: [
+                    { content: "تُربط الأجهزة على كابل واحد رئيسي." },
+                    { content: "سهل التنفيذ والتكلفة منخفضة." },
+                    { content: "عيبه: صعوبة اكتشاف الأعطال." },
+                  ],
+                },
+                {
+                  content: "نموذج النجمة (Star)",
+                  children: [
+                    {
+                      content:
+                        "تتصل جميع الأجهزة بموزّع مركزي (Switch أو Hub).",
+                    },
+                    { content: "سهل الصيانة والاكتشاف." },
+                    { content: "عيبه: تعطّل المركز يؤدي لتعطّل الشبكة." },
+                  ],
+                },
+                {
+                  content: "نموذج الحلقة (Ring)",
+                  children: [
+                    { content: "كل جهاز متصل بالذي يليه بشكل حلقي." },
+                    { content: "البيانات تنتقل باتجاه واحد." },
+                    { content: "عيبه: انقطاع أي جهاز يعطّل الاتصال." },
+                  ],
+                },
+                {
+                  content: "نموذج الشبكة الكاملة (Mesh)",
+                  children: [
+                    { content: "كل جهاز مرتبط بجميع الأجهزة الأخرى." },
+                    { content: "أعلى أمان وأداء." },
+                    { content: "تكلفته مرتفعة وصعب التوصيل." },
+                  ],
+                },
+              ],
+            },
+            {
+              content: "العوامل المؤثرة في اختيار النموذج",
+              children: [
+                { content: "عدد الأجهزة في الشبكة." },
+                { content: "التكلفة المتاحة للتنفيذ." },
+                { content: "سهولة الصيانة والتوسّع." },
+                { content: "درجة الأمان المطلوبة." },
+              ],
+            },
+            {
+              content: "أجهزة الربط الملحقة",
+              children: [
+                { content: "الموزّع (Hub) - يرسل البيانات إلى جميع الأجهزة." },
+                {
+                  content:
+                    "المحوّل (Switch) - يرسل البيانات فقط للجهاز المقصود.",
+                },
+                { content: "الموجّه (Router) - يربط بين شبكات مختلفة." },
+              ],
+            },
+          ],
+        },
+        { colorFreezeLevel: 2, initialExpandLevel: 2 }
+      );
+    </script>
+  </body>
+</html>

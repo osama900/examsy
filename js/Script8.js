@@ -24,15 +24,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-function encryptData(data) {
-  return CryptoJS.AES.encrypt(data, encryptionKey).toString();
-}
-
-function decryptData(encryptedData) {
-  const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
-  return bytes.toString(CryptoJS.enc.Utf8);
-}
-
 async function fetchQuestionsFromGoogleSheet() {
   try {
     const response = await fetch(
