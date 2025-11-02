@@ -398,7 +398,14 @@ function submitExam() {
       alert("حدث خطأ أثناء حفظ النتائج!");
     });
 }
+function encryptData(data) {
+  return CryptoJS.AES.encrypt(data, encryptionKey).toString();
+}
 
+function decryptData(encryptedData) {
+  const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+  return bytes.toString(CryptoJS.enc.Utf8);
+}
 // notification
 function showToast(message, { duration = 4000 } = {}) {
   const stack = document.getElementById("toast-stack");
