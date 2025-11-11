@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الدرس الخامس - التواصل باستخدام الشبكات 💬</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../css/style.css" />
+
+    <!-- markmap toolbar css -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #mindmap {
+        flex: 1;
+        width: 100%;
+        background-color: #27272a;
+      }
+
+      .instructions {
+        padding: 10px;
+        padding-top: 80px;
+        background-color: #918971;
+        color: #333;
+        font-size: 16px;
+        text-align: center;
+        border-bottom: 1px solid #080606;
+        font-weight: bolder;
+      }
+
+      .markmap-dark {
+        background: #27272a;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="headerdiv">
+      <header class="main-header">
+        <div class="header-content">
+          <a href="../../../index.html" class="logo-link">
+            <span class="logo-emoji">📚</span>
+            <span class="logo-text">الاختبارات الالكترونية</span>
+          </a>
+        </div>
+      </header>
+    </div>
+
+    <div class="content">
+      <!-- التعليمات كنص مستقل -->
+      <div class="instructions">
+        📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+        و التصغير و التحريك
+      </div>
+
+      <!-- mindmap هنا -->
+      <svg id="mindmap"></svg>
+    </div>
+
+    <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+    <!-- مكتبات markmap -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+    <script>
+      (() => {
+        setTimeout(() => {
+          const { markmap: S, mm: Q } = window,
+            $ = new S.Toolbar();
+          $.attach(Q);
+          const I = $.render();
+          I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+          document.body.append(I);
+        });
+      })();
+    </script>
+
+    <script>
+      ((l, U, M, R) => {
+        const N = l();
+        (window.mm = N.Markmap.create(
+          "svg#mindmap",
+          (U || N.deriveOptions)(R),
+          M
+        )),
+          window.matchMedia("(prefers-color-scheme: dark)").matches &&
+            document.documentElement.classList.add("markmap-dark");
+      })(
+        () => window.markmap,
+        null,
+        {
+          content: "التواصل باستخدام الشبكات 💬",
+          children: [
+            {
+              content: "طرق التواصل عبر الشبكات",
+              children: [
+                {
+                  content: "البريد الإلكتروني",
+                  children: [
+                    { content: "بروتوكولات: SMTP, IMAP" },
+                    { content: "أمثلة: Gmail, Yahoo, Outlook" },
+                  ],
+                },
+                {
+                  content: "التعلم عن بعد",
+                  children: [
+                    { content: "Microsoft Teams" },
+                    { content: "Google Classroom" },
+                    { content: "Moodle" },
+                    { content: "منصة إدراك (عربية MOOC)" },
+                    { content: "منصة درسك" },
+                    { content: "Khan Academy" },
+                  ],
+                },
+                {
+                  content: "الحوسبة السحابية",
+                  children: [
+                    { content: "OneDrive Cloud" },
+                    { content: "Google Cloud" },
+                  ],
+                },
+                {
+                  content: "وسائل التواصل الاجتماعي",
+                  children: [
+                    { content: "WhatsApp" },
+                    { content: "Telegram" },
+                    { content: "Facebook" },
+                    { content: "Twitter" },
+                    { content: "Instagram" },
+                    { content: "LinkedIn" },
+                  ],
+                },
+                {
+                  content: "الفيديو والصوت",
+                  children: [{ content: "Zoom" }],
+                },
+                {
+                  content: "اتصال مرئي",
+                  children: [
+                    { content: "Google Meet" },
+                    { content: "Skype" },
+                    { content: "Microsoft Teams" },
+                  ],
+                },
+                {
+                  content: "ألعاب إلكترونية",
+                  children: [
+                    { content: "ترفيهية وتعليمية" },
+                    { content: "فردية وجماعية" },
+                  ],
+                },
+                {
+                  content: "بث مباشر",
+                  children: [
+                    { content: "YouTube Live" },
+                    { content: "Twitch" },
+                  ],
+                },
+                {
+                  content: "منصات أخرى",
+                  children: [
+                    { content: "منتديات: Reddit" },
+                    { content: "مدونات: Blogger, WordPress" },
+                    { content: "بودكاست: Apple Podcasts, Spotify" },
+                    { content: "شبكات مهنية: LinkedIn" },
+                  ],
+                },
+                {
+                  content: "إنترنت الأشياء (IoT)",
+                  children: [
+                    { content: "ربط الأجهزة المنزلية الذكية" },
+                    { content: "التفاعل عبر الإنترنت" },
+                  ],
+                },
+              ],
+            },
+            {
+              content: "قواعد التواصل الآمن",
+              children: [
+                {
+                  content: "حماية الخصوصية",
+                  children: [
+                    { content: "عدم مشاركة المعلومات الشخصية" },
+                    { content: "تفعيل إعدادات الخصوصية" },
+                    { content: "التفكير قبل إرسال المحتوى" },
+                  ],
+                },
+                {
+                  content: "التحقق من الهويات",
+                  children: [
+                    { content: "عدم التواصل مع الغرباء" },
+                    { content: "التأكد من هوية المُراسَل" },
+                    { content: "عدم مقابلة الغرباء" },
+                  ],
+                },
+                {
+                  content: "تجنب المحتوى المشبوه",
+                  children: [
+                    { content: "عدم فتح روابط مجهولة" },
+                    { content: "عدم فتح ملفات غير موثوقة" },
+                    { content: "الإبلاغ عن السلوك المشبوه" },
+                  ],
+                },
+                {
+                  content: "أمان الحسابات",
+                  children: [
+                    { content: "استخدام كلمات مرور قوية" },
+                    { content: "عدم مشاركة كلمات المرور" },
+                    { content: "استخدام برامج مكافحة الفيروسات" },
+                    { content: "تفعيل جدار الحماية" },
+                  ],
+                },
+                {
+                  content: "آداب التواصل",
+                  children: [
+                    { content: "الالتزام بالأخلاق الحسنة" },
+                    { content: "عدم التسامح مع السلوك غير اللائق" },
+                    { content: "إبلاغ المسؤولين عند التعرض للأذى" },
+                  ],
+                },
+                {
+                  content: "جوانب أخرى",
+                  children: [
+                    { content: "التواصل الفعال والمسؤول" },
+                    { content: "احترام حقوق الملكية الفكرية" },
+                    { content: "المشاركة الرقمية البناءة" },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        { colorFreezeLevel: 2, initialExpandLevel: 2 }
+      );
+    </script>
+  </body>
+</html>
