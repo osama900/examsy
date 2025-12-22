@@ -1,6 +1,52 @@
 document.addEventListener('DOMContentLoaded', function () {
+    checkAuthentication();
     checkAndDisplayProfile();
 });
+
+function checkAuthentication() {
+    // Current Page Name
+    const path = window.location.pathname;
+    const page = path.split("/").pop();
+
+    // Pages that do NOT require authentication
+    // index.html is the landing page, allowing users to choose login
+    // login pages obviously don't need auth
+    const publicPages = [
+        "index.html",
+        "", // Root
+        "std_login.html",
+        "login_teacher.html",
+        "std_reg.html",
+        "teacher_dashboard.html",
+        "std_add.html"
+    ];
+
+    if (publicPages.includes(page) || page.startsWith("login")) {
+        return;
+    }
+
+    // Check if user is logged in
+    let stdName = localStorage.getItem('std_name');
+
+    if (!stdName) {
+        // Redirect to login
+        // Find the path to login page based on this script's location
+        const scripts = document.getElementsByTagName('script');
+        let loginUrl = "std_login.html"; // Default fallback
+
+        for (let script of scripts) {
+            if (script.src && script.src.includes('user_profile.js')) {
+                // The script is in js/user_profile.js
+                // We want proper path to std_login.html which is sibling to js folder
+                // e.g. .../examsy/js/user_profile.js -> .../examsy/std_login.html
+                loginUrl = script.src.replace(/js\/user_profile\.js(\?.*)?$/, 'std_login.html');
+                break;
+            }
+        }
+        alert("يرجى تسجيل الدخول أولاً");
+        window.location.href = loginUrl;
+    }
+}
 
 function checkAndDisplayProfile() {
     let stdName = localStorage.getItem('std_name');

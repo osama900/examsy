@@ -173,7 +173,7 @@
     <div class="unit-section">
       <h2 class=".h29">الوحدة الثالثة - أثر الحوسبة</h2>
       <div class="lessons-grid">
-        <a class="lesson-btn" onclick="showToast()">
+        <a href="3-1/7c.html" class="lesson-btn" data-sub-page-ids="7-3-1-prep,7-3-1-task,7-3-1-mind,7-3-1-1">
           <span class="lesson-title">الدرس</span>
           <span class="lesson-number">1</span>
           <span class="lesson-title">المواطنة الرقمية مفهومها ومبادئها</span>
@@ -219,6 +219,25 @@
     </div>
   </div>
   <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+      authDomain: "examsy-21dc3.firebaseapp.com",
+      projectId: "examsy-21dc3",
+      storageBucket: "examsy-21dc3.firebasestorage.app",
+      messagingSenderId: "357464025229",
+      appId: "1:357464025229:web:b920c8290f985f54339ac4",
+      measurementId: "G-CWZ7MR4V26"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  </script>
+  <script src="../../js/aggregate_progress_tracker.js"></script>
 
   <script src="../../js/Script7.js"></script>
   <script src="../../js/user_profile.js"></script>
