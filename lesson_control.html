@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة عروض الدروس - Examsy</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        :root {
+            --primary: #137fec;
+            --bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --border: #e1e8ed;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .grade-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .grade-title {
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .unit-group {
+            margin-bottom: 20px;
+        }
+
+        .unit-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #34495e;
+            padding-right: 10px;
+            border-right: 4px solid #3498db;
+        }
+
+        .lesson-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .lesson-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .save-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(19, 127, 236, 0.3);
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            z-index: 100;
+        }
+
+        .save-bar:hover {
+            background: #0b6ed0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>إدارة ظهور الدروس للطلاب</h1>
+            <a href="teacher_dashboard.html" class="back-btn">العودة للوحة المعلم ←</a>
+        </div>
+
+        <div id="content">جاري التحميل...</div>
+
+        <button class="save-bar" onclick="saveChanges()">حفظ التعديلات</button>
+    </div>
+
+    <script>
+        // Firebase Config (Corrected from teacher_dashboard.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26",
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const CURRICULUM = {
+            "7": {
+                "3": [
+                    { id: "7-3-1", name: "المواطنة الرقمية" },
+                    { id: "7-3-2", name: "الملكية الفكرية" },
+                    { id: "7-3-3", name: "خصوصية البيانات" },
+                    { id: "7-3-4", name: "الاستخدام المتوازن" }
+                ],
+                "4": [
+                    { id: "7-4-1", name: "الخوارزميات" },
+                    { id: "7-4-2", name: "تصميم الخوارزميات" },
+                    { id: "7-4-3", name: "تمثيل الخوارزميات" }
+                ]
+            },
+            "8": {
+                "2": [
+                    { id: "8-2-1", name: "مقدمة في سكراتش" },
+                    { id: "8-2-2", name: "عناصر التصميم" },
+                    { id: "8-2-3", name: "عناصر البرمجة" },
+                    { id: "8-2-4", name: "المتغيرات" },
+                    { id: "8-2-5", name: "لبنات التحكم" }
+                ]
+            },
+            "9": {
+                "3": [
+                    { id: "9-3-1", name: "أمن البيانت و المعلومات" },
+                    { id: "9-3-2", name: "تهديدات الامن السيبراني" },
+                    { id: "9-3-3", name: "النقل الامن للبيانات" },
+                    { id: "9-3-4", name: "وسائل حماية البيانات" },
+                    { id: "9-3-5", name: "التشفير" }
+                ],
+                "4": [
+                    { id: "9-4-1", name: "مقدمة في الذكاء الاصطناعي" },
+                    { id: "9-4-2", name: "تطبيقات الذكاء الاصطناعي" },
+                    { id: "9-4-3", name: "الروبوت" },
+                    { id: "9-4-4", name: "اساسيات برمجة روبوت" }
+                ]
+            }
+        };
+
+        let currentStates = {};
+
+        async function loadStates() {
+            try {
+                const doc = await db.collection('settings').doc('lesson_visibility').get();
+                if (doc.exists) {
+                    currentStates = doc.data();
+                }
+                renderUI();
+            } catch (e) {
+                console.error(e);
+                renderUI(); // Render defaults if failed
+            }
+        }
+
+        function renderUI() {
+            const container = document.getElementById('content');
+            container.innerHTML = '';
+
+            Object.keys(CURRICULUM).forEach(grade => {
+                const gradeSection = document.createElement('div');
+                gradeSection.className = 'grade-section';
+                gradeSection.innerHTML = `<div class="grade-title">الصف ${grade === "7" ? "السابع" : grade === "8" ? "الثامن" : "التاسع"}</div>`;
+
+                Object.keys(CURRICULUM[grade]).forEach(unit => {
+                    const unitGroup = document.createElement('div');
+                    unitGroup.className = 'unit-group';
+                    unitGroup.innerHTML = `<div class="unit-title">الوحدة ${unit === "3" ? "الثالثة" : unit === "4" ? "الرابعة" : "الثانية"}</div>`;
+
+                    CURRICULUM[grade][unit].forEach(lesson => {
+                        const isOpen = currentStates[lesson.id] === true;
+                        const row = document.createElement('div');
+                        row.className = 'lesson-row';
+                        row.innerHTML = `
+            <span>${lesson.name}</span>
+            <label class="switch">
+              <input type="checkbox" id="${lesson.id}" ${isOpen ? 'checked' : ''} onchange="updateLocalState('${lesson.id}', this.checked)">
+              <span class="slider"></span>
+            </label>
+          `;
+                        unitGroup.appendChild(row);
+                    });
+                    gradeSection.appendChild(unitGroup);
+                });
+                container.appendChild(gradeSection);
+            });
+        }
+
+        function updateLocalState(id, isChecked) {
+            currentStates[id] = isChecked;
+        }
+
+        async function saveChanges() {
+            try {
+                const btn = document.querySelector('.save-bar');
+                btn.innerText = 'جاري الحفظ...';
+                btn.disabled = true;
+
+                await db.collection('settings').doc('lesson_visibility').set(currentStates, { merge: true });
+
+                alert('تم حفظ التعديلات بنجاح! ستظهر للطلاب الآن.');
+                btn.innerText = 'حفظ التعديلات';
+                btn.disabled = false;
+            } catch (e) {
+                console.error(e);
+                alert('حدث خطأ أثناء الحفظ.');
+            }
+        }
+
+        loadStates();
+    </script>
+
+</body>
+
+</html>

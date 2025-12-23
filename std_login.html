@@ -49,7 +49,14 @@
   </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display">
+<body class="bg-background-light dark:bg-background-dark font-display relative">
+  <!-- Teacher Login Button -->
+  <a href="login_teacher.html"
+    class="absolute top-4 left-4 z-10 flex items-center gap-2 px-4 py-2 font-medium text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+    <span class="material-symbols-outlined text-[20px]">school</span>
+    <span class="text-sm">دخول المعلمين</span>
+  </a>
+
   <div class="flex items-center justify-center min-h-screen">
     <div class="w-full max-w-sm p-8 space-y-6 bg-background-light dark:bg-background-dark rounded-xl">
       <div class="flex justify-center">
@@ -187,13 +194,13 @@
 
             // إعادة التوجيه بحسب الصف (استخدمت else if لتجنّب تنفيذ الـ else العام)
             if (stdGrade === "9") {
-              window.location.href = "page/9th/9th.html";
+              window.location.href = "index.html";
               return;
             } else if (stdGrade === "8") {
-              window.location.href = "page/8th/8th.html";
+              window.location.href = "index.html";
               return;
             } else if (stdGrade === "7") {
-              window.location.href = "page/7th/7th.html";
+              window.location.href = "index.html";
               return;
             } else {
               errorDiv.textContent = "الصف غير معروف: " + stdGrade;
