@@ -67,6 +67,18 @@
 
 
     /* User Profile Styles */
+    .user-class {
+      font-size: 0.75rem;
+      color: #666;
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    /* Profile Dropdown Styles */
+    .profile-wrapper {
+      position: relative;
+    }
+
     .user-profile {
       display: flex;
       align-items: center;
@@ -75,27 +87,58 @@
       padding: 0.5rem 1rem;
       border-radius: 2rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
     }
 
-    .user-info-col {
+    .user-profile:hover {
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      background: white;
+      min-width: 160px;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      overflow: hidden;
+      border: 1px solid #f0f0f0;
+    }
+
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      /* Align text to the right for RTL or relative to badge */
-      line-height: 1.2;
-    }
-
-    .user-name {
-      font-weight: 700;
-      color: #333;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      color: #e74c3c;
+      font-weight: 600;
       font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      direction: rtl;
     }
 
-    .user-class {
-      font-size: 0.75rem;
-      color: #666;
-      font-weight: bold;
-      margin-top: 2px;
+    .dropdown-item:hover {
+      background: #fff5f5;
+    }
+
+    .dropdown-item svg {
+      color: #e74c3c;
     }
 
     .user-initials-badge {
@@ -112,6 +155,31 @@
       border: 2px solid #fff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       flex-shrink: 0;
+    }
+
+    .user-coins-display {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(243, 156, 18, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(243, 156, 18, 0.3);
+      color: #d35400;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-right: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .user-coins-display:hover {
+      background: rgba(243, 156, 18, 0.2);
+      transform: scale(1.05);
+    }
+
+    .profile-wrapper {
+      display: flex;
+      align-items: center;
     }
 
     /* Dashboard Styles */
@@ -333,7 +401,7 @@
           </svg>
         </div>
         <div class="stat-info">
-          <span class="stat-label">ترتيبك بين الطلاب</span>
+          <span class="stat-label">ترتيبك بين طلاب الشعبة</span>
           <span class="stat-value" id="studentRank">--</span>
         </div>
       </div>
@@ -345,8 +413,20 @@
           </svg>
         </div>
         <div class="stat-info">
+          <span class="stat-label">النسبة المئوية المكتملة</span>
           <span class="stat-value" id="completionPercentage">0%</span>
-          <span class="stat-label">نسبة الإنجاز الكلية</span>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-right: 4px solid #f39c12;">
+        <div class="stat-icon" style="background: rgba(243, 156, 18, 0.1); color: #f39c12;">
+          <span style="font-size: 24px;">🪙</span>
+        </div>
+        <div class="stat-info" style="flex-direction: row; align-items: center; gap: 10px;">
+          <div style="display: flex; flex-direction: column;">
+            <span class="stat-label">مجموع النقاط </span>
+            <span class="stat-value" id="user-coins-count">0</span>
+          </div>
         </div>
       </div>
 
@@ -381,55 +461,6 @@
     </div>
   </div>
 
-
-
-  <div class="container">
-    <h2 style="color: wheat; text-align: center; margin: 20px; font-size: 40px">
-      الصف الدراسي
-    </h2>
-    <div class="cards">
-      <a href="page/7th/7th.html">
-        <div id="teacher-card">
-          <div class="class-badge">7</div>
-
-          <svg id="teacher-icon" viewBox="0 0 24 24">
-            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
-                  3L1 9l11 6 9-4.91V17h2V9L12 3z"></path>
-          </svg>
-          <h4 id="teacher-title">الصف السابع الاساسي</h4>
-          <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
-        </div>
-      </a>
-
-      <a href="page/8th/8th.html">
-        <div id="teacher-card">
-          <div class="class-badge">8</div>
-
-          <svg id="teacher-icon" viewBox="0 0 24 24">
-            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
-                  3L1 9l11 6 9-4.91V17h2V9L12 3z"></path>
-          </svg>
-          <h4 id="teacher-title">الصف الثامن الاساسي</h4>
-          <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
-        </div>
-      </a>
-
-      <a href="page/9th/9th.html">
-        <div id="teacher-card">
-          <div class="class-badge">9</div>
-
-          <svg id="teacher-icon" viewBox="0 0 24 24">
-            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 
-                  3L1 9l11 6 9-4.91V17h2V9L12 3z"></path>
-          </svg>
-          <h4 id="teacher-title">الصف التاسع الاساسي</h4>
-          <p id="teacher-desc">الوصول الى التحضير و اوراق العمل</p>
-        </div>
-      </a>
-
-
-    </div>
-  </div>
 
   <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -526,54 +557,47 @@
     // Unit Progress Logic
     const CURRICULUM = {
       "7": {
-        "2": [
-          { id: "7-2-1", name: "مقدمة الى شبكات الحاسوب" },
-          { id: "7-2-2", name: "مكونات شبكات الحاسوب" },
-          { id: "7-2-3", name: "نماذج الربط في الشبكات" },
-          { id: "7-2-4", name: "أنواع شبكات الحاسوب" },
-          { id: "7-2-5", name: "التواصل باستخدام الشبكات" },
-          { id: "7-2-6", name: "أداء الشبكة" }
-        ],
         "3": [
-          { id: "7-3-1", name: "المواطنة الرقمية" },
-          { id: "7-3-2", name: "الملكية الفكرية" },
-          { id: "7-3-3", name: "خصوصية البيانات" },
-          { id: "7-3-4", name: "الاستخدام المتوازن" }
+          { id: "7-3-1", name: "المواطنة الرقمية", path: "page/7th/3-1/7c.html" },
+          { id: "7-3-2", name: "الملكية الفكرية", path: "page/7th/3-2/7c.html" },
+          { id: "7-3-3", name: "خصوصية البيانات", path: "page/7th/3-3/7c.html" },
+          { id: "7-3-4", name: "الاستخدام المتوازن", path: "page/7th/3-4/7c.html" }
         ],
         "4": [
-          { id: "7-4-1", name: "الخوارزميات" },
-          { id: "7-4-2", name: "تصميم الخوارزميات" },
-          { id: "7-4-3", name: "تمثيل الخوارزميات" }
+          { id: "7-4-1", name: "الخوارزميات", path: "page/7th/4-1/7c.html" },
+          { id: "7-4-2", name: "تصميم الخوارزميات", path: "page/7th/4-2/7c.html" },
+          { id: "7-4-3", name: "تمثيل الخوارزميات", path: "page/7th/4-3/7c.html" }
         ]
       },
       "8": {
-        "2": [
-          { id: "8-2-1", name: "مقدمة في سكراتش" },
-          { id: "8-2-2", name: "عناصر التصميم" },
-          { id: "8-2-3", name: "عناصر البرمجة" },
-          { id: "8-2-4", name: "المتغيرات" },
-          { id: "8-2-5", name: "لبنات التحكم" }
+        "3": [
+          { id: "8-3-1", name: "اصلاح الأعطال", path: "page/8th/3-1/8c.html" },
+          { id: "8-3-2", name: "صيانة الأعطال المادية", path: "page/8th/1-2/8c.html" },
+          { id: "8-3-3", name: "صيانة الأعطال البرمجية", path: "page/8th/3-3/8c.html" },
+          { id: "8-3-4", name: "اصلاح الاعطال باستخدام ادوات نظام التشغيل", path: "page/8th/3-4/8c.html" }
+        ],
+        "4": [
+          { id: "8-4-1", name: "مقدمة في سكراتش", path: "page/8th/4-1/8c.html" },
+          { id: "8-4-2", name: "عناصر التصميم", path: "page/8th/4-2/8c.html" },
+          { id: "8-4-3", name: "عناصر البرمجة", path: "page/8th/4-3/8c.html" },
+          { id: "8-4-4", name: "المتغيرات", path: "page/8th/4-4/8c.html" },
+          { id: "8-4-5", name: "لبنات التحكم", path: "page/8th/4-5/8c.html" }
         ]
       },
       "9": {
-        "2": [
-          { id: "9-2-1", name: "المتغيرات في سكراتش" },
-          { id: "9-2-2", name: "الجمل الشرطية المركبة" },
-          { id: "9-2-3", name: "حلقات التكرار" },
-          { id: "9-2-4", name: "الدوال البرمجية" }
-        ],
+
         "3": [
-          { id: "9-3-1", name: "أمن البيانت و المعلومات" },
-          { id: "9-3-2", name: "تهديدات الامن السيبراني" },
-          { id: "9-3-3", name: "النقل الامن للبيانات" },
-          { id: "9-3-4", name: "وسائل حماية البيانات" },
-          { id: "9-3-5", name: "التشفير" }
+          { id: "9-3-1", name: "أمن البيانت و المعلومات", path: "page/9th/3-1/9c.html" },
+          { id: "9-3-2", name: "تهديدات الامن السيبراني", path: "page/9th/3-2/9c.html" },
+          { id: "9-3-3", name: "النقل الامن للبيانات", path: "page/9th/3-3/9c.html" },
+          { id: "9-3-4", name: "وسائل حماية البيانات", path: "page/9th/3-4/9c.html" },
+          { id: "9-3-5", name: "التشفير", path: "page/9th/3-5/9c.html" }
         ],
         "4": [
-          { id: "9-4-1", name: "مقدمة في الذكاء الاصطناعي" },
-          { id: "9-4-2", name: "تطبيقات الذكاء الاصطناعي" },
-          { id: "9-4-3", name: "الروبوت" },
-          { id: "9-4-4", name: "اساسيات برمجة روبوت" }
+          { id: "9-4-1", name: "مقدمة في الذكاء الاصطناعي", path: "page/9th/4-1/9c.html" },
+          { id: "9-4-2", name: "تطبيقات الذكاء الاصطناعي", path: "page/9th/4-2/9c.html" },
+          { id: "9-4-3", name: "الروبوت", path: "page/9th/4-3/9c.html" },
+          { id: "9-4-4", name: "اساسيات برمجة روبوت", path: "page/9th/4-4/9c.html" }
         ]
       }
     };
@@ -635,9 +659,13 @@
               let statusIcon = isCurrentComplete ? '✅' : '❌';
               if (isLocked) statusIcon = '🔒';
 
+              const lessonContent = isLocked
+                ? `<span class="lesson-name">${lesson.name}</span>`
+                : `<a href="${lesson.path || '#'}" class="lesson-name" style="text-decoration: none; color: inherit; font-weight: 700; transition: color 0.2s;" onmouseover="this.style.color='#137fec'" onmouseout="this.style.color='inherit'">${lesson.name}</a>`;
+
               lessonEl.innerHTML = `
                 <span class="status-badge">${statusIcon}</span>
-                <span class="lesson-name">${lesson.name}</span>
+                ${lessonContent}
               `;
 
               container.appendChild(lessonEl);
@@ -658,6 +686,7 @@
 
     document.addEventListener('DOMContentLoaded', loadAllUnitsProgress);
   </script>
+  <script src="js/coins_manager.js"></script>
   <script src="js/user_profile.js"></script>
 </body>
 

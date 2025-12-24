@@ -73,7 +73,8 @@
       margin-right: 10px;
     }
 
-    .std-reg-btn {
+    .std-reg-btn,
+    .search-btn {
       background: #3498db;
       color: white;
       padding: 10px 20px;
@@ -84,6 +85,16 @@
       margin-top: 20px;
       display: inline-block;
       margin-right: 10px;
+    }
+
+    .search-btn {
+      background: #f39c12;
+      margin-top: 0;
+      vertical-align: middle;
+    }
+
+    .search-btn:hover {
+      background: #e67e22;
     }
 
     .results-table {
@@ -167,7 +178,7 @@
       <select id="studentClassFilter" onchange="filterResults()">
         <option value="">كل الصفوف</option>
       </select>
-
+      <button class="search-btn" onclick="fetchExamResults()">بحث 🔍</button>
     </div>
   </div>
 
@@ -429,7 +440,8 @@
         window.location.href = "std_add.html";
       }
 
-      fetchExamResults();
+      // Removed automatic call on page load
+      // fetchExamResults();
     </script>
 </body>
 

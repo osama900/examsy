@@ -205,12 +205,18 @@
                 ]
             },
             "8": {
-                "2": [
-                    { id: "8-2-1", name: "مقدمة في سكراتش" },
-                    { id: "8-2-2", name: "عناصر التصميم" },
-                    { id: "8-2-3", name: "عناصر البرمجة" },
-                    { id: "8-2-4", name: "المتغيرات" },
-                    { id: "8-2-5", name: "لبنات التحكم" }
+                "3": [
+                    { id: "8-3-1", name: "اصلاح الأعطال" },
+                    { id: "8-3-2", name: "صيانة الأعطال المادية" },
+                    { id: "8-3-3", name: "صيانة الأعطال البرمجية" },
+                    { id: "8-3-4", name: "اصلاح الاعطال باستخدام ادوات نظام التشغيل" }
+                ],
+                "4": [
+                    { id: "8-4-1", name: "مقدمة في برمجية سكراتش" },
+                    { id: "8-4-2", name: "عناصر التصميم في سكراتش" },
+                    { id: "8-4-3", name: "عناصر البرمجة في سكراتش" },
+                    { id: "8-4-4", name: "المتغيرات في سكراتش" },
+                    { id: "8-4-5", name: "لبنات التحكم في سكراتش" }
                 ]
             },
             "9": {
@@ -231,13 +237,22 @@
         };
 
         let currentStates = {};
+        let currentTimers = {}; // { lessonId: timeInMinutes }
 
         async function loadStates() {
             try {
-                const doc = await db.collection('settings').doc('lesson_visibility').get();
-                if (doc.exists) {
-                    currentStates = doc.data();
+                // Fetch visibility settings
+                const visibilityDoc = await db.collection('settings').doc('lesson_visibility').get();
+                if (visibilityDoc.exists) {
+                    currentStates = visibilityDoc.data();
                 }
+
+                // Fetch timer settings
+                const timersDoc = await db.collection('settings').doc('lesson_timers').get();
+                if (timersDoc.exists) {
+                    currentTimers = timersDoc.data();
+                }
+
                 renderUI();
             } catch (e) {
                 console.error(e);
@@ -261,16 +276,52 @@
 
                     CURRICULUM[grade][unit].forEach(lesson => {
                         const isOpen = currentStates[lesson.id] === true;
+
+                        // Main Lesson Row (Visibility Toggle)
                         const row = document.createElement('div');
                         row.className = 'lesson-row';
+                        row.style.background = '#f9f9f9';
                         row.innerHTML = `
-            <span>${lesson.name}</span>
-            <label class="switch">
-              <input type="checkbox" id="${lesson.id}" ${isOpen ? 'checked' : ''} onchange="updateLocalState('${lesson.id}', this.checked)">
-              <span class="slider"></span>
-            </label>
-          `;
+                            <span style="font-weight:bold;">${lesson.name} (${lesson.id})</span>
+                            <label class="switch">
+                              <input type="checkbox" id="${lesson.id}" ${isOpen ? 'checked' : ''} onchange="updateLocalState('${lesson.id}', this.checked)">
+                              <span class="slider"></span>
+                            </label>
+                        `;
                         unitGroup.appendChild(row);
+
+                        // Sub-items for Time Control
+                        const subItems = [
+                            { suffix: '-prep', label: 'التحضير' },
+                            { suffix: '-task', label: 'ورقة العمل' },
+                            { suffix: '-mind', label: 'الخريطة الذهنية' }
+                        ];
+
+                        subItems.forEach(sub => {
+                            const subId = lesson.id + sub.suffix; // e.g., 7-3-1-prep
+                            // Fix naming inconsistency for quiz: 7-3-1-1 where suffix is -1 (result 7-3-1-1)
+                            // Fix naming inconsistency for mind: 7-3-1mind where suffix is mind (result 7-3-1mind)
+
+                            const timeVal = currentTimers[subId] !== undefined ? currentTimers[subId] : 0;
+
+                            const subRow = document.createElement('div');
+                            subRow.className = 'lesson-row';
+                            subRow.style.paddingLeft = '30px';
+                            subRow.style.fontSize = '0.9rem';
+                            subRow.style.borderBottom = '1px dashed #eee';
+
+                            subRow.innerHTML = `
+                                <span>- ${sub.label}</span>
+                                <input type="number" 
+                                       min="0" 
+                                       placeholder="دقيقة"
+                                       value="${timeVal > 0 ? timeVal : ''}"
+                                       style="width: 70px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;"
+                                       onchange="updateLocalTimer('${subId}', this.value)"
+                                >
+                            `;
+                            unitGroup.appendChild(subRow);
+                        });
                     });
                     gradeSection.appendChild(unitGroup);
                 });
@@ -282,25 +333,172 @@
             currentStates[id] = isChecked;
         }
 
-        async function saveChanges() {
-            try {
-                const btn = document.querySelector('.save-bar');
-                btn.innerText = 'جاري الحفظ...';
-                btn.disabled = true;
+        function updateLocalTimer(id, value) {
+            currentTimers[id] = parseInt(value) || 0;
+        }
 
+        async function saveChanges() {
+            // Show Modal
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        async function verifyAndSave() {
+            const usernameInput = document.getElementById('modalUser').value;
+            const passwordInput = document.getElementById('modalPass').value;
+            const modalError = document.getElementById('modalError');
+            const confirmBtn = document.getElementById('confirmBtn');
+
+            if (!usernameInput || !passwordInput) {
+                modalError.innerText = 'يرجى إدخال اسم المستخدم وكلمة المرور';
+                return;
+            }
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'جاري التحقق...';
+            modalError.innerText = '';
+
+            try {
+                // Verify Credentials
+                const snapshot = await db.collection('teacehr_log')
+                    .where('username', '==', usernameInput)
+                    .where('password', '==', passwordInput)
+                    .get();
+
+                if (snapshot.empty) {
+                    throw new Error('بيانات الدخول غير صحيحة');
+                }
+
+                const teacherDoc = snapshot.docs[0];
+                const teacherName = teacherDoc.data().username; // Or name field if available
+
+                // Proceed to Save
+                const saveBtn = document.querySelector('.save-bar');
+                if (saveBtn) {
+                    saveBtn.innerText = 'جاري الحفظ...';
+                    saveBtn.disabled = true;
+                }
+
+                // 1. Save Visibility
                 await db.collection('settings').doc('lesson_visibility').set(currentStates, { merge: true });
 
-                alert('تم حفظ التعديلات بنجاح! ستظهر للطلاب الآن.');
-                btn.innerText = 'حفظ التعديلات';
-                btn.disabled = false;
+                // 2. Save Timers
+                // Determine if any timer changed? For now, simpler to just overwrite.
+                // We add a `lastModified` timestamp to the timers doc itself or separate log
+                const timersInfo = {
+                    ...currentTimers,
+                    lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                    modifiedBy: teacherName
+                };
+                await db.collection('settings').doc('lesson_timers').set(timersInfo, { merge: true });
+
+                alert('تم التحقق وحفظ التعديلات بنجاح! ✅');
+                closeModal();
+
+                if (saveBtn) {
+                    saveBtn.innerText = 'حفظ التعديلات';
+                    saveBtn.disabled = false;
+                }
+
             } catch (e) {
                 console.error(e);
-                alert('حدث خطأ أثناء الحفظ.');
+                modalError.innerText = e.message || 'حدث خطأ أثناء الحفظ';
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = 'تأكيد وحفظ';
             }
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('modalUser').value = '';
+            document.getElementById('modalPass').value = '';
+            document.getElementById('modalError').innerText = '';
+            document.getElementById('confirmBtn').disabled = false;
+            document.getElementById('confirmBtn').innerText = 'تأكيد وحفظ';
         }
 
         loadStates();
     </script>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>🔐 تأكيد هوية المعلم</h3>
+            <p>يرجى إدخال بيانات الدخول لحفظ التعديلات</p>
+
+            <input type="text" id="modalUser" class="modal-input" placeholder="اسم المستخدم">
+            <input type="password" id="modalPass" class="modal-input" placeholder="كلمة المرور">
+
+            <div id="modalError" style="color: red; margin-bottom: 10px; font-size: 0.9rem;"></div>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
+                <button id="confirmBtn" class="modal-btn confirm" onclick="verifyAndSave()">تأكيد وحفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-btn.confirm {
+            background: #137fec;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
 
 </body>
 

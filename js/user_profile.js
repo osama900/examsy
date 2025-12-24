@@ -52,6 +52,7 @@ function checkAndDisplayProfile() {
     let stdName = localStorage.getItem('std_name');
     let stdGrade = localStorage.getItem('std_grade');
     let stdClass = localStorage.getItem('std_class');
+    let stdCoins = localStorage.getItem('std_coins') || '0';
 
     // If no name found, default to "ضيف"
     if (!stdName) {
@@ -65,9 +66,7 @@ function checkAndDisplayProfile() {
         const nameParts = stdName.trim().split(/\s+/);
         // Replicating user's logic for name display, but handling cases with fewer names safely
         let displayName = "أهلا, " + nameParts[0];
-        if (nameParts.length > 1) {
-            displayName += " " + nameParts[1];
-        }
+
 
         // Initials logic
         let initials = '';
@@ -90,19 +89,64 @@ function checkAndDisplayProfile() {
         }
 
         // Create HTML Structure
-        // Changed layout to text column + avatar
         const profileHTML = `
-            <div class="user-profile">
-                <div class="user-info-col">
-                    <span class="user-name">${displayName}</span>
-                    ${classInfo ? `<span class="user-class">${classInfo}</span>` : ''}
+            <div class="profile-wrapper">
+                <div class="user-profile" id="userProfileTrigger">
+                    <div class="user-info-col">
+                        <span class="user-name">${displayName}</span>
+                        ${classInfo ? `<span class="user-class">${classInfo}</span>` : ''}
+                    </div>
+                    <div class="user-initials-badge">${initials}</div>
                 </div>
-                <div class="user-initials-badge">${initials}</div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-item" id="logoutBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>تسجيل خروج</span>
+                    </div>
+                </div>
             </div>
         `;
 
         profileContainer.innerHTML = profileHTML;
 
-        // Optional: Add logout or profile link functionality here if requested later
+        // Toggle dropdown
+        const trigger = document.getElementById('userProfileTrigger');
+        const dropdown = document.getElementById('profileDropdown');
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function () {
+            localStorage.removeItem('std_id');
+            localStorage.removeItem('std_name');
+            localStorage.removeItem('std_grade');
+            localStorage.removeItem('std_class');
+            localStorage.removeItem('std_coins');
+
+            // Redirect to login page
+            const scripts = document.getElementsByTagName('script');
+            let loginUrl = "std_login.html";
+            for (let script of scripts) {
+                if (script.src && script.src.includes('user_profile.js')) {
+                    loginUrl = script.src.replace(/js\/user_profile\.js(\?.*)?$/, 'std_login.html');
+                    break;
+                }
+            }
+            window.location.href = loginUrl;
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
     }
 }

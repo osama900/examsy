@@ -184,57 +184,50 @@ function loadQuestion() {
 
   questionContainer.innerHTML = `
         <div class="question">
-            <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${
-    question.question
-  }</h3>
+            <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${question.question
+    }</h3>
             ${question.options
-              .map(
-                (option, index) => `
-                <div class="option ${
-                  selectedAnswer === option ? "selected" : ""
-                }" onclick="selectAnswer('${option.replace(
-                  /'/g,
-                  "\\'"
-                )}', ${currentQuestionIndex})">
+      .map(
+        (option, index) => `
+                <div class="option ${selectedAnswer === option ? "selected" : ""
+          }" onclick="selectAnswer('${option.replace(
+            /'/g,
+            "\\'"
+          )}', ${currentQuestionIndex})">
                     ${String.fromCharCode(65 + index)}. ${option}
                 </div>
             `
-              )
-              .join("")}
+      )
+      .join("")}
         </div>
         <div class="navigation">
             <div>
-                <button onclick="previousQuestion()" ${
-                  currentQuestionIndex === 0 ? "disabled" : ""
-                }>السابق</button>
+                <button onclick="previousQuestion()" ${currentQuestionIndex === 0 ? "disabled" : ""
+    }>السابق</button>
             </div>
             <div>
-                <span>سؤال ${currentQuestionIndex + 1} من ${
-    questions.length
-  }</span>
+                <span>سؤال ${currentQuestionIndex + 1} من ${questions.length
+    }</span>
             </div>
             <div>
-                ${
-                  currentQuestionIndex < questions.length - 1
-                    ? `<button onclick="nextQuestion()">التالي</button>`
-                    : `<button class="submit-btn" onclick="submitExam()">إنهاء الامتحان</button>`
-                }
+                ${currentQuestionIndex < questions.length - 1
+      ? `<button onclick="nextQuestion()">التالي</button>`
+      : `<button class="submit-btn" onclick="submitExam()">إنهاء الامتحان</button>`
+    }
             </div>
         </div>
         <div class="question-indicators">
             ${questions
-              .map(
-                (_, index) => `
-                <div class="indicator ${
-                  userAnswers[index] ? "answered" : "unanswered"
-                } ${
-                  index === currentQuestionIndex ? "current" : ""
-                }" onclick="goToQuestion(${index})">
+      .map(
+        (_, index) => `
+                <div class="indicator ${userAnswers[index] ? "answered" : "unanswered"
+          } ${index === currentQuestionIndex ? "current" : ""
+          }" onclick="goToQuestion(${index})">
                     ${index + 1}
                 </div>
             `
-              )
-              .join("")}
+      )
+      .join("")}
         </div>
     `;
 }
@@ -287,8 +280,7 @@ function submitExam() {
 
   if (unansweredQuestions.length > 0) {
     const confirmation = confirm(
-      `لديك ${
-        unansweredQuestions.length
+      `لديك ${unansweredQuestions.length
       } أسئلة غير محلولة: ${unansweredQuestions.join(
         ", "
       )}. هل تريد إنهاء الامتحان؟`
@@ -310,20 +302,17 @@ function submitExam() {
     const isCorrect = userAnswers[index] === correctAnswer;
     totalScore += isCorrect ? q.score : 0;
     const answerClass = isCorrect ? "correct-answer" : "wrong-answer";
-    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${
-      q.question
-    }<br>إجابتك: <span class="${answerClass}">${
-      userAnswers[index] || "لم تجب"
-    }</span><br>الإجابة الصحيحة: <span class="correct-answer">${correctAnswer}</span><br>نقاط: <span class="score">${
-      isCorrect ? q.score : 0
-    }</span></li>`;
+    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${q.question
+      }<br>إجابتك: <span class="${answerClass}">${userAnswers[index] || "لم تجب"
+      }</span><br>الإجابة الصحيحة: <span class="correct-answer">${correctAnswer}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0
+      }</span></li>`;
   });
 
   resultsHtml += `</ul>`;
 
   const previousResult = JSON.parse(
     localStorage.getItem("examResults_" + studentName + "_" + studentClass) ||
-      "{}"
+    "{}"
   );
   let comparisonHtml = "";
   if (previousResult && previousResult.score) {
@@ -331,13 +320,12 @@ function submitExam() {
     comparisonHtml = `<h3 class="comparison-title">المقارنة مع العلامة السابقة:</h3>`;
     comparisonHtml += `<p class="comparison-text">العلامة السابقة: <span class="previous-score">${previousResult.score}</span> في تاريخ ${previousResult.date} الساعة ${previousResult.time}<br>`;
     comparisonHtml += `العلامة الحالية: <span class="current-score">${totalScore}</span><br>`;
-    comparisonHtml += `الفرق: <span class="${
-      scoreDifference > 0
+    comparisonHtml += `الفرق: <span class="${scoreDifference > 0
         ? "improved"
         : scoreDifference < 0
-        ? "declined"
-        : "no-change"
-    }">${scoreDifference > 0 ? "+" : ""}${scoreDifference}</span> علامة</p>`;
+          ? "declined"
+          : "no-change"
+      }">${scoreDifference > 0 ? "+" : ""}${scoreDifference}</span> علامة</p>`;
     if (scoreDifference > 0) {
       comparisonHtml += `<p class="feedback improved">أحسنــت ! لقد تحسنت علامتك!</p>`;
     } else if (scoreDifference < 0) {
@@ -397,6 +385,15 @@ function submitExam() {
     .catch((error) => {
       alert("حدث خطأ أثناء حفظ النتائج!");
     });
+
+  // Award Coins logic
+  if (window.coinsManager) {
+    if (totalScore === maxScore && maxScore > 0) {
+      window.coinsManager.addCoins(50, "علامة كاملة في الاختبار");
+    } else if (totalScore > 0) {
+      window.coinsManager.addCoins(10, "إكمال الاختبار");
+    }
+  }
 }
 function encryptData(data) {
   return CryptoJS.AES.encrypt(data, encryptionKey).toString();

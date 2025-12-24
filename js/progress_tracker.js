@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("Progress Tracker: Initializing...");
 
     const stdId = localStorage.getItem('std_id');
+    const stdName = localStorage.getItem('std_name'); // Get name for exam lookup
+
     if (!stdId) {
         console.warn("Progress Tracker: No student ID found. Progress will not be shown.");
         return;
@@ -19,41 +21,113 @@ document.addEventListener('DOMContentLoaded', async function () {
     const db = firebase.firestore();
 
     try {
-        // Fetch all study activity for the student
+        // 1. Fetch Study Activity (Time based)
         const activitySnapshot = await db.collection('std_id').doc(stdId).collection('study_activity').get();
-
         const activityMap = {};
         activitySnapshot.forEach(doc => {
             activityMap[doc.id] = doc.data();
         });
+
+        // 2. Fetch Exam Results (Score based)
+        // Specific logic for quizzes like 7-3-1-1
+        // We query examResults where name == stdName
+        let examMap = {};
+        if (stdName) {
+            try {
+                // Fetch all exams for this student
+                const examsSnapshot = await db.collection('examResults')
+                    .where('name', '==', stdName)
+                    .get();
+
+                examsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.testName) {
+                        // Initialize if not exists
+                        // We store the object: { score, maxScore }
+                        // We want to keep the HIGHEST score.
+                        if (!examMap[data.testName]) {
+                            examMap[data.testName] = { score: data.score, maxScore: data.maxScore };
+                        } else {
+                            if (data.score > examMap[data.testName].score) {
+                                examMap[data.testName] = { score: data.score, maxScore: data.maxScore };
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Error fetching exams:", e);
+            }
+        }
 
         // Find all elements that need progress indicators
         const lessonElements = document.querySelectorAll('[data-page-id]');
 
         lessonElements.forEach(element => {
             const pageId = element.getAttribute('data-page-id');
-            const data = activityMap[pageId];
+            const studyData = activityMap[pageId];
 
             // Default state: Red X (No data or invalid)
             let icon = "❌";
             let color = "red";
+            let title = "Not completed";
 
-            if (data) {
-                const sessionTime = data.sessionTimeSeconds || 0;
-                // Use targetTime from the record if available, otherwise assume a default or fail safe
-                // Note: Ideally targetTime should be fetched from a central config or the record itself.
-                // The time tracker saves targetTimeSeconds in the record, so we use that.
-                const targetTime = data.targetTimeSeconds || 30; // Default to 30s if missing
+            // Special handling for Quiz 7-3-1-1 based on EXAM RESULTS
+            // The testName in DB is likely "7-3-1-1" based on page title.
+            // We can also try looser matching if needed, but strict is safer if titles match.
+            // Or fallback to checking specific ID.
+            if (pageId === "7-3-1-1") {
+                const examResult = examMap[pageId]; // Try exact match first (Title == ID)
 
-                if (sessionTime >= targetTime) {
-                    icon = "✅";
-                    color = "green";
-                } else if (sessionTime >= (targetTime - 5)) {
-                    icon = "⚠️"; // Orange Triangle
-                    color = "orange";
+                if (examResult) {
+                    const score = examResult.score || 0;
+                    const maxScore = examResult.maxScore || 1; // Prevent div by zero
+
+                    // Logic:
+                    // Green: Score is Full Mark or Full Mark - 1
+                    // Orange: Score is passing (>= 50%) but less than Green threshold
+                    // Red: Failing (< 50%)
+
+                    const greenThreshold = maxScore - 1;
+                    const passingScore = maxScore / 2;
+
+                    if (score >= greenThreshold) {
+                        icon = "✅";
+                        color = "green";
+                        title = `ممتاز! العلامة: ${score}/${maxScore}`;
+                    } else if (score >= passingScore) {
+                        icon = "⚠️"; // Orange Triangle
+                        color = "orange";
+                        title = `ناجح. العلامة: ${score}/${maxScore}`;
+                    } else {
+                        // Fail
+                        icon = "❌";
+                        color = "red";
+                        title = `حاول مرة أخرى. العلامة: ${score}/${maxScore}`;
+                    }
                 } else {
+                    // Not taken
                     icon = "❌";
                     color = "red";
+                    title = "لم يتم تقديم الاختبار بعد";
+                }
+
+            } else {
+                // Standard Time Logic for other pages
+                if (studyData) {
+                    const sessionTime = studyData.sessionTimeSeconds || 0;
+                    const targetTime = studyData.targetTimeSeconds || 30;
+
+                    if (sessionTime >= targetTime) {
+                        icon = "✅";
+                        color = "green";
+                    } else if (sessionTime >= (targetTime - 5)) {
+                        icon = "⚠️"; // Orange Triangle
+                        color = "orange";
+                    } else {
+                        icon = "❌";
+                        color = "red";
+                    }
+                    title = `Time: ${sessionTime}s / ${targetTime}s`;
                 }
             }
 
@@ -64,17 +138,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             indicator.style.marginRight = "80px"; // Adjust for LTR logic if needed, but page is RTL
             indicator.style.color = color;
             indicator.style.fontSize = "1.2rem";
-            indicator.title = data ? `Time: ${data.sessionTimeSeconds}s / ${data.targetTimeSeconds}s` : "Not started";
+            indicator.title = title;
 
-            // Append to the element (assuming it's formatted as a flex container or similar)
-            // If it's the anchor tag, we append inside it.
             element.appendChild(indicator);
 
-            // Ensure flex layout for valid alignment if not already
             if (window.getComputedStyle(element).display !== 'flex') {
                 element.style.display = 'flex';
                 element.style.alignItems = 'center';
-                element.style.justifyContent = 'space-between'; // Keep text and icon apart
+                element.style.justifyContent = 'space-between';
             }
         });
 

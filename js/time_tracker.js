@@ -48,7 +48,46 @@
         }
     }
 
+    // 1.1 Load Coins Manager
+    if (typeof coinsManager === 'undefined') {
+        try {
+            const scripts = document.getElementsByTagName('script');
+            let coinsManagerUrl = "js/coins_manager.js"; // Default fallback
+            for (let script of scripts) {
+                if (script.src && script.src.includes('time_tracker.js')) {
+                    coinsManagerUrl = script.src.replace('time_tracker.js', 'coins_manager.js');
+                    break;
+                }
+            }
+            await loadScript(coinsManagerUrl);
+            console.log("Time Tracker: Coins Manager loaded.");
+        } catch (e) {
+            console.warn("Time Tracker: Failed to load Coins Manager", e);
+        }
+    }
+
     const db = firebase.firestore();
+
+    // 1. Fetch Centralized Timer Settings
+    try {
+        const timersDoc = await db.collection('settings').doc('lesson_timers').get();
+        if (timersDoc.exists) {
+            const timers = timersDoc.data();
+            // Ensure PAGE_TIME_CONFIG exists before checking
+            if (typeof PAGE_TIME_CONFIG !== 'undefined' && PAGE_TIME_CONFIG.pageId) {
+                const pageId = PAGE_TIME_CONFIG.pageId;
+
+                // Check if there is a custom time for this page (stored in minutes)
+                if (timers && timers[pageId] && timers[pageId] > 0) {
+                    const customTimeMinutes = timers[pageId];
+                    PAGE_TIME_CONFIG.targetTimeSeconds = customTimeMinutes * 60;
+                    console.log(`Time Tracker: Using centralized target time: ${customTimeMinutes}m (${PAGE_TIME_CONFIG.targetTimeSeconds}s)`);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Time Tracker: Error fetching centralized timers:", e);
+    }
 
     // 2. Check Prerequisites
     const stdId = localStorage.getItem('std_id');
@@ -66,51 +105,90 @@
 
     let startTime = Date.now();
 
-    // Timer Display (Optional - for debugging/visual confirmation)
-    // You can comment this out if you don't want it visible
-    const timerDisplay = document.createElement('div');
-    timerDisplay.style.position = 'fixed';
-    timerDisplay.style.bottom = '10px';
-    timerDisplay.style.left = '10px';
-    timerDisplay.style.background = 'rgba(0, 0, 0, 0.7)';
-    timerDisplay.style.color = 'white';
-    timerDisplay.style.padding = '5px 10px';
-    timerDisplay.style.borderRadius = '5px';
-    timerDisplay.style.fontSize = '12px';
-    timerDisplay.style.zIndex = '9999';
-    timerDisplay.style.pointerEvents = 'none';
-    timerDisplay.innerText = "Time: 0s";
-    document.body.appendChild(timerDisplay);
 
-    setInterval(() => {
-        const now = Date.now();
-        const diff = Math.floor((now - startTime) / 1000);
-        timerDisplay.innerText = `Time: ${diff}s`;
-    }, 1000);
+    let accumulatedTime = 0;
+    let alreadyCompleted = false;
+    let lastSavedTimestamp = Date.now();
+    let initialFetchDone = false;
+
+    // Fetch initial state once
+    const activityRef = db.collection('std_id').doc(stdId).collection('study_activity').doc(PAGE_TIME_CONFIG.pageId);
+    activityRef.get().then(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            accumulatedTime = data.sessionTimeSeconds || 0;
+            const target = data.targetTimeSeconds || PAGE_TIME_CONFIG.targetTimeSeconds || 30;
+            if (accumulatedTime >= target) {
+                alreadyCompleted = true;
+            }
+        }
+        initialFetchDone = true;
+    }).catch(err => {
+        console.error("Time Tracker: Error fetching initial state", err);
+        initialFetchDone = true;
+    });
 
     // 3. Saving Logic
     const saveTime = async () => {
+        if (!initialFetchDone) return;
+
+        // Ensure we don't save 0 if target time hasn't been fetched yet/configured
+        const targetToSave = PAGE_TIME_CONFIG.targetTimeSeconds || 0;
+        if (targetToSave === 0 && (!window.coinsManager)) {
+            // Slight heuristic: if coins manager not loaded yet, maybe we are too early? 
+            // But valid target time could be 0? Unlikely for a tracked page.
+        }
+
         const now = Date.now();
+        const deltaSeconds = Math.floor((now - lastSavedTimestamp) / 1000);
+
+        if (deltaSeconds <= 0) return;
+
+        // Update local accumulation
+        accumulatedTime += deltaSeconds;
+        lastSavedTimestamp = now;
+
+        // Session duration for coins (Study Time Reward - continues to track session time)
         const sessionDuration = Math.floor((now - startTime) / 1000);
 
-        if (sessionDuration <= 0) return;
+        // Coins awarding logic (Per session milestones)
+        if (window.coinsManager) {
+            const COINS_PER_UNIT = 1;
+            const SECONDS_PER_UNIT = 5 * 60; // 5 minutes
+            const currentUnits = Math.floor(sessionDuration / SECONDS_PER_UNIT); // Still based on session duration
+
+            if (!this.lastAwardedUnits) this.lastAwardedUnits = 0;
+
+            if (currentUnits > this.lastAwardedUnits) {
+                const newUnits = currentUnits - this.lastAwardedUnits;
+                window.coinsManager.addCoins(newUnits * COINS_PER_UNIT, "وقت الدراسة");
+                this.lastAwardedUnits = currentUnits;
+            }
+        }
 
         try {
-            // Using same collection reference logic
-            const studentRef = db.collection('std_id').doc(stdId);
-            const activityRef = studentRef.collection('study_activity').doc(PAGE_TIME_CONFIG.pageId);
-
-            // Strategy: Periodic Overwrite
+            // Strategy: Increment Delta
             await activityRef.set({
                 pageId: PAGE_TIME_CONFIG.pageId,
-                sessionTimeSeconds: sessionDuration,
+                sessionTimeSeconds: firebase.firestore.FieldValue.increment(deltaSeconds),
                 lastVisited: firebase.firestore.FieldValue.serverTimestamp(),
                 targetTimeSeconds: PAGE_TIME_CONFIG.targetTimeSeconds || 0
             }, { merge: true });
 
-            console.log(`Time Tracker: Saved ${sessionDuration}s successfully.`);
+            // Reward for completion if it just happened
+            const targetTime = PAGE_TIME_CONFIG.targetTimeSeconds || 30;
+            if (!alreadyCompleted && accumulatedTime >= targetTime) {
+                if (window.coinsManager) {
+                    window.coinsManager.addCoins(10, "إكمال النشاط");
+                }
+                alreadyCompleted = true; // Mark as done locally to prevent double reward
+            }
+
+            console.log(`Time Tracker: Saved +${deltaSeconds}s. Total: ${accumulatedTime}s`);
         } catch (error) {
             console.error("Time Tracker: Error saving time:", error);
+            // If save failed, we might want to revert lastSavedTimestamp or accumulatedTime? 
+            // For now, simpler to just log given it's a periodic save.
         }
     };
 
