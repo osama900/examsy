@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أمن البيانات والمعلومات 🔒</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "أمن البيانات والمعلومات 🔐",
+        children: [
+
+          {
+            content: "المفاهيم الأساسية",
+            children: [
+              {
+                content: "أمن البيانات والمعلومات",
+                children: [
+                  {
+                    content: "مجموعة إجراءات وتقنيات تحمي البيانات من الوصول غير المصرح به أو التلاعب أو الإتلاف."
+                  }
+                ]
+              },
+              {
+                content: "الأمن السيبراني",
+                children: [
+                  {
+                    content: "حماية الأنظمة والشبكات والأجهزة في الفضاء الإلكتروني من الهجمات الرقمية."
+                  }
+                ]
+              },
+              {
+                content: "الفرق بينهما",
+                children: [
+                  {
+                    content: "أمن المعلومات يركز على حماية البيانات أينما وجدت، بينما الأمن السيبراني يركز على حماية الأنظمة والشبكات."
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "أهمية أمن البيانات",
+            children: [
+              { content: "حماية الخصوصية: منع الوصول غير المصرح به للبيانات الشخصية." },
+              { content: "ضمان النزاهة: الحفاظ على دقة وصحة المعلومات." },
+              { content: "ضمان التوافر: الوصول للمعلومات عند الحاجة دون انقطاع." },
+              { content: "حماية الأصول الرقمية: البيانات مورد أساسي للمؤسسات." },
+              { content: "الالتزام بالقوانين والتشريعات: مثل قوانين حماية البيانات." }
+            ]
+          },
+
+          {
+            content: "ركائز أمن المعلومات (CIA)",
+            children: [
+              {
+                content: "السرية (Confidentiality)",
+                children: [
+                  { content: "السماح بالوصول للمعلومات للمصرح لهم فقط." },
+                  { content: "استخدام التشفير وكلمات المرور والمصادقة الثنائية." }
+                ]
+              },
+              {
+                content: "النزاهة (Integrity)",
+                children: [
+                  { content: "الحفاظ على صحة المعلومات ومنع التعديل غير المصرح به." },
+                  { content: "استخدام الصلاحيات والتوقيع الرقمي." }
+                ]
+              },
+              {
+                content: "التوافر (Availability)",
+                children: [
+                  { content: "ضمان عمل الأنظمة وإتاحة البيانات عند الحاجة." },
+                  { content: "النسخ الاحتياطي وخطط الطوارئ." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "سياسات وأدوات أمن المعلومات",
+            children: [
+              { content: "أمن التطبيقات: حماية البرامج من الثغرات." },
+              { content: "الأمن السحابي: حماية البيانات المخزنة على السحابة." },
+              { content: "أمن البنية التحتية: تأمين الأجهزة والشبكات." },
+              { content: "إدارة الثغرات الأمنية: اكتشاف الثغرات ومعالجتها." },
+              { content: "الاستجابة للحوادث: التعامل مع الاختراقات الأمنية." },
+              { content: "التعافي من الكوارث: استعادة الأنظمة بعد الأعطال أو الهجمات." }
+            ]
+          },
+
+          {
+            content: "كلمات المرور وحماية البيانات",
+            children: [
+              {
+                content: "أهمية كلمات المرور",
+                children: [
+                  { content: "منع الوصول غير المصرح به." },
+                  { content: "حماية البيانات الشخصية والحسابات." }
+                ]
+              },
+              {
+                content: "خصائص كلمة السر القوية",
+                children: [
+                  { content: "طول لا يقل عن 12 رمزًا." },
+                  { content: "تحتوي على حروف وأرقام ورموز." },
+                  { content: "عدم استخدام كلمات شائعة." }
+                ]
+              },
+              {
+                content: "أفضل الممارسات",
+                children: [
+                  { content: "عدم تكرار كلمة السر في أكثر من حساب." },
+                  { content: "تغيير كلمة السر بشكل دوري." },
+                  { content: "عدم مشاركتها مع الآخرين." }
+                ]
+              }
+            ]
+          },
+
+
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "7-3-2-mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
