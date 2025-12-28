@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>النقل الامن للبيانات 📲</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "النقل الآمن للبيانات 🔐",
+        children: [
+
+          {
+            content: "الفكرة الرئيسة",
+            children: [
+              {
+                content: "أهمية حماية البيانات",
+                children: [
+                  { content: "حماية المعلومات المتوافرة على الشبكة من السرقة أو التلاعب." },
+                  { content: "ضمان سرية البيانات وسلامتها واستمرارية توفرها." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "المفاهيم والمصطلحات",
+            children: [
+              {
+                content: "ميزة الوصول للخدمة (Accessibility)",
+                children: [
+                  { content: "تمكين جميع المستخدمين بمن فيهم ذوو الإعاقة من استخدام التكنولوجيا بسهولة وأمان." }
+                ]
+              },
+              {
+                content: "قفل اللمس (Touch ID)",
+                children: [
+                  { content: "استخدام بصمة الإصبع للتحقق من هوية المستخدم." }
+                ]
+              },
+              {
+                content: "قفل الوجه (Face ID)",
+                children: [
+                  { content: "استخدام التعرف على الوجه لفتح الأجهزة وحمايتها." }
+                ]
+              },
+              {
+                content: "برمجيات المسح (Wiping)",
+                children: [
+                  { content: "برمجيات تُستخدم لمسح البيانات نهائيًا من الأجهزة لمنع استرجاعها." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "أهمية البيانات وقيمتها",
+            children: [
+              {
+                content: "البيانات كأصل اقتصادي",
+                children: [
+                  { content: "تعتمد كبرى الشركات العالمية على البيانات لتحقيق الأرباح." },
+                  { content: "البيانات تُعد مادة خام جديدة في العصر الرقمي." }
+                ]
+              },
+              {
+                content: "تأثير البيانات في حياتنا",
+                children: [
+                  { content: "تؤثر في القرارات الشرائية والسلوكية." },
+                  { content: "تُستخدم في التسويق وتحليل سلوك المستخدمين." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "أهمية حماية البيانات عبر الشبكة",
+            children: [
+              {
+                content: "مخاطر نقل البيانات",
+                children: [
+                  { content: "سرقة البيانات الحساسة." },
+                  { content: "التلاعب بالمعلومات." },
+                  { content: "الاحتيال الإلكتروني." }
+                ]
+              },
+              {
+                content: "الحاجة للأمن السيبراني",
+                children: [
+                  { content: "حماية الأجهزة والشبكات والبيانات." },
+                  { content: "منع الوصول غير المصرح به." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "توصيات الأمن السيبراني",
+            children: [
+              {
+                content: "أسباب ظهورها",
+                children: [
+                  { content: "زيادة الهجمات السيبرانية." },
+                  { content: "حماية البيانات الحساسة." },
+                  { content: "الالتزام بالقوانين واللوائح." },
+                  { content: "العمل عن بعد والخدمات السحابية." }
+                ]
+              },
+              {
+                content: "أمثلة على التوصيات",
+                children: [
+                  { content: "سياسة كلمات المرور القوية." },
+                  { content: "سياسة الوصول إلى الشبكة." },
+                  { content: "سياسة النسخ الاحتياطي واستعادة البيانات." },
+                  { content: "سياسة التوعية والتدريب." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "الهجمات السيبرانية الشهيرة",
+            children: [
+              {
+                content: "هجوم WannaCry",
+                children: [
+                  { content: "استهدف أنظمة ويندوز عام 2017." },
+                  { content: "تشفير البيانات وطلب فدية." },
+                  { content: "أبرز أهمية تحديث الأنظمة." }
+                ]
+              },
+              {
+                content: "اختراق Equifax",
+                children: [
+                  { content: "تسريب بيانات ملايين المستخدمين." },
+                  { content: "نتج عن ثغرة غير مصححة." },
+                  { content: "كشف ضعف الممارسات الأمنية." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "احتياجات المستخدم مقابل الأمن السيبراني",
+            children: [
+              {
+                content: "تعارض محتمل",
+                children: [
+                  { content: "السرعة وسهولة الاستخدام مقابل الخصوصية." }
+                ]
+              },
+              {
+                content: "أمثلة",
+                children: [
+                  { content: "نشر البيانات الطبية لأغراض البحث." },
+                  { content: "تتبع المصابين أثناء الأوبئة." },
+                  { content: "تحليل بيانات وسائل التواصل الاجتماعي." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "إمكانية الوصول والأمن السيبراني",
+            children: [
+              {
+                content: "مشكلات إمكانية الوصول",
+                children: [
+                  { content: "بصرية." },
+                  { content: "حركية." },
+                  { content: "سمعية." },
+                  { content: "إدراكية وعصبية." }
+                ]
+              },
+              {
+                content: "أمثلة على حلول الوصول",
+                children: [
+                  { content: "قارئ الشاشة." },
+                  { content: "الترجمة النصية الفورية." },
+                  { content: "التعرف الصوتي." },
+                  { content: "تصميم مواقع متوافقة." }
+                ]
+              }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "9-3-3-mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
