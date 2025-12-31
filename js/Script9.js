@@ -203,7 +203,8 @@ function loadQuestion() {
             /'/g,
             "\\'"
           )}', ${currentQuestionIndex})">
-                    ${String.fromCharCode(65 + index)}. ${option}
+                    <span class="option-label">${String.fromCharCode(65 + index)}</span>
+                    <span class="option-text">${option}</span>
                 </div>
             `
       )
@@ -330,10 +331,10 @@ function submitExam() {
     comparisonHtml += `<p class="comparison-text">العلامة السابقة: <span class="previous-score">${previousResult.score}</span> في تاريخ ${previousResult.date} الساعة ${previousResult.time}<br>`;
     comparisonHtml += `العلامة الحالية: <span class="current-score">${totalScore}</span><br>`;
     comparisonHtml += `الفرق: <span class="${scoreDifference > 0
-        ? "improved"
-        : scoreDifference < 0
-          ? "declined"
-          : "no-change"
+      ? "improved"
+      : scoreDifference < 0
+        ? "declined"
+        : "no-change"
       }">${scoreDifference > 0 ? "+" : ""}${scoreDifference}</span> علامة</p>`;
     if (scoreDifference > 0) {
       comparisonHtml += `<p class="feedback improved">أحسنــت ! لقد تحسنت علامتك!</p>`;

@@ -23,13 +23,16 @@ body {
 /*----------------------------------*/
 /*  show notification */
 :root {
-  --toast-bg: #ff8a00; /* orange */
-  --toast-text: #ffffff; /* white */
+  --toast-bg: #ff8a00;
+  /* orange */
+  --toast-text: #ffffff;
+  /* white */
   --toast-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
   --toast-radius: 16px;
   --toast-gap: 14px;
   --toast-padding: 14px 18px;
-  --toast-duration: 4s; /* default duration */
+  --toast-duration: 4s;
+  /* default duration */
   --toast-width: min(92vw, 420px);
 }
 
@@ -47,7 +50,8 @@ body {
   width: var(--toast-width);
   color: var(--toast-text);
   background: var(--toast-bg);
-  font-weight: 800; /* bold */
+  font-weight: 800;
+  /* bold */
   border-radius: var(--toast-radius);
   box-shadow: var(--toast-shadow);
   padding: var(--toast-padding);
@@ -58,7 +62,8 @@ body {
   transform: translateY(24px);
   opacity: 0;
   will-change: transform, opacity;
-  overflow: hidden; /* clips progress bar corners */
+  overflow: hidden;
+  /* clips progress bar corners */
   animation: toast-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
@@ -82,9 +87,11 @@ body {
   cursor: pointer;
   opacity: 0.9;
 }
+
 .toast__close:hover {
   opacity: 1;
 }
+
 .toast__close:focus {
   outline: 2px solid rgba(255, 255, 255, 0.6);
   outline-offset: 2px;
@@ -107,25 +114,30 @@ body {
     transform: translateY(24px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
 }
+
 @keyframes toast-out {
   from {
     transform: translateY(0);
     opacity: 1;
   }
+
   to {
     transform: translateY(12px);
     opacity: 0;
   }
 }
+
 @keyframes toast-progress {
   from {
     transform: scaleX(1);
   }
+
   to {
     transform: scaleX(0);
   }
@@ -139,10 +151,12 @@ body {
 .demo {
   text-align: center;
 }
+
 .demo h1 {
   font-size: clamp(20px, 2.5vw, 34px);
   margin: 8px 0 16px;
 }
+
 .demo button {
   padding: 12px 18px;
   border: 0;
@@ -153,6 +167,7 @@ body {
   color: #fff;
   box-shadow: inset 0 0 0 2px #444;
 }
+
 .demo button:active {
   transform: translateY(1px);
 }
@@ -195,6 +210,7 @@ body {
   /* لضبط الأيقونة والنص بجانب بعض */
   margin-right: auto;
 }
+
 .std_login {
   font-weight: bold;
   color: #2c3e50;
@@ -252,6 +268,7 @@ body {
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: translateY(0);
@@ -542,6 +559,12 @@ textarea:focus {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .combined-table {
   margin: 20px auto;
   border-collapse: collapse;
@@ -549,7 +572,9 @@ textarea:focus {
   max-width: 800px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  overflow: hidden;
+  /* overflow: hidden; Removed to allow scrolling in wrapper */
+  white-space: nowrap;
+  /* Keep table on one line */
 }
 
 .combined-table th,
@@ -606,6 +631,7 @@ textarea:focus {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
   .container,
   .rail-container,
   .caesar-container {
@@ -844,6 +870,23 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 5px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.option-label {
+  background-color: #e3e3e3;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  font-weight: bold;
+  min-width: 30px;
+  text-align: center;
+}
+
+.option-text {
+  flex: 1;
 }
 
 .option:hover {
@@ -1285,7 +1328,8 @@ footer {
 
 .video-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 */
+  padding-bottom: 56.25%;
+  /* 16:9 */
   height: 0;
   overflow: hidden;
   margin: 20px 0;
@@ -1296,7 +1340,8 @@ footer {
 .video-container iframe {
   position: absolute;
   top: 0;
-  right: 0; /* للاتجاه RTL */
+  right: 0;
+  /* للاتجاه RTL */
   width: 100%;
   height: 100%;
   border: 0;
@@ -1316,15 +1361,19 @@ footer {
   0% {
     color: red;
   }
+
   25% {
     color: rgb(221, 58, 58);
   }
+
   50% {
     color: rgb(223, 90, 90);
   }
+
   75% {
     color: rgb(218, 151, 151);
   }
+
   100% {
     color: rgb(226, 184, 184);
   }
