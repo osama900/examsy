@@ -514,11 +514,21 @@ textarea:focus {
 }
 
 /* Caesar Cipher Styles */
-.caesar-container {
+.caesar-container,
+.rail-container {
   max-width: 1200px;
-  margin: 40px auto;
+  /* margin: 40px auto; changed to 140px to fix header overlap */
+  margin: 140px auto 40px;
   padding: 20px;
   text-align: center;
+}
+
+.caesar-container button,
+.rail-container button {
+  width: auto;
+  min-width: 150px;
+  display: inline-block;
+  margin: 10px auto;
 }
 
 .tab {
@@ -608,7 +618,7 @@ textarea:focus {
   background-color: #ecf0f1;
   padding: 10px;
   border-radius: 5px;
-  display: inline-block;
+  display: block;
 }
 
 .switch-button {
@@ -999,7 +1009,7 @@ button:hover {
 }
 
 .h1rail {
-  padding-top: 50px;
+  padding-top: 140px;
 }
 
 .error {

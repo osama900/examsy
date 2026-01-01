@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مقدمة في الذكاء الاصطناعي 🇦 🇮</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "مقدمة في الذكاء الاصطناعي 🤖",
+        children: [
+          {
+            content: "الفكرة الرئيسة",
+            children: [
+              {
+                content: "التعريف بالذكاء الاصطناعي",
+                children: [
+                  { content: "محاكاة الأنشطة الذكائية البشرية." },
+                  { content: "فرع من علوم الحاسوب." },
+                  { content: "نظام آلي قادر على التعلم واتخاذ القرار." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "المفاهيم والمصطلحات",
+            children: [
+              {
+                content: "معالجة اللغات الطبيعية (NLP)",
+                children: [
+                  { content: "فهم اللغة البشرية والتفاعل معها." }
+                ]
+              },
+              {
+                content: "استيعاب البيانات (Data Ingestion)",
+                children: [
+                  { content: "جمع وتحليل البيانات الضخمة." }
+                ]
+              },
+              {
+                content: "محاكاة الإدراك البشري",
+                children: [
+                  { content: "التقنيات المشابهة لقدرة الإنسان." }
+                ]
+              },
+              {
+                content: "الإدراك (Perception)",
+                children: [
+                  { content: "التعرف على الأشياء عبر الحواس." }
+                ]
+              },
+              {
+                content: "المنطق واتخاذ القرار",
+                children: [
+                  { content: "الاستنتاج وحل المشكلات." }
+                ]
+              },
+              {
+                content: "أتمتة المهام",
+                children: [
+                  { content: "تنفيذ المهام المتكررة تلقائياً." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "مكونات الأنظمة",
+            children: [
+              {
+                content: "البيانات (Data)",
+                children: [
+                  { content: "المدخلات (نص، صور، صوت)." }
+                ]
+              },
+              {
+                content: "الخوارزميات (Algorithms)",
+                children: [
+                  { content: "خطوات منطقية لمعالجة البيانات." }
+                ]
+              },
+              {
+                content: "النماذج (Models)",
+                children: [
+                  { content: "المعرفة المستخرجة للتنبؤ والقرار." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "مراحل إعداد النظام",
+            children: [
+              {
+                content: "مرحلة البناء",
+                children: [
+                  { content: "جمع البيانات." },
+                  { content: "معالجة البيانات (تنظيف وتعديل)." },
+                  { content: "اختيار الخوارزميات." },
+                  { content: "تدريب النموذج." },
+                  { content: "اختبار النموذج." }
+                ]
+              },
+              {
+                content: "مرحلة الاستخدام",
+                children: [
+                  { content: "التنبؤ أو الاستدلال." },
+                  { content: "النشر (Deployment)." },
+                  { content: "التحسين والتغذية الراجعة." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "خصائص الذكاء الاصطناعي",
+            children: [
+              {
+                content: "القدرات الذاتية",
+                children: [
+                  { content: "التعلم من البيانات." },
+                  { content: "التكيف مع الظروف الجديدة." },
+                  { content: "الاستدلال المنطقي." }
+                ]
+              },
+              {
+                content: "التفاعل والأداء",
+                children: [
+                  { content: "المرونة في المجالات المختلفة." },
+                  { content: "أتمتة المهام." },
+                  { content: "التفاعل الطبيعي مع البشر." },
+                  { content: "التخطيط وحل المشكلات." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "مراحل التطور التاريخي",
+            children: [
+              {
+                content: "النشأة (الخمسينيات)",
+                children: [
+                  { content: "بداية فكرة الآلة الذكية." }
+                ]
+              },
+              {
+                content: "الذكاء الرمزي (70s-80s)",
+                children: [
+                  { content: "الاعتماد على القواعد والرموز." }
+                ]
+              },
+              {
+                content: "التعلم الآلي (التسعينيات)",
+                children: [
+                  { content: "استخدام الخوارزميات للتعرف على الأنماط." }
+                ]
+              },
+              {
+                content: "التعلم العميق (الألفية)",
+                children: [
+                  { content: "الشبكات العصبية والبيانات الضخمة." }
+                ]
+              },
+              {
+                content: "القابل للتفسير (2020s)",
+                children: [
+                  { content: "الشفافية والعدالة في القرارات." }
+                ]
+              }
+            ]
+          },
+          {
+            content: "مستويات الذكاء (هرم الذكاء)",
+            children: [
+              {
+                content: "الذكاء الضيق (ANI)",
+                children: [
+                  { content: "ينفذ مهمة واحدة محددة." }
+                ]
+              },
+              {
+                content: "الذكاء التوليدي",
+                children: [
+                  { content: "يخلق محتوى جديداً." }
+                ]
+              },
+              {
+                content: "الذكاء العام (AGI)",
+                children: [
+                  { content: "يمتلك قدرات بشرية عامة." }
+                ]
+              },
+              {
+                content: "الذكاء الفائق (ASI)",
+                children: [
+                  { content: "يتفوق على القدرات البشرية." }
+                ]
+              }
+            ]
+          },
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "9-3-4mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>

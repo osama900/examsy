@@ -291,13 +291,22 @@
                         unitGroup.appendChild(row);
 
                         // Sub-items for Time Control
-                        const subItems = [
-                            { suffix: '-prep', label: 'التحضير' },
-                            { suffix: '-task', label: 'ورقة العمل' },
-                            { suffix: '-task2', label: 'تشفير قيصر' },
-                            { suffix: '-task3', label: 'تشفير السكة الحديدية' },
-                            { suffix: '-mind', label: 'الخريطة الذهنية' }
-                        ];
+                        let subItems;
+                        if (lesson.id === '9-3-5') {
+                            subItems = [
+                                { suffix: '-prep', label: 'التحضير' },
+                                { suffix: '-task', label: 'ورقة العمل' },
+                                { suffix: '-task2', label: 'تشفير قيصر' },
+                                { suffix: '-task3', label: 'تشفير السكة الحديدية' },
+                                { suffix: '-mind', label: 'الخريطة الذهنية' }
+                            ];
+                        } else {
+                            subItems = [
+                                { suffix: '-prep', label: 'التحضير' },
+                                { suffix: '-task', label: 'ورقة العمل' },
+                                { suffix: '-mind', label: 'الخريطة الذهنية' }
+                            ];
+                        }
 
                         subItems.forEach(sub => {
                             const subId = lesson.id + sub.suffix; // e.g., 7-3-1-prep
