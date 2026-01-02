@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الروبوت 🤖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "الروبوتات 🤖",
+        children: [
+
+          {
+            content: "مفهوم الروبوت",
+            children: [
+              { content: "آلة إلكتروميكانيكية قابلة للبرمجة." },
+              { content: "تؤدي مهام محددة وتؤثر في البيئة المحيطة." },
+              { content: "تعتمد على الذكاء الاصطناعي مثل الإدراك والتخطيط والتعلم." }
+            ]
+          },
+
+          {
+            content: "مكونات الروبوت",
+            children: [
+              {
+                content: "وحدات الإدخال (Sensors)",
+                children: [
+                  { content: "كاميرا - رؤية حاسوبية." },
+                  { content: "سونار - قياس المسافة بالموجات الصوتية." },
+                  { content: "ليدار - قياس المسافة بالضوء." },
+                  { content: "GPS - تحديد الموقع." },
+                  { content: "حساس الصوت واللمس." }
+                ]
+              },
+              {
+                content: "وحدات المعالجة",
+                children: [
+                  { content: "تحليل البيانات واتخاذ القرارات." },
+                  { content: "أمثلة: Raspberry Pi، Arduino." }
+                ]
+              },
+              {
+                content: "وحدات الإخراج",
+                children: [
+                  { content: "المحركات - تحويل الأوامر الكهربائية إلى حركة." },
+                  { content: "الأذرع - تنفيذ المهام الميكانيكية." },
+                  { content: "العجلات - التنقل عبر التضاريس." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مستويات حركة الروبوت",
+            children: [
+              { content: "التخطيط للمهمة - تحديد الهدف." },
+              { content: "التخطيط للحركة - تحديد المسار والتمثيل الداخلي للبيئة." },
+              { content: "التحكم - تنفيذ الحركة عبر المحركات وفق خطوات زمنية محددة." }
+            ]
+          },
+
+          {
+            content: "أنواع الروبوتات",
+            children: [
+              { content: "روبوتات مجسمة - تشبه الإنسان." },
+              { content: "روبوتات على هيئة ذراع - مثل المصانع والمساعدة على الحركة." },
+              { content: "روبوتات ذوات أجنحة - طائرات الدرون." },
+              { content: "الروبوت السائح - استكشاف أعماق المحيطات." }
+            ]
+          },
+
+          {
+            content: "مجالات استخدام الروبوت",
+            children: [
+              { content: "المنزل - مساعدة كبار السن وذوي الإعاقة." },
+              { content: "المجال الطبي - أطراف صناعية ومساعدات جراحية." },
+              { content: "الخدمات - الفنادق، المستشفيات، الجامعات." },
+              { content: "النقل - السيارات ذاتية القيادة." },
+              { content: "الاستكشاف في البيئات الخطرة." },
+              { content: "الصناعة - الأعمال الشاقة والدقيقة." },
+              { content: "التعليم - تعزيز التعلم باستخدام روبوتات تعليمية." }
+            ]
+          },
+
+          {
+            content: "روبوتات تعليمية واجتماعية",
+            children: [
+              { content: "LEGO Mindstorms - تعليم البرمجة." },
+              { content: "EMYS - تعليم اللغات للأطفال بطريقة تفاعلية." },
+              { content: "التفاعل باستخدام تعابير الوجه والصوت والحركة." }
+            ]
+          },
+
+          {
+            content: "تصميم بيئة روبوتية ذكية",
+            children: [
+              { content: "تحليل أنواع الروبوتات المطلوبة." },
+              { content: "تحديد الوظائف والفوائد المتوقعة." },
+              { content: "استخدام برامج الذكاء الاصطناعي لتحويل الوصف إلى تصميم." },
+              { content: "مشاركة النتائج ومناقشة التحديات المحتملة." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "9-4-3mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
