@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تصميم الخوارزميات ⚙️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+ <script>
+  ((l, U, M, R) => {
+    const N = l();
+    (window.mm = N.Markmap.create(
+      "svg#mindmap",
+      (U || N.deriveOptions)(R),
+      M
+    )),
+      window.matchMedia("(prefers-color-scheme: dark)").matches &&
+      document.documentElement.classList.add("markmap-dark");
+  })(
+    () => window.markmap,
+    null,
+    {
+      content: "تصميم الخوارزميات 🧠💻",
+      children: [
+
+        {
+          content: "الفكرة الرئيسة",
+          children: [
+            {
+              content: "تجريب الخوارزميات ومقارنتها",
+              children: [
+                { content: "اختيار الخوارزمية الأنسب لتنفيذ المهمة نفسها." }
+              ]
+            }
+          ]
+        },
+
+        {
+          content: "المفاهيم الأساسية",
+          children: [
+            {
+              content: "الخوارزمية",
+              children: [
+                { content: "مجموعة خطوات منطقية ومتسلسلة لحل مشكلة أو تنفيذ مهمة." }
+              ]
+            },
+            {
+              content: "هياكل الخوارزميات",
+              children: [
+                { content: "التتابع." },
+                { content: "الاختيار (If-Else)." },
+                { content: "التكرار (Loops)." }
+              ]
+            }
+          ]
+        },
+
+        {
+          content: "أهمية تصميم الخوارزميات",
+          children: [
+            { content: "حل المشكلات بطرق منظمة وواضحة." },
+            { content: "تحسين سرعة وكفاءة البرامج." },
+            { content: "تسهيل فهم الحلول البرمجية وصيانتها." },
+            { content: "إتاحة مقارنة الحلول واختيار الأفضل." }
+          ]
+        },
+
+        {
+          content: "عوامل اختيار الخوارزمية الأفضل",
+          children: [
+            { content: "وقت التنفيذ: سرعة الوصول إلى الحل." },
+            { content: "مساحة الذاكرة: كمية الذاكرة المستخدمة." },
+            { content: "سهولة الفهم والتنفيذ." },
+            { content: "مدى تخصص الخوارزمية للمشكلة." }
+          ]
+        },
+
+        {
+          content: "تصميم أكثر من خوارزمية",
+          children: [
+            { content: "حل المشكلة الواحدة بطرق مختلفة." },
+            { content: "مقارنة الخوارزميات من حيث الكفاءة." },
+            { content: "اختيار الحل الأنسب حسب المعايير." }
+          ]
+        },
+
+        {
+          content: "خطوات تصميم الخوارزمية",
+          children: [
+            { content: "تحديد المشكلة وفهمها." },
+            { content: "تحديد المدخلات والمخرجات." },
+            { content: "تجزئة المشكلة إلى خطوات أصغر." },
+            { content: "تحديد مسار التحكم المناسب." }
+          ]
+        },
+
+        {
+          content: "المتغيرات",
+          children: [
+            {
+              content: "مفهوم المتغير",
+              children: [
+                { content: "مكان في الذاكرة لتخزين القيم أثناء التنفيذ." }
+              ]
+            },
+            {
+              content: "أهمية المتغيرات",
+              children: [
+                { content: "حفظ البيانات." },
+                { content: "تنفيذ العمليات الحسابية." },
+                { content: "إنتاج المخرجات الصحيحة." }
+              ]
+            }
+          ]
+        },
+
+        {
+          content: "أنواع بيانات المتغيرات",
+          children: [
+            { content: "صحيح (Integer): أعداد صحيحة." },
+            { content: "عشري (Float): أعداد عشرية." },
+            { content: "نصي (String): كلمات ونصوص." },
+            { content: "منطقي (Boolean): صح / خطأ." }
+          ]
+        },
+
+        {
+          content: "تتبع الخوارزميات",
+          children: [
+            { content: "تنفيذ الخطوات خطوة بخطوة." },
+            { content: "فهم طريقة عمل الخوارزمية." },
+            { content: "اكتشاف الأخطاء المحتملة." },
+            { content: "تحسين الأداء والكفاءة." }
+          ]
+        },
+
+        {
+          content: "تصحيح الأخطاء (Debugging)",
+          children: [
+            { content: "اكتشاف الأخطاء البرمجية." },
+            { content: "تحليل سبب الخطأ." },
+            { content: "إعادة ترتيب أو تعديل الخطوات." },
+            { content: "ضمان عمل الخوارزمية بشكل صحيح." }
+          ]
+        }
+
+      ]
+    },
+    { colorFreezeLevel: 2, initialExpandLevel: 2 }
+  );
+</script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "7-4-2mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
