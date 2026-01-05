@@ -94,25 +94,9 @@ function checkAndDisplayProfile() {
                 
                 <!-- Notification Bell & Dropdown -->
                 <div class="notif-wrapper" style="position: relative; margin-left: 15px;">
-                    <div id="js-notif-bell" style="cursor: pointer; position: relative; padding: 5px;">
+                    <div id="js-notif-bell" class="notif-bell" style="cursor: pointer; position: relative;">
                         <span style="font-size:24px;">🔔</span>
-                        <span id="js-notif-badge" style="
-                            position: absolute;
-                            top: 0;
-                            right: 0;
-                            background: #e74c3c;
-                            color: white;
-                            border-radius: 50%;
-                            min-width: 18px;
-                            height: 18px;
-                            font-size: 11px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            border: 2px solid white;
-                            font-weight: bold;
-                            display: none;
-                        ">0</span>
+                        <span id="js-notif-badge" class="notif-badge">0</span>
                     </div>
 
                     <!-- Dropdown Content -->
@@ -134,9 +118,8 @@ function checkAndDisplayProfile() {
                         direction: rtl;
                         text-align: right;
                     ">
-                        <div style="padding: 12px 15px; border-bottom: 1px solid #eee; background: #fafafa; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="padding: 12px 15px; border-bottom: 1px solid #eee; background: #fafafa;">
                             <h3 style="margin:0; font-size:14px; color:#333; font-weight:bold;">الإشعارات</h3>
-                            <span id="js-mark-read-all" style="font-size:11px; color:#3498db; cursor:pointer;">تحديد الكل كمقروء</span>
                         </div>
                         <div id="js-notif-list" style="max-height: 350px; overflow-y: auto;">
                             <!-- Items go here -->
@@ -204,7 +187,6 @@ function checkAndDisplayProfile() {
         const bellBtn = document.getElementById('js-notif-bell');
         const notifDropdown = document.getElementById('js-notif-dropdown');
         const notifList = document.getElementById('js-notif-list');
-        const markAllBtn = document.getElementById('js-mark-read-all');
 
         function toggleNotifDropdown(e) {
             e.stopPropagation();
@@ -270,22 +252,12 @@ function checkAndDisplayProfile() {
             if (badge) {
                 if (count > 0) {
                     badge.textContent = count > 9 ? '9+' : count;
-                    badge.style.display = 'flex';
+                    badge.classList.add('show');
                 } else {
-                    badge.style.display = 'none';
+                    badge.classList.remove('show');
                 }
             }
         }
-
-        markAllBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const sid = localStorage.getItem('std_id');
-            const map = getReadMap();
-            fetchedNotifications.forEach(n => map[n.id] = true);
-            localStorage.setItem('read_notifications_' + sid, JSON.stringify(map));
-            updateBadge();
-            renderNotifList();
-        });
 
         function renderNotifList() {
             if (fetchedNotifications.length === 0) {
