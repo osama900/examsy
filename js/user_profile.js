@@ -90,22 +90,78 @@ function checkAndDisplayProfile() {
 
         // Create HTML Structure
         const profileHTML = `
-            <div class="profile-wrapper">
-                <div class="user-profile" id="userProfileTrigger">
-                    <div class="user-info-col">
-                        <span class="user-name">${displayName}</span>
-                        ${classInfo ? `<span class="user-class">${classInfo}</span>` : ''}
+            <div class="user-profile-controls" style="display:flex; align-items:center;">
+                
+                <!-- Notification Bell & Dropdown -->
+                <div class="notif-wrapper" style="position: relative; margin-left: 15px;">
+                    <div id="js-notif-bell" style="cursor: pointer; position: relative; padding: 5px;">
+                        <span style="font-size:24px;">🔔</span>
+                        <span id="js-notif-badge" style="
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            background: #e74c3c;
+                            color: white;
+                            border-radius: 50%;
+                            min-width: 18px;
+                            height: 18px;
+                            font-size: 11px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border: 2px solid white;
+                            font-weight: bold;
+                            display: none;
+                        ">0</span>
                     </div>
-                    <div class="user-initials-badge">${initials}</div>
+
+                    <!-- Dropdown Content -->
+                    <div id="js-notif-dropdown" style="
+                        position: absolute;
+                        top: 120%;
+                        left: -50px;
+                        width: 320px;
+                        background: white;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                        border: 1px solid #f0f0f0;
+                        opacity: 0;
+                        visibility: hidden;
+                        transform: translateY(-10px);
+                        transition: all 0.3s ease;
+                        z-index: 2000;
+                        overflow: hidden;
+                        direction: rtl;
+                        text-align: right;
+                    ">
+                        <div style="padding: 12px 15px; border-bottom: 1px solid #eee; background: #fafafa; display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0; font-size:14px; color:#333; font-weight:bold;">الإشعارات</h3>
+                            <span id="js-mark-read-all" style="font-size:11px; color:#3498db; cursor:pointer;">تحديد الكل كمقروء</span>
+                        </div>
+                        <div id="js-notif-list" style="max-height: 350px; overflow-y: auto;">
+                            <!-- Items go here -->
+                            <div style="padding:20px; text-align:center; color:#999; font-size:13px;">جاري التحميل...</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="dropdown-item" id="logoutBtn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        <span>تسجيل خروج</span>
+
+                <div class="profile-wrapper">
+                    <div class="user-profile" id="userProfileTrigger">
+                        <div class="user-info-col">
+                            <span class="user-name">${displayName}</span>
+                            ${classInfo ? `<span class="user-class">${classInfo}</span>` : ''}
+                        </div>
+                        <div class="user-initials-badge">${initials}</div>
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-item" id="logoutBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>تسجيل خروج</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,6 +176,8 @@ function checkAndDisplayProfile() {
         trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             dropdown.classList.toggle('active');
+            // Close notif dropdown if open
+            document.getElementById('js-notif-dropdown').classList.remove('active');
         });
 
         // Logout functionality
@@ -142,11 +200,162 @@ function checkAndDisplayProfile() {
             window.location.href = loginUrl;
         });
 
-        // Close dropdown when clicking outside
+        // --- Notification Logic ---
+        const bellBtn = document.getElementById('js-notif-bell');
+        const notifDropdown = document.getElementById('js-notif-dropdown');
+        const notifList = document.getElementById('js-notif-list');
+        const markAllBtn = document.getElementById('js-mark-read-all');
+
+        function toggleNotifDropdown(e) {
+            e.stopPropagation();
+            const isActive = notifDropdown.classList.contains('active');
+
+            // Close profile dropdown
+            dropdown.classList.remove('active');
+
+            if (isActive) {
+                notifDropdown.classList.remove('active');
+                notifDropdown.style.opacity = '0';
+                notifDropdown.style.visibility = 'hidden';
+                notifDropdown.style.transform = 'translateY(-10px)';
+            } else {
+                notifDropdown.classList.add('active');
+                notifDropdown.style.opacity = '1';
+                notifDropdown.style.visibility = 'visible';
+                notifDropdown.style.transform = 'translateY(0)';
+                loadAndRenderNotifications();
+            }
+        }
+
+        bellBtn.addEventListener('click', toggleNotifDropdown);
+
+        // Close dropdowns when clicking outside
         document.addEventListener('click', function (e) {
             if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('active');
             }
+            // For notif dropdown - check if click is outside wrapper
+            if (!bellBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.remove('active');
+                notifDropdown.style.opacity = '0';
+                notifDropdown.style.visibility = 'hidden';
+                notifDropdown.style.transform = 'translateY(-10px)';
+            }
         });
+
+        let fetchedNotifications = [];
+
+        function getReadMap() {
+            const sid = localStorage.getItem('std_id');
+            return JSON.parse(localStorage.getItem('read_notifications_' + sid)) || {};
+        }
+
+        function updateReadMap(id) {
+            const sid = localStorage.getItem('std_id');
+            const map = getReadMap();
+            map[id] = true;
+            localStorage.setItem('read_notifications_' + sid, JSON.stringify(map));
+            updateBadge();
+            renderNotifList();
+        }
+
+        function updateBadge() {
+            if (!fetchedNotifications.length) return;
+            const map = getReadMap();
+            let count = 0;
+            fetchedNotifications.forEach(n => {
+                if (!map[n.id]) count++;
+            });
+            const badge = document.getElementById('js-notif-badge');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count > 9 ? '9+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        markAllBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sid = localStorage.getItem('std_id');
+            const map = getReadMap();
+            fetchedNotifications.forEach(n => map[n.id] = true);
+            localStorage.setItem('read_notifications_' + sid, JSON.stringify(map));
+            updateBadge();
+            renderNotifList();
+        });
+
+        function renderNotifList() {
+            if (fetchedNotifications.length === 0) {
+                notifList.innerHTML = '<div style="padding:20px; text-align:center; color:#999; font-size:13px;">لا توجد إشعارات جديدة</div>';
+                return;
+            }
+
+            notifList.innerHTML = '';
+            const map = getReadMap();
+
+            fetchedNotifications.forEach(n => {
+                const isRead = !!map[n.id];
+                const date = n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleDateString('ar-EG') : '';
+
+                const item = document.createElement('div');
+                item.style.cssText = `
+                    padding: 12px 15px;
+                    border-bottom: 1px solid #eee;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    background: ${isRead ? '#fff' : '#ebf5fb'};
+                `;
+                item.onmouseenter = () => { item.style.backgroundColor = isRead ? '#f9f9f9' : '#e1f0fa'; };
+                item.onmouseleave = () => { item.style.backgroundColor = isRead ? '#fff' : '#ebf5fb'; };
+
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    updateReadMap(n.id);
+                };
+
+                const titleStyle = isRead ? 'font-weight:normal; color:#555;' : 'font-weight:bold; color:#2c3e50;';
+
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="font-size:13px; ${titleStyle}">${n.title}</span>
+                        <span style="font-size:10px; color:#999;">${date}</span>
+                    </div>
+                    <div style="font-size:12px; color:#666; line-height:1.4;">${n.message || n.body}</div>
+                `;
+
+                notifList.appendChild(item);
+            });
+        }
+
+        function loadAndRenderNotifications() {
+            if (typeof db === 'undefined') return;
+            const sid = localStorage.getItem('std_id');
+
+            Promise.all([
+                db.collection('notifications').where('target', '==', 'all').limit(20).get(),
+                db.collection('notifications').where('target', '==', sid).limit(20).get()
+            ]).then(results => {
+                const notifs1 = results[0].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const notifs2 = results[1].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                let merged = [...notifs1, ...notifs2];
+                const unique = [];
+                const m = new Map();
+                for (const i of merged) {
+                    if (!m.has(i.id)) { m.set(i.id, true); unique.push(i); }
+                }
+
+                unique.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                fetchedNotifications = unique;
+                renderNotifList();
+                updateBadge();
+            }).catch(e => console.error(e));
+        }
+
+        if (typeof db !== 'undefined') loadAndRenderNotifications();
     }
 }

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الإشعارات</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: #fff;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .notif-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .notif-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .notif-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-item:hover {
+            background: #f9f9f9;
+        }
+
+        .notif-item.unread {
+            background: #ebf5fb;
+            border-right: 4px solid #3498db;
+        }
+
+        .notif-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .notif-body {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .notif-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #95a5a6;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                🔔 الإشعارات
+            </h1>
+            <a href="index.html" class="back-btn">
+                🏠 الرئيسية
+            </a>
+        </div>
+
+        <div id="loading" style="text-align: center; margin-top: 50px;">جاري التحميل...</div>
+        <div class="notif-list" id="notifList" style="display: none;"></div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26",
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const stdId = localStorage.getItem('std_id');
+
+        // Redirect if not logged in
+        if (!stdId) {
+            window.location.href = "std_login.html";
+        }
+
+        document.addEventListener('DOMContentLoaded', loadNotifications);
+
+        function loadNotifications() {
+            if (!stdId) return;
+
+            Promise.all([
+                db.collection('notifications').where('target', '==', 'all').limit(50).get(),
+                db.collection('notifications').where('target', '==', stdId).limit(50).get()
+            ]).then(results => {
+                const notifs1 = results[0].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const notifs2 = results[1].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                let merged = [...notifs1, ...notifs2];
+                // Deduplicate by ID
+                const unique = [];
+                const map = new Map();
+                for (const item of merged) {
+                    if (!map.has(item.id)) {
+                        map.set(item.id, true);
+                        unique.push(item);
+                    }
+                }
+
+                // Sort
+                unique.sort((a, b) => {
+                    const t1 = a.timestamp ? a.timestamp.seconds : 0;
+                    const t2 = b.timestamp ? b.timestamp.seconds : 0;
+                    return t2 - t1;
+                });
+
+                renderList(unique);
+                markAllAsRead(unique); // Auto mark as read when viewing page
+
+            }).catch(err => {
+                console.error("Error:", err);
+                document.getElementById('loading').textContent = "حدث خطأ في تحميل الإشعارات";
+            });
+        }
+
+        function renderList(list) {
+            const container = document.getElementById('notifList');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+            container.style.display = 'block';
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-icon">🔕</span>
+                        <h3>لا توجد إشعارات حالياً</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            // Get local read state just to show 'new' effect for a moment or stick to unread style?
+            // Since we mark all as read on load, let's just show them normally.
+            // Or maybe show them as unread based on *previous* state? 
+            // For simplicity, we just list them clean. Maybe highlight the very recent ones?
+            // Let's use the stored read state to highlight "unread" ones *before* we update it.
+            const readMap = JSON.parse(localStorage.getItem('read_notifications_' + stdId)) || {};
+
+            list.forEach(n => {
+                const date = n.timestamp ? new Date(n.timestamp.seconds * 1000).toLocaleString('ar-EG') : '';
+                const isRead = readMap[n.id];
+
+                const item = document.createElement('div');
+                item.className = `notif-item ${isRead ? '' : 'unread'}`;
+                item.innerHTML = `
+                    <span class="notif-title">${n.title}</span>
+                    <span class="notif-body">${n.message || n.body}</span>
+                    <div class="notif-meta">
+                        <span>👤 المعلم</span>
+                        <span>📅 ${date}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function markAllAsRead(list) {
+            const readMap = JSON.parse(localStorage.getItem('read_notifications_' + stdId)) || {};
+            list.forEach(n => readMap[n.id] = true);
+            localStorage.setItem('read_notifications_' + stdId, JSON.stringify(readMap));
+        }
+
+    </script>
+</body>
+
+</html>

@@ -182,6 +182,157 @@
       align-items: center;
     }
 
+    /* Notification Styles */
+    .notif-wrapper {
+      position: relative;
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    .notif-bell {
+      font-size: 24px;
+      color: #7f8c8d;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f0f2f5;
+    }
+
+    .notif-bell:hover {
+      background: #e1e4e8;
+      color: #2c3e50;
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      font-weight: bold;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .notif-badge.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .notif-dropdown {
+      position: absolute;
+      top: 120%;
+      left: 0;
+      /* Align left for RTL context in header usually means right, but let's check direction */
+      /* Since dir is likely RTL or handled by styles, we need to be careful. 
+         In the header flex, the profile is on the left? No, let's look at the header structure.
+         Header: Logo (Right usually in RTL) ... Profile (Left usually).
+         If profile is on the left, we want the dropdown to align to the left.
+      */
+
+      width: 300px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border: 1px solid #f0f0f0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 2000;
+      overflow: hidden;
+    }
+
+    /* Adjust alignment based on parent being relative */
+    /* If the bell is near the left edge, we might need left: 0 or right: auto */
+
+    .notif-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .notif-header {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+    }
+
+    .notif-header h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .notif-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .notif-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-item:hover {
+      background: #f9f9f9;
+    }
+
+    .notif-item.unread {
+      background: #ebf5fb;
+    }
+
+    .notif-title {
+      font-weight: bold;
+      font-size: 13px;
+      color: #2c3e50;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .notif-body {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.4;
+      display: block;
+    }
+
+    .notif-time {
+      font-size: 10px;
+      color: #95a5a6;
+      display: block;
+      margin-top: 5px;
+      text-align: left;
+    }
+
+    .empty-notif {
+      padding: 20px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+    }
+
     /* Dashboard Styles */
     .dashboard-container {
       max-width: 1200px;
@@ -364,7 +515,24 @@
         <span class="logo-emoji">📚</span>
         <span class="logo-text">الاختبارات الالكترونية</span>
       </a>
-      <div id="user-profile-container"></div>
+      <div id="user-profile-container" style="display: flex; align-items: center;">
+        <!-- Notifications -->
+        <div class="notif-wrapper" id="notifWrapper">
+          <div class="notif-bell" onclick="toggleNotifications()">
+            🔔
+            <span class="notif-badge" id="notifBadge">0</span>
+          </div>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+              <h3>الإشعارات</h3>
+              <span style="font-size:10px; cursor:pointer; color:#3498db;" onclick="markAllRead()">تحديد كمقروء</span>
+            </div>
+            <div class="notif-list" id="notifList">
+              <div class="empty-notif">لا توجد إشعارات جديدة</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -427,6 +595,20 @@
             <span class="stat-label">مجموع النقاط </span>
             <span class="stat-value" id="user-coins-count">0</span>
           </div>
+        </div>
+      </div>
+
+      <div class="stat-card" style="border-right: 4px solid #9b59b6; cursor: pointer;"
+        onclick="window.location.href='notifications.html'">
+        <div class="stat-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+          <span style="font-size: 24px;">🔔</span>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">تنبيه الإشعارات</span>
+          <span class="stat-value" id="lastNotifText"
+            style="font-size: 0.9rem; font-weight: 500; color: #555; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;">
+            جاري التحميل...
+          </span>
         </div>
       </div>
 
@@ -552,7 +734,58 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadDashboardStats);
+    async function updateDashboardNotificationCard() {
+      const stdId = localStorage.getItem('std_id');
+      const textElem = document.getElementById('lastNotifText');
+      if (!stdId) {
+        textElem.textContent = "يرجى تسجيل الدخول";
+        return;
+      }
+
+      try {
+        // Fetch without orderBy to avoid composite index requirements
+        // Get 10 most recent (best effort without index)
+        const [globalNotifs, personalNotifs] = await Promise.all([
+          db.collection('notifications')
+            .where('target', '==', 'all')
+            .limit(10)
+            .get(),
+          db.collection('notifications')
+            .where('target', '==', stdId)
+            .limit(10)
+            .get()
+        ]);
+
+        let allDocs = [];
+        globalNotifs.forEach(doc => allDocs.push(doc.data()));
+        personalNotifs.forEach(doc => allDocs.push(doc.data()));
+
+        // Sort client-side
+        allDocs.sort((a, b) => {
+          const t1 = a.timestamp ? a.timestamp.seconds : 0;
+          const t2 = b.timestamp ? b.timestamp.seconds : 0;
+          return t2 - t1; // Descending
+        });
+
+        const latest = allDocs.length > 0 ? allDocs[0] : null;
+
+        if (latest) {
+          textElem.textContent = `${latest.title}: ${latest.body}`;
+          textElem.style.color = "#2c3e50";
+        } else {
+          textElem.textContent = "لا يوجد إشعارات";
+          textElem.style.color = "#95a5a6";
+        }
+      } catch (err) {
+        console.error("Error fetching latest notification:", err);
+        textElem.textContent = "تعذر تحميل الإشعارات";
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardStats();
+      updateDashboardNotificationCard();
+    });
 
     // Unit Progress Logic
     const CURRICULUM = {
@@ -686,6 +919,7 @@
 
     document.addEventListener('DOMContentLoaded', loadAllUnitsProgress);
   </script>
+
   <script src="js/coins_manager.js"></script>
   <script src="js/user_profile.js"></script>
 </body>

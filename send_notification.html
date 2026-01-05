@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إرسال إشعار للطلاب</title>
+    <style>
+        body {
+            font-family: "Tajawal", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            direction: rtl;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #8e44ad;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced6e0;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+
+        .form-control:focus {
+            border-color: #8e44ad;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
+        }
+
+        .form-control:disabled {
+            background: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .send-btn {
+            background: #8e44ad;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .send-btn:hover {
+            background: #732d91;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+        }
+
+        .send-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-wrapper">
+            <h1>📢 إرسال إشعار للطلاب</h1>
+        </div>
+
+        <!-- Filters First -->
+        <div class="form-group">
+            <label for="filterGrade">الصف</label>
+            <select id="filterGrade" class="form-control">
+                <option value="">-- اختر الصف --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="filterClass">الشعبة</label>
+            <select id="filterClass" class="form-control" disabled>
+                <option value="">-- اختر الشعبة --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notifTarget">المستلم</label>
+            <select id="notifTarget" class="form-control">
+                <option value="all">📢 كل الطلاب (في المدرسة)</option>
+            </select>
+        </div>
+
+        <!-- Content Second -->
+        <div class="form-group">
+            <label for="notifTitle">عنوان الإشعار</label>
+            <input type="text" id="notifTitle" class="form-control" placeholder="مثال: تذكير بموعد الامتحان">
+        </div>
+
+        <div class="form-group">
+            <label for="notifMessage">نص الإشعار</label>
+            <textarea id="notifMessage" class="form-control" placeholder="اكتب رسالتك هنا..."></textarea>
+        </div>
+
+        <button class="send-btn" onclick="sendNotification()" id="sendBtn">
+            🚀 إرسال الإشعار
+        </button>
+
+        <div style="text-align: center;">
+            <a href="teacher_dashboard.html" class="back-btn">⬅ العودة للوحة التحكم</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let allStudents = [];
+
+        // Load students & Init Filters
+        document.addEventListener('DOMContentLoaded', () => {
+            db.collection("std_id").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const s = doc.data();
+                    allStudents.push({
+                        id: s.std_id || doc.id,
+                        name: s.std_name || "بدون اسم",
+                        grade: (s.std_grade || "").trim(), // e.g. "9"
+                        section: (s.std_class || "").trim(), // e.g. "أ"
+                        meta: `${s.std_grade || ""} - ${s.std_class || ""}`
+                    });
+                });
+
+                // Sort by Name
+                allStudents.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+                // Populate Grades Filter
+                populateGrades();
+
+                // Initial Populate "Right Side" (All Students)
+                populateTargetList(allStudents);
+
+            }).catch(err => console.error("Error loading students:", err));
+        });
+
+        const gradeSelect = document.getElementById('filterGrade');
+        const classSelect = document.getElementById('filterClass');
+        const targetSelect = document.getElementById('notifTarget');
+
+        function populateGrades() {
+            const grades = [...new Set(allStudents.map(s => s.grade).filter(g => g))];
+            grades.sort(); // Numeric or alpha sort?
+
+            grades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = `الصف ${g}`;
+                gradeSelect.appendChild(opt);
+            });
+        }
+
+        gradeSelect.addEventListener('change', () => {
+            const selectedGrade = gradeSelect.value;
+            classSelect.innerHTML = '<option value="">-- كل الشعب --</option>';
+            classSelect.disabled = !selectedGrade;
+
+            if (!selectedGrade) {
+                populateTargetList(allStudents); // Reset to all
+                return;
+            }
+
+            // Get Sections for this Grade
+            const sections = [...new Set(allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s))];
+            sections.sort();
+
+            sections.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = `شعبة ${s}`;
+                classSelect.appendChild(opt);
+            });
+
+            filterStudents();
+        });
+
+        classSelect.addEventListener('change', filterStudents);
+
+        function filterStudents() {
+            const grade = gradeSelect.value;
+            const section = classSelect.value;
+
+            let filtered = allStudents;
+
+            if (grade) {
+                filtered = filtered.filter(s => s.grade === grade);
+            }
+            if (section) {
+                filtered = filtered.filter(s => s.section === section);
+            }
+
+            populateTargetList(filtered, grade, section);
+        }
+
+        function populateTargetList(list, currentGrade = null, currentSection = null) {
+            targetSelect.innerHTML = '';
+
+            // "Group" Option
+            let groupLabel = "📢 كل الطلاب (في المدرسة)";
+            let groupValue = "all"; // Global broadcast logic from user_profile.js
+
+            if (currentGrade) {
+                groupLabel = `📢 كل طلاب الصف ${currentGrade}`;
+                groupValue = "GROUP_FILTERED"; // Signal to iterate
+                if (currentSection) {
+                    groupLabel += ` - شعبة ${currentSection}`;
+                }
+            }
+
+            // Add Group Option
+            const groupOpt = document.createElement('option');
+            groupOpt.value = groupValue;
+            groupOpt.textContent = groupLabel;
+            targetSelect.appendChild(groupOpt);
+
+            // Individual Options
+            list.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = `${s.name} (${s.meta})`;
+                targetSelect.appendChild(opt);
+            });
+        }
+
+        async function sendNotification() {
+            const title = document.getElementById('notifTitle').value.trim();
+            const body = document.getElementById('notifMessage').value.trim();
+            const targetValue = targetSelect.value;
+            const btn = document.getElementById('sendBtn');
+
+            if (!title || !body) {
+                alert("يرجى تعبئة العنوان والنص");
+                return;
+            }
+
+            if (!confirm("هل أنت متأكد من إرسال هذا الإشعار؟")) return;
+
+            btn.disabled = true;
+            btn.textContent = "جاري الإرسال...";
+
+            try {
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+                if (targetValue === "all") {
+                    // Global Broadcast (handled by client logic 'target' == 'all')
+                    await db.collection("notifications").add({
+                        title, body, target: 'all', timestamp, sender: "Teacher"
+                    });
+                } else if (targetValue === "GROUP_FILTERED") {
+                    // Fan-out to currently filtered list
+                    // We need to re-filter based on current dropdowns to be safe
+                    const grade = gradeSelect.value;
+                    const section = classSelect.value;
+
+                    const recipients = allStudents.filter(s => {
+                        if (grade && s.grade !== grade) return false;
+                        if (section && s.section !== section) return false;
+                        return true;
+                    });
+
+                    // Firestore batch limit is 500. Assuming < 500 for now or individual adds.
+                    // Promise.all is safer for many writes if not using actual batch object logic.
+                    const promises = recipients.map(s =>
+                        db.collection("notifications").add({
+                            title, body, target: s.id, timestamp, sender: "Teacher"
+                        })
+                    );
+                    await Promise.all(promises);
+
+                } else {
+                    // Single Student
+                    await db.collection("notifications").add({
+                        title, body, target: targetValue, timestamp, sender: "Teacher"
+                    });
+                }
+
+                alert("تم الإرسال بنجاح! ✅");
+                document.getElementById('notifTitle').value = "";
+                document.getElementById('notifMessage').value = "";
+                // Don't reset filters to avoid annoyance
+            } catch (err) {
+                console.error("Error sending notification:", err);
+                alert("حدث خطأ أثناء الإرسال ❌");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "🚀 إرسال الإشعار";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

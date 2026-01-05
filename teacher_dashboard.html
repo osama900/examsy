@@ -151,6 +151,81 @@
       margin-top: 20px;
     }
 
+    /* Notification Section Styles */
+    .notification-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e1e8ed;
+    }
+
+    .notification-section h2 {
+      color: #2c3e50;
+      margin-top: 0;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ced6e0;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .send-notif-btn {
+      background: #8e44ad;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .send-notif-btn:hover {
+      background: #732d91;
+    }
+
+    .send-notif-btn:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
+
     button {
       margin: 5px;
     }
@@ -168,6 +243,9 @@
     <button class="download-btn" style="background: #9b59b6;" onclick="window.location.href='lesson_control.html'">إدارة
       ظهور الدروس</button>
     <button class="download-btn" onclick="exportData()">تحميل البيانات Excel</button>
+    <button class="download-btn" style="background: #8e44ad;" onclick="window.location.href='send_notification.html'">📢
+      إرسال
+      إشعارات</button>
     <div class="filter-section">
       <select id="testNameFilter" onchange="filterResults()">
         <option value="">كل الاختبارات</option>
@@ -180,6 +258,9 @@
       </select>
       <button class="search-btn" onclick="fetchExamResults()">بحث 🔍</button>
     </div>
+
+    <!-- Notification Form Section -->
+
   </div>
 
 
@@ -251,6 +332,9 @@
       let classes = new Set();
       let studentClasses = new Set();
       let filteredResults = [];
+
+      // Cache for student list to avoid multiple reads
+      let allStudentsList = []; // Kept if needed for other features, or remove if unused. Let's keep minimal cleanup.
 
       function fetchExamResults() {
         db.collection("examResults")
@@ -439,6 +523,8 @@
       function goToStdReg() {
         window.location.href = "std_add.html";
       }
+
+
 
       // Removed automatic call on page load
       // fetchExamResults();
