@@ -33,6 +33,16 @@ function decryptData(encryptedData) {
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
+function escapeHTML(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function fetchQuestionsFromGoogleSheet() {
   try {
     const response = await fetch(
@@ -306,7 +316,7 @@ function submitExam() {
   }
 
   let totalScore = 0;
-  let resultsHtml = `<h2 class="result-title">نتيجة ${studentName} - الشعبة ${studentClass}</h2><ul class="result-list">`;
+  let resultsHtml = `<h2 class="result-title">نتيجة ${escapeHTML(studentName)} - الشعبة ${escapeHTML(studentClass)}</h2><ul class="result-list">`;
 
   questions.forEach((q, index) => {
     const encryptedCorrect = encryptedCorrectAnswers[index];
@@ -314,10 +324,7 @@ function submitExam() {
     const isCorrect = userAnswers[index] === correctAnswer;
     totalScore += isCorrect ? q.score : 0;
     const answerClass = isCorrect ? "correct-answer" : "wrong-answer";
-    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${q.question
-      }<br>إجابتك: <span class="${answerClass}">${userAnswers[index] || "لم تجب"
-      }</span><br>الإجابة الصحيحة: <span class="correct-answer">${correctAnswer}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0
-      }</span></li>`;
+    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${escapeHTML(q.question)}<br>إجابتك: <span class="${answerClass}">${escapeHTML(userAnswers[index]) || "لم تجب"}</span><br>الإجابة الصحيحة: <span class="correct-answer">${escapeHTML(correctAnswer)}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0}</span></li>`;
   });
 
   resultsHtml += `</ul>`;
@@ -387,6 +394,7 @@ function submitExam() {
     date: now.toLocaleDateString(),
     time: now.toLocaleTimeString(),
     timestamp: firebase.firestore.Timestamp.fromDate(now),
+    studentEmail: localStorage.getItem('std_email') // Required for Firestore Rules
   };
 
   db.collection("examResults")
@@ -468,9 +476,12 @@ function showToast(message, { duration = 4000 } = {}) {
   return toast;
 }
 
-document.getElementById("btn").addEventListener("click", () => {
-  showToast("This is your orange notification. It will close in 4 seconds.");
-});
+const btnElement = document.getElementById("btn");
+if (btnElement) {
+  btnElement.addEventListener("click", () => {
+    showToast("This is your orange notification. It will close in 4 seconds.");
+  });
+}
 
 window.addEventListener("load", () => {
   setTimeout(() => showToast("Saved successfully! ✅"), 500);

@@ -32,6 +32,16 @@ function decryptData(encryptedData) {
     return bytes.toString(CryptoJS.enc.Utf8);
 }
 
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 async function fetchQuestionsFromGoogleSheet() {
     try {
         const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQiTMJLS9OPOepY4aooD20SQJE0MS4sKA5O50AJpKKe7zgaEA9zC_Fwqf6MKEZy75iRT4Ax6jctXPF-/pub?output=csv');
@@ -178,7 +188,7 @@ function submitExam() {
     clearInterval(examTimer); // Stop the timer
 
     let totalScore = 0;
-    let resultsHtml = `<h2 class="result-title">نتيجة ${studentName} - الشعبة ${studentClass}</h2><ul class="result-list">`;
+    let resultsHtml = `<h2 class="result-title">نتيجة ${escapeHTML(studentName)} - الشعبة ${escapeHTML(studentClass)}</h2><ul class="result-list">`;
 
     questions.forEach((q, index) => {
         const encryptedCorrect = encryptedCorrectAnswers[index];
@@ -186,7 +196,7 @@ function submitExam() {
         const isCorrect = userAnswers[index] === correctAnswer;
         totalScore += isCorrect ? q.score : 0;
         const answerClass = isCorrect ? 'correct-answer' : 'wrong-answer';
-        resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${q.question}<br>إجابتك: <span class="${answerClass}">${userAnswers[index] || 'لم تجب'}</span><br>الإجابة الصحيحة: <span class="correct-answer">${correctAnswer}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0}</span></li>`;
+        resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${escapeHTML(q.question)}<br>إجابتك: <span class="${answerClass}">${escapeHTML(userAnswers[index]) || 'لم تجب'}</span><br>الإجابة الصحيحة: <span class="correct-answer">${escapeHTML(correctAnswer)}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0}</span></li>`;
     });
 
     resultsHtml += `</ul>`;

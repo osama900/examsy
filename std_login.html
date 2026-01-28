@@ -83,7 +83,7 @@
             الالكتروني</label>
           <input dir="ltr"
             class="w-full px-4 py-3 bg-input-light dark:bg-input-dark border-transparent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground-light dark:text-foreground-dark placeholder-placeholder-light dark:placeholder-placeholder-dark"
-            id="username" placeholder="you@zaid.com" required type="email" />
+            id="username" placeholder="you@zaid.com" required type="email" oninput="validateEmail()" />
         </div>
 
         <div class="space-y-2">
@@ -109,8 +109,8 @@
 
         <div>
           <button id="loginBtn"
-            class="w-full px-4 py-3 font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background-light dark:focus:ring-offset-background-dark transition-colors duration-300"
-            type="submit">
+            class="w-full px-4 py-3 font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background-light dark:focus:ring-offset-background-dark transition-colors duration-300"
+            type="submit" disabled>
             تسجيل الدخول
           </button>
         </div>
@@ -136,6 +136,7 @@
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
     // --- تأكد أن هذه القيم مطابقة للمشروع لديك ---
@@ -151,6 +152,13 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    function validateEmail() {
+      const email = document.getElementById('username').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      loginBtn.disabled = !emailRegex.test(email);
+    }
 
     // الدالة الرئيسية لمعالجة تسجيل الدخول
     function studentLogin(event) {
@@ -173,46 +181,50 @@
       loginBtn.disabled = true;
       loginBtn.classList.add("opacity-70");
 
-      // استعلام Firestore
-      db.collection("std_id")
-        .where("std_email", "==", username)
-        .where("std_password", "==", password)
-        .get()
+      firebase.auth().signInWithEmailAndPassword(username, password)
+        .then((userCredential) => {
+          // Authentication successful, now fetch metadata from Firestore
+          return db.collection("std_id")
+            .where("std_email", "==", username)
+            .get();
+        })
         .then((querySnapshot) => {
-          console.log("Query size:", querySnapshot.size);
           if (!querySnapshot.empty) {
-            const studentData = querySnapshot.docs[0].data();
+            const doc = querySnapshot.docs[0];
+            const studentData = doc.data();
             const stdName = studentData.std_name || "";
             const stdClass = studentData.std_class || "";
             const stdGrade = String(studentData.std_grade || "");
+            const stdCoins = studentData.coins || 0;
+            const stdEmail = studentData.std_email || username;
 
             // حفظ في LocalStorage
             localStorage.setItem("std_name", stdName);
             localStorage.setItem("std_class", stdClass);
             localStorage.setItem("std_grade", stdGrade);
-            localStorage.setItem("std_id", studentData.std_id || ""); // Save the unique ID
+            localStorage.setItem("std_coins", stdCoins.toString());
+            localStorage.setItem("std_email", stdEmail);
+            localStorage.setItem("std_id", doc.id); // استخدام المعرف الفريد للمستند
 
-            // إعادة التوجيه بحسب الصف (استخدمت else if لتجنّب تنفيذ الـ else العام)
-            if (stdGrade === "9") {
-              window.location.href = "index.html";
-              return;
-            } else if (stdGrade === "8") {
-              window.location.href = "index.html";
-              return;
-            } else if (stdGrade === "7") {
-              window.location.href = "index.html";
-              return;
-            } else {
-              errorDiv.textContent = "الصف غير معروف: " + stdGrade;
-            }
+            // دعم الأكواد القديمة (loggedInStudent)
+            localStorage.setItem("loggedInStudent", JSON.stringify({
+              name: stdName,
+              class: stdClass,
+              grade: stdGrade,
+              email: stdEmail,
+              std_id: doc.id
+            }));
+
+            // إعادة التوجيه
+            window.location.href = "index.html";
           } else {
-            errorDiv.textContent =
-              "اسم المستخدم أو كلمة المرور غير صحيحة. إذا لم يكن لديك معلومات الدخول يرجى مراجعة الاستاذ أسامة عمر.";
+            firebase.auth().signOut();
+            errorDiv.textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
           }
         })
         .catch((error) => {
-          console.error("Firestore error:", error);
-          errorDiv.textContent = "حدث خطأ: " + error.message;
+          console.error("Login error:", error);
+          errorDiv.textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
         })
         .finally(() => {
           loginBtn.disabled = false;

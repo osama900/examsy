@@ -1,298 +1,343 @@
 <!DOCTYPE html>
 <html lang="ar">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>إضافة طالب جديد</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background-color: #e77f4f;
-        padding: 20px;
-      }
 
-      .form-container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        width: 100%;
-        max-width: 500px;
-        text-align: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إضافة طالب جديد</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #e77f4f;
+      padding: 20px;
+    }
 
-      .form-container h2 {
-        margin-bottom: 25px;
-        color: #333;
-      }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
 
-      .form-group {
-        margin-bottom: 15px;
-        text-align: right;
-      }
+    .form-container h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
 
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #555;
-      }
+    .form-group {
+      margin-bottom: 15px;
+      text-align: right;
+    }
 
-      .form-group input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 14px;
-      }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
 
-      .password-container {
-        position: relative;
-        width: 100%;
-      }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
 
-      .password-container input {
-        padding-right: 40px;
-      }
+    .password-container {
+      position: relative;
+      width: 100%;
+    }
 
-      .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #666;
-      }
+    .password-container input {
+      padding-right: 40px;
+    }
 
-      button {
-        background-color: #4caf50;
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-        width: 100%;
-        margin-top: 10px;
-      }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+    }
 
-      button:hover {
-        background-color: #45a049;
-      }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      width: 100%;
+      margin-top: 10px;
+    }
 
-      button:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-      }
+    button:hover {
+      background-color: #45a049;
+    }
 
-      .status {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 6px;
-        display: none;
-      }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
 
-      .status.success {
-        background-color: #d4edda;
-        color: #155724;
-        display: block;
-      }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+    }
 
-      .status.error {
-        background-color: #f8d7da;
-        color: #721c24;
-        display: block;
-      }
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
 
-      .status.processing {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        display: block;
-      }
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
 
-      .back-link {
-        margin-top: 15px;
-        display: block;
-        color: #4caf50;
-        text-decoration: none;
-        font-size: 14px;
-      }
+    .status.processing {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      display: block;
+    }
 
-      .back-link:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </head>
+    .back-link {
+      margin-top: 15px;
+      display: block;
+      color: #4caf50;
+      text-decoration: none;
+      font-size: 14px;
+    }
 
-  <body>
-    <div class="form-container">
-      <h2>إضافة طالب جديد</h2>
+    .back-link:hover {
+      text-decoration: underline;
+    }
 
-      <form id="studentForm">
-        <div class="form-group">
-          <label for="std_name">اسم الطالب (عربي):</label>
-          <input type="text" id="std_name" required />
-        </div>
+    .form-container {
+      display: none;
+    }
 
-        <div class="form-group">
-          <label for="std_grade">الصف:</label>
-          <input type="text" id="std_grade" required />
-        </div>
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 20px;
+      color: #4caf50;
+      font-weight: bold;
+    }
+  </style>
+</head>
 
-        <div class="form-group">
-          <label for="std_class">الشعبة:</label>
-          <input type="text" id="std_class" required />
-        </div>
-
-        <div class="form-group">
-          <label for="std_id">رقم الطالب (الرقم الوطني):</label>
-          <input type="text" id="std_id" required />
-        </div>
-
-        <div class="form-group">
-          <label for="std_email">البريد الإلكتروني:</label>
-          <input type="email" id="std_email" required />
-        </div>
-
-        <div class="form-group">
-          <label for="std_password">كلمة المرور:</label>
-          <div class="password-container">
-            <input type="password" id="std_password" required />
-            <span class="toggle-password" onclick="togglePassword()">👁️</span>
-          </div>
-        </div>
-
-        <button type="submit" id="submitBtn">إضافة الطالب</button>
-      </form>
-
-      <a href="#" class="back-link" onclick="goBack()"
-        >العودة إلى صفحة التحميل</a
-      >
-
-      <div class="status" id="status"></div>
+<body>
+  <div id="loadingOverlay">
+    <div style="margin-bottom: 20px;">جاري التحقق من الصلاحيات...</div>
+    <div
+      style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #4caf50; border-radius: 50%; animation: spin 1s linear infinite;">
     </div>
+  </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-    <script>
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
-        authDomain: "examsy-21dc3.firebaseapp.com",
-        projectId: "examsy-21dc3",
-        storageBucket: "examsy-21dc3.firebasestorage.app",
-        messagingSenderId: "357464025229",
-        appId: "1:357464025229:web:b920c8290f985f54339ac4",
-        measurementId: "G-CWZ7MR4V26",
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-
-      // DOM elements
-      const studentForm = document.getElementById("studentForm");
-      const statusDiv = document.getElementById("status");
-      const submitBtn = document.getElementById("submitBtn");
-
-      // Toggle password visibility
-      function togglePassword() {
-        const passwordInput = document.getElementById("std_password");
-        const toggleIcon = document.querySelector(".toggle-password");
-
-        if (passwordInput.type === "password") {
-          passwordInput.type = "text";
-          toggleIcon.textContent = "👁️‍🗨️";
-        } else {
-          passwordInput.type = "password";
-          toggleIcon.textContent = "👁️";
-        }
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
       }
 
-      // Show status message
-      function showStatus(message, type) {
-        statusDiv.textContent = message;
-        statusDiv.className = "status " + type;
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <div class="form-container">
+    <h2>إضافة طالب جديد</h2>
+
+    <form id="studentForm">
+      <div class="form-group">
+        <label for="std_name">اسم الطالب (عربي):</label>
+        <input type="text" id="std_name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="std_grade">الصف:</label>
+        <input type="text" id="std_grade" required />
+      </div>
+
+      <div class="form-group">
+        <label for="std_class">الشعبة:</label>
+        <input type="text" id="std_class" required />
+      </div>
+
+      <div class="form-group">
+        <label for="std_email">البريد الإلكتروني:</label>
+        <input type="email" id="std_email" required />
+      </div>
+
+      <button type="submit" id="submitBtn">إضافة الطالب</button>
+    </form>
+
+    <a href="#" class="back-link" onclick="goBack()">العودة إلى صفحة التحميل</a>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+      authDomain: "examsy-21dc3.firebaseapp.com",
+      projectId: "examsy-21dc3",
+      storageBucket: "examsy-21dc3.firebasestorage.app",
+      messagingSenderId: "357464025229",
+      appId: "1:357464025229:web:b920c8290f985f54339ac4",
+      measurementId: "G-CWZ7MR4V26",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    // Auth & Role Check
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
       }
 
-      // Go back to upload page
-      function goBack() {
-        window.location.href = "upload.html"; // Change this to your actual upload page URL
+      // Verify teacher role in database
+      db.collection('teacehr_log').doc(user.email).get()
+        .then(doc => {
+          if (!doc.exists) {
+            return db.collection('teacehr_log').where('email', '==', user.email).get();
+          }
+          return { exists: true, fromDoc: true };
+        })
+        .then(result => {
+          const isAuthorized = result.fromDoc || (result && !result.empty);
+          if (!isAuthorized) {
+            alert("غير مصرح لك بدخول هذه الصفحة. سيتم تسجيل خروجك.");
+            firebase.auth().signOut().then(() => {
+              window.location.href = "index.html";
+            });
+          } else {
+            // Authorized! Show content
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.querySelector('.form-container').style.display = 'block';
+          }
+        })
+        .catch(err => {
+          console.error("Auth verify error:", err);
+          firebase.auth().signOut().then(() => {
+            window.location.href = "index.html";
+          });
+        });
+    });
+
+    // DOM elements
+    const studentForm = document.getElementById("studentForm");
+    const statusDiv = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+
+
+    // Show status message
+    function showStatus(message, type) {
+      statusDiv.textContent = message;
+      statusDiv.className = "status " + type;
+    }
+
+    // Go back to upload page
+    function goBack() {
+      window.location.href = "upload.html"; // Change this to your actual upload page URL
+    }
+
+    // Form submission handler
+    studentForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Get form values
+      const std_name = document.getElementById("std_name").value.trim();
+      const std_grade = document.getElementById("std_grade").value.trim();
+      const std_class = document.getElementById("std_class").value.trim();
+      const std_email = document.getElementById("std_email").value.trim();
+
+      // Validate required fields
+      if (
+        !std_name ||
+        !std_grade ||
+        !std_class ||
+        !std_email
+      ) {
+        showStatus("يرجى ملء جميع الحقول المطلوبة", "error");
+        return;
       }
 
-      // Form submission handler
-      studentForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(std_email)) {
+        showStatus("يرجى إدخال بريد إلكتروني صحيح", "error");
+        return;
+      }
 
-        // Get form values
-        const std_name = document.getElementById("std_name").value.trim();
-        const std_grade = document.getElementById("std_grade").value.trim();
-        const std_class = document.getElementById("std_class").value.trim();
-        const std_id = document.getElementById("std_id").value.trim();
-        const std_email = document.getElementById("std_email").value.trim();
-        const std_password = document.getElementById("std_password").value;
+      // Disable submit button and show processing status
+      submitBtn.disabled = true;
+      showStatus("جارٍ إضافة الطالب...", "processing");
 
-        // Validate required fields
-        if (
-          !std_name ||
-          !std_grade ||
-          !std_class ||
-          !std_id ||
-          !std_email ||
-          !std_password
-        ) {
-          showStatus("يرجى ملء جميع الحقول المطلوبة", "error");
-          return;
-        }
+      try {
+        // Create student data object
+        const studentData = {
+          std_name: std_name,
+          std_grade: std_grade,
+          std_class: std_class,
+          std_id: std_email, // Use email as ID
+          std_email: std_email,
+        };
 
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(std_email)) {
-          showStatus("يرجى إدخال بريد إلكتروني صحيح", "error");
-          return;
-        }
+        // Add to Firebase Firestore
+        await db.collection("std_id").doc(std_email).set(studentData);
 
-        // Disable submit button and show processing status
-        submitBtn.disabled = true;
-        showStatus("جارٍ إضافة الطالب...", "processing");
+        showStatus("تمت إضافة الطالب بنجاح!", "success");
 
-        try {
-          // Create student data object
-          const studentData = {
-            std_name: std_name,
-            std_grade: std_grade,
-            std_class: std_class,
-            std_id: std_id,
-            std_email: std_email,
-            std_password: std_password,
-          };
-
-          // Add to Firebase Firestore
-          await db.collection("std_id").doc(std_id).set(studentData);
-
-          showStatus("تمت إضافة الطالب بنجاح!", "success");
-
-          // Reset form after successful submission
-          setTimeout(() => {
-            studentForm.reset();
-            submitBtn.disabled = false;
-            statusDiv.style.display = "none";
-          }, 3000);
-        } catch (error) {
-          console.error("Error adding student:", error);
-          showStatus("حدث خطأ أثناء إضافة الطالب: " + error.message, "error");
+        // Reset form after successful submission
+        setTimeout(() => {
+          studentForm.reset();
           submitBtn.disabled = false;
-        }
-      });
-    </script>
-  </body>
+          statusDiv.style.display = "none";
+        }, 3000);
+      } catch (error) {
+        console.error("Error adding student:", error);
+        showStatus("حدث خطأ أثناء إضافة الطالب: " + error.message, "error");
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
 </html>

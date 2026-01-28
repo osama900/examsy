@@ -35,10 +35,20 @@
 
             // 1. Ensure Firebase is ready
             await this.ensureFirebase();
-            this.db = firebase.firestore();
+
+            // Wait for Auth to be ready
+            await new Promise((resolve) => {
+                const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+                    this.db = firebase.firestore();
+                    resolve(user);
+                    unsubscribe();
+                });
+            });
 
             // 2. Load current coins from Firestore (Sync with server)
             try {
+                // Determine docId based on stdId (assuming stdId is docId, or query?)
+                // Since std_login now saves DOC ID into 'std_id' localStorage, we trust it.
                 const doc = await this.db.collection('std_id').doc(this.stdId).get();
                 if (doc.exists) {
                     const serverCoins = doc.data().coins || 0;
@@ -81,6 +91,9 @@
         async ensureFirebase() {
             if (typeof firebase === 'undefined') {
                 await this.loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
+            }
+            if (typeof firebase.auth === 'undefined') {
+                await this.loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js");
             }
             if (typeof firebase.firestore === 'undefined') {
                 await this.loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js");

@@ -430,9 +430,9 @@
     .lesson-item {
       display: flex;
       flex-direction: row;
-      /* Flex order handles the RTL naturally with direction: rtl */
-      justify-content: space-between;
       align-items: center;
+      gap: 12px;
+      /* Standard spacing between icon and text */
       padding: 0.75rem 1rem;
       background: #ffffff;
       border-radius: 0.75rem;
@@ -467,6 +467,13 @@
       pointer-events: none;
       box-shadow: none;
       border: 1px dashed #dee2e6;
+    }
+
+    .status-badge {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .lesson-item.locked:hover {
@@ -536,7 +543,9 @@
   </header>
 
   <header class="hero">
-    <h1>أهلاً بكم في موقع الاختبارات الالكترونية</h1>
+    <h1 style="margin:2px; padding: 2px;">👋 أهلاً بك </h1>
+    <p style="font-size: 35px;" id="hero-student-info"></p>
+    <p> في موقع الاختبارات الالكترونية </p>
     <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
   </header>
 
@@ -644,6 +653,7 @@
 
   <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
     // Firebase Configuration (Same as others)
@@ -780,10 +790,20 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadDashboardStats();
-      updateDashboardNotificationCard();
+    // Initialize Auth Listener
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log("Auth State: User signed in", user.email);
+        loadDashboardStats();
+        loadAllUnitsProgress();
+        updateDashboardNotificationCard();
+      } else {
+        console.log("Auth State: No user signed in");
+      }
     });
+
+    // document.addEventListener('DOMContentLoaded', ...) removed as it is replaced by Auth listener
+
 
     // Unit Progress Logic
     const CURRICULUM = {
@@ -802,17 +822,17 @@
       },
       "8": {
         "3": [
-          { id: "8-3-1", name: "اصلاح الأعطال", path: "page/8th/3-1/8c.html" },
-          { id: "8-3-2", name: "صيانة الأعطال المادية", path: "page/8th/1-2/8c.html" },
-          { id: "8-3-3", name: "صيانة الأعطال البرمجية", path: "page/8th/3-3/8c.html" },
-          { id: "8-3-4", name: "اصلاح الاعطال باستخدام ادوات نظام التشغيل", path: "page/8th/3-4/8c.html" }
+          { id: "8-3-1", name: "البيانات والمعلومات", path: "page/8th/3-1/8c.html" },
+          { id: "8-3-2", name: "البحث عن المعلومات باستخدام الانترنت", path: "page/8th/1-2/8c.html" },
+          { id: "8-3-3", name: "تحليل البيانات", path: "page/8th/3-3/8c.html" },
+          { id: "8-3-4", name: "النماذج الحسابية وتجميع البيانات", path: "page/8th/3-4/8c.html" }
         ],
         "4": [
-          { id: "8-4-1", name: "مقدمة في سكراتش", path: "page/8th/4-1/8c.html" },
-          { id: "8-4-2", name: "عناصر التصميم", path: "page/8th/4-2/8c.html" },
-          { id: "8-4-3", name: "عناصر البرمجة", path: "page/8th/4-3/8c.html" },
-          { id: "8-4-4", name: "المتغيرات", path: "page/8th/4-4/8c.html" },
-          { id: "8-4-5", name: "لبنات التحكم", path: "page/8th/4-5/8c.html" }
+          { id: "8-4-1", name: "تنظيم الشبكات", path: "page/8th/4-1/8c.html" },
+          { id: "8-4-2", name: "تمدد الشبكة وموثوقيتها", path: "page/8th/4-2/8c.html" },
+          { id: "8-4-3", name: "اساسيات برنامج محاكاة الشبكات ", path: "page/8th/4-3/8c.html" },
+          { id: "8-4-4", name: "استخدام برنامج باك تريسر للشبكات المحلية", path: "page/8th/4-4/8c.html" },
+          { id: "8-4-5", name: "محاكاة انترنت الاشياء باستخدام باك تريسر", path: "page/8th/4-5/8c.html" }
         ]
       },
       "9": {
@@ -834,13 +854,42 @@
     };
 
     async function loadAllUnitsProgress() {
-      const stdId = localStorage.getItem('std_id');
+      let stdEmail = localStorage.getItem('std_email');
       const stdGrade = localStorage.getItem('std_grade');
-      if (!stdId || !CURRICULUM[stdGrade]) return;
+      const stdId = localStorage.getItem('std_id'); // Fallback ID
+
+      // Fallback: If email is missing but ID exists (user didn't re-login), fetch email
+      if (!stdEmail && stdId) {
+        try {
+          const userDoc = await db.collection('std_id').doc(stdId).get();
+          if (userDoc.exists) {
+            stdEmail = userDoc.data().std_email;
+            if (stdEmail) localStorage.setItem('std_email', stdEmail); // Save for future
+          }
+        } catch (e) { console.error("Error fetching email fallback:", e); }
+      }
+
+      console.log("Debug Lessons: stdEmail =", stdEmail, "stdGrade =", stdGrade);
+
+      if (!stdEmail || !CURRICULUM[stdGrade]) {
+        console.warn("Debug Lessons: Missing stdEmail or curriculum for grade", stdGrade);
+        return;
+      }
 
       try {
-        // Fetch user activities
-        const snapshot = await db.collection('std_id').doc(stdId).collection('study_activity').get();
+        // Fetch user document by email
+        const userQuery = await db.collection('std_id').where('std_email', '==', stdEmail).limit(1).get();
+
+        if (userQuery.empty) {
+          console.error("Debug Lessons: No student found with email", stdEmail);
+          return;
+        }
+
+        const userDoc = userQuery.docs[0];
+        const userId = userDoc.id; // Correct Document ID from query
+
+        // Fetch user activities using the correct Document ID
+        const snapshot = await userDoc.ref.collection('study_activity').get();
         const activityMap = {};
         snapshot.forEach(doc => activityMap[doc.id] = doc.data());
 
@@ -849,7 +898,27 @@
         try {
           const visibilityDoc = await db.collection('settings').doc('lesson_visibility').get();
           if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
-        } catch (e) { console.error("Error fetching visibility:", e); }
+        } catch (e) {
+          console.error("Error fetching visibility:", e);
+        }
+
+        // Fetch Exam Results (Score based) for this student
+        let examMap = {};
+        try {
+          const examsSnapshot = await db.collection('examResults')
+            .where('studentEmail', '==', stdEmail)
+            .get();
+          examsSnapshot.forEach(doc => {
+            const d = doc.data();
+            if (d.testName) {
+              const t = d.testName.trim();
+              // Keep best score
+              if (!examMap[t] || d.score > examMap[t].score) {
+                examMap[t] = d;
+              }
+            }
+          });
+        } catch (e) { console.error("Error fetching exams in dashboard:", e); }
 
         let openLessons = 0;
         let completedOpenLessons = 0;
@@ -865,15 +934,34 @@
             container.innerHTML = '';
 
             unitLessons.forEach((lesson) => {
-              const subActivities = ['-prep', '-task', '-mind', '-1'];
+              const subActivities = ['-prep', '-task', 'mind', '-1'];
               let isCurrentComplete = true;
 
               subActivities.forEach(suffix => {
                 const actId = lesson.id + suffix;
-                const data = activityMap[actId];
-                const target = data?.targetTimeSeconds || 30;
-                if (!data || (data.sessionTimeSeconds || 0) < target) {
-                  isCurrentComplete = false;
+
+                // If it is a quiz (ending in -1), check Exam Score first
+                if (suffix === '-1') {
+                  const examData = examMap[actId];
+
+                  if (examData) {
+                    const max = examData.maxScore || 1;
+                    const passing = max / 2;
+                    if (examData.score < passing) {
+                      isCurrentComplete = false;
+                    }
+                  } else {
+                    isCurrentComplete = false;
+                  }
+                } else {
+                  // Standard Time Logic for Prep, Task, Mind
+                  const data = activityMap[actId];
+                  const target = data?.targetTimeSeconds || 30;
+                  const spent = data?.sessionTimeSeconds || 0;
+
+                  if (!data || spent < target) {
+                    isCurrentComplete = false;
+                  }
                 }
               });
 
@@ -915,7 +1003,8 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadAllUnitsProgress);
+    // document.addEventListener('DOMContentLoaded', loadAllUnitsProgress); removed
+
   </script>
 
   <script src="js/coins_manager.js"></script>

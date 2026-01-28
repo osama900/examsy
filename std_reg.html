@@ -1,556 +1,505 @@
 <!DOCTYPE html>
 <html lang="ar">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>تحميل ملف الطلاب</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background-color: #e77f4f;
-        padding: 20px;
-      }
 
-      .upload-container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        width: 100%;
-        max-width: 800px;
-        text-align: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تحميل ملف الطلاب</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #e77f4f;
+      padding: 20px;
+    }
 
-      .upload-container h2 {
-        margin-bottom: 25px;
-        color: #333;
-      }
+    .upload-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+    }
 
-      .file-input-container {
-        margin: 20px 0;
-        padding: 20px;
-        border: 2px dashed #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        cursor: pointer;
-        transition: border-color 0.3s;
-      }
+    .upload-container h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
 
-      .file-input-container:hover {
-        border-color: #4caf50;
-      }
+    .file-input-container {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
 
-      .file-input-container input[type="file"] {
-        display: none;
-      }
+    .file-input-container:hover {
+      border-color: #4caf50;
+    }
 
-      .file-name {
-        margin-top: 10px;
-        font-size: 14px;
-        color: #666;
-      }
+    .file-input-container input[type="file"] {
+      display: none;
+    }
 
-      button {
-        background-color: #4caf50;
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-        margin: 10px 5px;
-      }
+    .file-name {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
 
-      button:hover {
-        background-color: #45a049;
-      }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      margin: 10px 5px;
+    }
 
-      button:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-      }
+    button:hover {
+      background-color: #45a049;
+    }
 
-      .preview-section {
-        margin-top: 20px;
-        display: none;
-      }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
 
-      .preview-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        max-height: 300px;
-        overflow-y: auto;
-        display: block;
-      }
+    .preview-section {
+      margin-top: 20px;
+      display: none;
+    }
 
-      .preview-table th,
-      .preview-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-        font-size: 12px;
-      }
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: block;
+    }
 
-      .preview-table th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-      }
+    .preview-table th,
+    .preview-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+    }
 
-      .preview-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-      }
+    .preview-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
 
-      .status {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 6px;
-        display: none;
-      }
+    .preview-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
 
-      .status.success {
-        background-color: #d4edda;
-        color: #155724;
-        display: block;
-      }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+    }
 
-      .status.error {
-        background-color: #f8d7da;
-        color: #721c24;
-        display: block;
-      }
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
 
-      .status.processing {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        display: block;
-      }
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
 
-      .progress-bar {
-        width: 100%;
-        height: 8px;
-        background-color: #e0e0e0;
-        border-radius: 4px;
-        margin-top: 10px;
-        overflow: hidden;
-      }
+    .status.processing {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      display: block;
+    }
 
-      .progress {
-        height: 100%;
-        background-color: #4caf50;
-        width: 0%;
-        transition: width 0.3s;
-      }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
 
-      .button-group {
-        margin-top: 20px;
-      }
+    .progress {
+      height: 100%;
+      background-color: #4caf50;
+      width: 0%;
+      transition: width 0.3s;
+    }
 
-      .action-buttons {
-        display: none;
-        margin-top: 20px;
-      }
-    </style>
-  </head>
+    .button-group {
+      margin-top: 20px;
+    }
 
-  <body>
-    <div class="upload-container">
-      <h2>تحميل ملف الطلاب إلى Firebase</h2>
+    .action-buttons {
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
 
-      <div class="file-input-container" id="dropZone">
-        <p>انقر لاختيار ملف Excel أو اسحب الملف هنا</p>
-        <input type="file" id="excelFile" accept=".xlsx,.xls" />
-        <div class="file-name" id="fileName">لم يتم اختيار ملف</div>
+<body>
+  <div class="upload-container">
+    <h2>تحميل ملف الطلاب إلى Firebase</h2>
+
+    <div class="file-input-container" id="dropZone">
+      <p>انقر لاختيار ملف Excel أو اسحب الملف هنا</p>
+      <input type="file" id="excelFile" accept=".xlsx,.xls" />
+      <div class="file-name" id="fileName">لم يتم اختيار ملف</div>
+    </div>
+
+    <div class="button-group">
+      <button id="previewBtn" onclick="previewData()" disabled>
+        معاينة البيانات
+      </button>
+    </div>
+
+    <div class="preview-section" id="previewSection">
+      <h3>معاينة البيانات</h3>
+      <div id="recordCount"></div>
+      <div style="max-height: 300px; overflow-y: auto">
+        <table class="preview-table" id="previewTable">
+          <thead id="previewHeader"></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
       </div>
-
-      <div class="button-group">
-        <button id="previewBtn" onclick="previewData()" disabled>
-          معاينة البيانات
+      <div class="action-buttons" id="actionButtons">
+        <button onclick="uploadToFirebase()">تحميل إلى Firebase</button>
+        <button onclick="clearPreview()" style="background-color: #dc3545">
+          إلغاء
         </button>
-      </div>
-
-      <div class="preview-section" id="previewSection">
-        <h3>معاينة البيانات</h3>
-        <div id="recordCount"></div>
-        <div style="max-height: 300px; overflow-y: auto">
-          <table class="preview-table" id="previewTable">
-            <thead id="previewHeader"></thead>
-            <tbody id="previewBody"></tbody>
-          </table>
-        </div>
-        <div class="action-buttons" id="actionButtons">
-          <button onclick="uploadToFirebase()">تحميل إلى Firebase</button>
-          <button onclick="clearPreview()" style="background-color: #dc3545">
-            إلغاء
-          </button>
-        </div>
-      </div>
-
-      <div class="status" id="status"></div>
-      <div class="progress-bar" id="progressBar" style="display: none">
-        <div class="progress" id="progress"></div>
       </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <div class="status" id="status"></div>
+    <div class="progress-bar" id="progressBar" style="display: none">
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
 
-    <!-- ExcelJS for reading Excel files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    <script>
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
-        authDomain: "examsy-21dc3.firebaseapp.com",
-        projectId: "examsy-21dc3",
-        storageBucket: "examsy-21dc3.firebasestorage.app",
-        messagingSenderId: "357464025229",
-        appId: "1:357464025229:web:b920c8290f985f54339ac4",
-        measurementId: "G-CWZ7MR4V26",
-      };
+  <!-- ExcelJS for reading Excel files -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+      authDomain: "examsy-21dc3.firebaseapp.com",
+      projectId: "examsy-21dc3",
+      storageBucket: "examsy-21dc3.firebasestorage.app",
+      messagingSenderId: "357464025229",
+      appId: "1:357464025229:web:b920c8290f985f54339ac4",
+      measurementId: "G-CWZ7MR4V26",
+    };
 
-      // DOM elements
-      const fileInput = document.getElementById("excelFile");
-      const fileName = document.getElementById("fileName");
-      const previewBtn = document.getElementById("previewBtn");
-      const previewSection = document.getElementById("previewSection");
-      const previewHeader = document.getElementById("previewHeader");
-      const previewBody = document.getElementById("previewBody");
-      const recordCount = document.getElementById("recordCount");
-      const actionButtons = document.getElementById("actionButtons");
-      const statusDiv = document.getElementById("status");
-      const progressBar = document.getElementById("progressBar");
-      const progress = document.getElementById("progress");
-      const dropZone = document.getElementById("dropZone");
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-      // Global variable to store parsed data
-      let parsedStudentData = [];
-
-      // File selection handler
-      fileInput.addEventListener("change", function (e) {
-        if (this.files && this.files[0]) {
-          const file = this.files[0];
-          if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
-            fileName.textContent = file.name;
-            previewBtn.disabled = false;
-            showStatus("", "none");
-            clearPreviewSection();
-          } else {
-            fileName.textContent = "ملف غير مدعوم";
-            previewBtn.disabled = true;
-          }
-        }
-      });
-
-      // Drag and drop handlers
-      dropZone.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        this.style.borderColor = "#4caf50";
-      });
-
-      dropZone.addEventListener("dragleave", function () {
-        this.style.borderColor = "#ccc";
-      });
-
-      dropZone.addEventListener("drop", function (e) {
-        e.preventDefault();
-        this.style.borderColor = "#ccc";
-
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-          const file = e.dataTransfer.files[0];
-          if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
-            fileInput.files = e.dataTransfer.files;
-            fileName.textContent = file.name;
-            previewBtn.disabled = false;
-            showStatus("", "none");
-            clearPreviewSection();
-          } else {
-            fileName.textContent = "ملف غير مدعوم";
-            previewBtn.disabled = true;
-          }
-        }
-      });
-
-      dropZone.addEventListener("click", function () {
-        fileInput.click();
-      });
-
-      // Show status message
-      function showStatus(message, type) {
-        statusDiv.textContent = message;
-        statusDiv.className = "status " + type;
+    // Auth Check
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login_teacher.html";
       }
+    });
 
-      // Update progress bar
-      function updateProgress(percentage) {
-        progress.style.width = percentage + "%";
-        if (percentage > 0) {
-          progressBar.style.display = "block";
-        }
-      }
+    // DOM elements
+    const fileInput = document.getElementById("excelFile");
+    const fileName = document.getElementById("fileName");
+    const previewBtn = document.getElementById("previewBtn");
+    const previewSection = document.getElementById("previewSection");
+    const previewHeader = document.getElementById("previewHeader");
+    const previewBody = document.getElementById("previewBody");
+    const recordCount = document.getElementById("recordCount");
+    const actionButtons = document.getElementById("actionButtons");
+    const statusDiv = document.getElementById("status");
+    const progressBar = document.getElementById("progressBar");
+    const progress = document.getElementById("progress");
+    const dropZone = document.getElementById("dropZone");
 
-      // Clear preview section
-      function clearPreviewSection() {
-        previewSection.style.display = "none";
-        actionButtons.style.display = "none";
-        parsedStudentData = [];
-      }
+    // Global variable to store parsed data
+    let parsedStudentData = [];
 
-      // Clear preview and reset
-      function clearPreview() {
-        clearPreviewSection();
-        fileInput.value = "";
-        fileName.textContent = "لم يتم اختيار ملف";
-        previewBtn.disabled = true;
-      }
-
-      // Preview data from Excel file
-      async function previewData() {
-        if (!fileInput.files || !fileInput.files[0]) {
-          showStatus("يرجى اختيار ملف Excel أولاً", "error");
-          return;
-        }
-
-        const file = fileInput.files[0];
-        showStatus("جاري معالجة الملف...", "processing");
-
-        try {
-          // Read Excel file
-          const workbook = new ExcelJS.Workbook();
-          const buffer = await file.arrayBuffer();
-          await workbook.xlsx.load(buffer);
-
-          const worksheet = workbook.getWorksheet(1);
-          if (!worksheet) {
-            throw new Error("لم يتم العثور على ورقة عمل في الملف");
-          }
-
-          showStatus("جارٍ قراءة البيانات...", "processing");
-
-          // Get headers from first row
-          const headers = [];
-          worksheet.getRow(1).eachCell((cell, colNumber) => {
-            headers.push(cell.value?.toString()?.toLowerCase() || "");
-          });
-
-          // Map the actual column names to our required fields
-          const fieldMapping = {
-            "name arabic": "std_name",
-            std_grade: "std_grade",
-            std_class: "std_class",
-            "name english": "std_name_english",
-            "national id": "std_id",
-            email: "std_email",
-            password: "std_password",
-          };
-
-          // Find columns in the Excel file
-          const fieldIndices = {};
-          const fieldNames = {};
-
-          Object.keys(fieldMapping).forEach((originalName) => {
-            const index = headers.findIndex(
-              (header) =>
-                header === originalName.toLowerCase().trim() ||
-                header.includes(originalName.toLowerCase().trim())
-            );
-            if (index !== -1) {
-              fieldIndices[fieldMapping[originalName]] = index + 1;
-              fieldNames[fieldMapping[originalName]] =
-                worksheet
-                  .getRow(1)
-                  .getCell(index + 1)
-                  .value?.toString() || originalName;
-            }
-          });
-
-          // Validate required fields (we need at least std_name, std_grade, std_class, std_id, std_email)
-          const requiredFields = [
-            "std_name",
-            "std_grade",
-            "std_class",
-            "std_id",
-            "std_email",
-          ];
-          const missingFields = requiredFields.filter(
-            (field) => !fieldIndices[field]
-          );
-
-          if (missingFields.length > 0) {
-            throw new Error(
-              `الحقول المطلوبة التالية مفقودة في الملف: ${missingFields.join(
-                ", "
-              )}`
-            );
-          }
-
-          // Process rows (skip header row)
-          parsedStudentData = [];
-          let rowCount = 0;
-
-          worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-            if (rowNumber === 1) return; // Skip header row
-
-            const rowData = {};
-            let hasValidData = false;
-
-            // Map all fields
-            Object.keys(fieldMapping).forEach((originalName) => {
-              const targetField = fieldMapping[originalName];
-              const cellValue = row.getCell(fieldIndices[targetField]).value;
-              const value = cellValue?.toString() || "";
-              rowData[targetField] = value;
-              if (value) hasValidData = true;
-            });
-
-            // Only include rows with valid data (at least std_id and std_email)
-            if (hasValidData && (rowData.std_id || rowData.std_email)) {
-              // Create the student object with required fields for Firebase
-              const studentRecord = {
-                std_name: rowData.std_name || "",
-                std_grade: rowData.std_grade || "",
-                std_class: rowData.std_class || "",
-                std_id: rowData.std_id || "",
-                std_email: rowData.std_email || "",
-                std_password: rowData.std_password || "",
-              };
-
-              parsedStudentData.push(studentRecord);
-              rowCount++;
-            }
-          });
-
-          if (parsedStudentData.length === 0) {
-            throw new Error("لم يتم العثور على بيانات صالحة للمعاينة");
-          }
-
-          // Display preview
-          displayPreview(fieldNames, parsedStudentData);
+    // File selection handler
+    fileInput.addEventListener("change", function (e) {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+          fileName.textContent = file.name;
+          previewBtn.disabled = false;
           showStatus("", "none");
-        } catch (error) {
-          console.error("Error previewing data:", error);
-          showStatus(
-            "حدث خطأ أثناء معاينة البيانات: " + error.message,
-            "error"
-          );
+          clearPreviewSection();
+        } else {
+          fileName.textContent = "ملف غير مدعوم";
+          previewBtn.disabled = true;
         }
       }
+    });
 
-      // Display preview table
-      function displayPreview(fieldNames, data) {
-        // Clear existing content
-        previewHeader.innerHTML = "";
-        previewBody.innerHTML = "";
+    // Drag and drop handlers
+    dropZone.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      this.style.borderColor = "#4caf50";
+    });
 
-        // Create header row
-        const headerRow = document.createElement("tr");
-        const displayFields = [
-          "std_name",
-          "std_grade",
-          "std_class",
-          "std_id",
-          "std_email",
-        ];
-        const displayNames = {
-          std_name: "اسم الطالب (عربي)",
-          std_grade: "الصف",
-          std_class: "الشعبة",
-          std_id: "رقم الطالب",
-          std_email: "البريد الإلكتروني",
+    dropZone.addEventListener("dragleave", function () {
+      this.style.borderColor = "#ccc";
+    });
+
+    dropZone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      this.style.borderColor = "#ccc";
+
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const file = e.dataTransfer.files[0];
+        if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+          fileInput.files = e.dataTransfer.files;
+          fileName.textContent = file.name;
+          previewBtn.disabled = false;
+          showStatus("", "none");
+          clearPreviewSection();
+        } else {
+          fileName.textContent = "ملف غير مدعوم";
+          previewBtn.disabled = true;
+        }
+      }
+    });
+
+    dropZone.addEventListener("click", function () {
+      fileInput.click();
+    });
+
+    // Show status message
+    function showStatus(message, type) {
+      statusDiv.textContent = message;
+      statusDiv.className = "status " + type;
+    }
+
+    // Update progress bar
+    function updateProgress(percentage) {
+      progress.style.width = percentage + "%";
+      if (percentage > 0) {
+        progressBar.style.display = "block";
+      }
+    }
+
+    // Clear preview section
+    function clearPreviewSection() {
+      previewSection.style.display = "none";
+      actionButtons.style.display = "none";
+      parsedStudentData = [];
+    }
+
+    // Clear preview and reset
+    function clearPreview() {
+      clearPreviewSection();
+      fileInput.value = "";
+      fileName.textContent = "لم يتم اختيار ملف";
+      previewBtn.disabled = true;
+    }
+
+    // Preview data from Excel file
+    async function previewData() {
+      if (!fileInput.files || !fileInput.files[0]) {
+        showStatus("يرجى اختيار ملف Excel أولاً", "error");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      showStatus("جاري معالجة الملف...", "processing");
+
+      try {
+        // Read Excel file
+        const workbook = new ExcelJS.Workbook();
+        const buffer = await file.arrayBuffer();
+        await workbook.xlsx.load(buffer);
+
+        const worksheet = workbook.getWorksheet(1);
+        if (!worksheet) {
+          throw new Error("لم يتم العثور على ورقة عمل في الملف");
+        }
+
+        showStatus("جارٍ قراءة البيانات...", "processing");
+
+        // Column Mapping as per User Request:
+        // Col 2: Name
+        // Col 4: Email
+        // Col 6: Grade
+        // Col 7: Section
+        const colIndices = {
+          std_name: 2,
+          std_email: 4,
+          std_grade: 6,
+          std_class: 7
         };
 
-        displayFields.forEach((field) => {
-          const th = document.createElement("th");
-          th.textContent = displayNames[field];
-          headerRow.appendChild(th);
+        // Process rows (skip header row)
+        parsedStudentData = [];
+        let rowCount = 0;
+
+        worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+          if (rowNumber === 1) return; // Skip header row
+
+          const studentRecord = {
+            std_name: row.getCell(colIndices.std_name).value?.toString() || "",
+            std_email: row.getCell(colIndices.std_email).value?.toString() || "",
+            std_grade: row.getCell(colIndices.std_grade).value?.toString() || "",
+            std_class: row.getCell(colIndices.std_class).value?.toString() || "",
+          };
+
+          // Use email as std_id
+          studentRecord.std_id = studentRecord.std_email;
+
+          // Only include rows with valid name and email
+          if (studentRecord.std_name && studentRecord.std_email) {
+            parsedStudentData.push(studentRecord);
+            rowCount++;
+          }
         });
-        previewHeader.appendChild(headerRow);
 
-        // Create data rows (limit to 20 rows for preview)
-        const previewData = data;
-        previewData.forEach((row) => {
-          const tr = document.createElement("tr");
-          displayFields.forEach((field) => {
-            const td = document.createElement("td");
-            td.textContent = row[field] || "-";
-            tr.appendChild(td);
-          });
-          previewBody.appendChild(tr);
-        });
-
-        // Show preview section
-        recordCount.textContent = `عدد السجلات: ${data.length} (معروض ${previewData.length})`;
-        previewSection.style.display = "block";
-        actionButtons.style.display = "block";
-      }
-
-      // Upload data to Firebase
-      async function uploadToFirebase() {
         if (parsedStudentData.length === 0) {
-          showStatus("لا توجد بيانات للتحميل", "error");
-          return;
+          throw new Error("لم يتم العثور على بيانات صالحة (الاسم والإيميل مطلوبان)");
         }
 
-        showStatus("جارٍ تحميل البيانات إلى Firebase...", "processing");
-        updateProgress(0);
+        // Display preview
+        displayPreview(parsedStudentData);
+        showStatus("", "none");
+      } catch (error) {
+        console.error("Error previewing data:", error);
+        showStatus(
+          "حدث خطأ أثناء معاينة البيانات: " + error.message,
+          "error"
+        );
+      }
+    }
 
-        try {
-          const promises = [];
-          const batchSize = 10; // Process in batches to avoid overwhelming
-          let processedCount = 0;
+    // Display preview table
+    function displayPreview(data) {
+      // Clear existing content
+      previewHeader.innerHTML = "";
+      previewBody.innerHTML = "";
 
-          for (let i = 0; i < parsedStudentData.length; i += batchSize) {
-            const batch = parsedStudentData.slice(i, i + batchSize);
-            const batchPromises = batch.map((rowData) => {
-              return db.collection("std_id").doc(rowData.std_id).set(rowData);
-            });
+      // Create header row
+      const headerRow = document.createElement("tr");
+      const displayFields = [
+        "std_name",
+        "std_email",
+        "std_grade",
+        "std_class"
+      ];
+      const displayNames = {
+        std_name: "الاسم",
+        std_email: "الإيميل",
+        std_grade: "الصف",
+        std_class: "الشعبة"
+      };
 
-            await Promise.all(batchPromises);
-            processedCount += batch.length;
+      displayFields.forEach((field) => {
+        const th = document.createElement("th");
+        th.textContent = displayNames[field];
+        headerRow.appendChild(th);
+      });
+      previewHeader.appendChild(headerRow);
 
-            // Update progress
-            const progressPercentage = Math.min(
-              100,
-              Math.round((processedCount / parsedStudentData.length) * 100)
-            );
-            updateProgress(progressPercentage);
-            showStatus(
-              `تم تحميل ${processedCount} من ${parsedStudentData.length} سجل...`,
-              "processing"
-            );
-          }
+      // Create data rows
+      data.forEach((row) => {
+        const tr = document.createElement("tr");
+        displayFields.forEach((field) => {
+          const td = document.createElement("td");
+          td.textContent = row[field] || "-";
+          tr.appendChild(td);
+        });
+        previewBody.appendChild(tr);
+      });
 
-          updateProgress(100);
-          showStatus(
-            `تم تحميل ${parsedStudentData.length} سجل طالب بنجاح!`,
-            "success"
+      // Show preview section
+      recordCount.textContent = `عدد السجلات: ${data.length}`;
+      previewSection.style.display = "block";
+      actionButtons.style.display = "block";
+    }
+
+    // Upload data to Firebase
+    async function uploadToFirebase() {
+      if (parsedStudentData.length === 0) {
+        showStatus("لا توجد بيانات للتحميل", "error");
+        return;
+      }
+
+      showStatus("جارٍ تحميل البيانات إلى Firebase...", "processing");
+      updateProgress(0);
+
+      try {
+        const batchSize = 10;
+        let processedCount = 0;
+
+        for (let i = 0; i < parsedStudentData.length; i += batchSize) {
+          const batch = parsedStudentData.slice(i, i + batchSize);
+          const batchPromises = batch.map((rowData) => {
+            // Using email as the document ID
+            return db.collection("std_id").doc(rowData.std_email).set(rowData);
+          });
+
+          await Promise.all(batchPromises);
+          processedCount += batch.length;
+
+          const progressPercentage = Math.min(
+            100,
+            Math.round((processedCount / parsedStudentData.length) * 100)
           );
+          updateProgress(progressPercentage);
+          showStatus(
+            `تم تحميل ${processedCount} من ${parsedStudentData.length} سجل...`,
+            "processing"
+          );
+        }
 
-          // Reset after successful upload
-          setTimeout(() => {
-            clearPreview();
-            updateProgress(0);
-            progressBar.style.display = "none";
-          }, 3000);
-        } catch (error) {
-          console.error("Error uploading to Firebase:", error);
-          showStatus("حدث خطأ أثناء التحميل: " + error.message, "error");
+        updateProgress(100);
+        showStatus(
+          `تم تحميل ${parsedStudentData.length} سجل طالب بنجاح!`,
+          "success"
+        );
+
+        // Reset after successful upload
+        setTimeout(() => {
+          clearPreview();
           updateProgress(0);
           progressBar.style.display = "none";
-        }
+        }, 3000);
+      } catch (error) {
+        console.error("Error uploading to Firebase:", error);
+        showStatus("حدث خطأ أثناء التحميل: " + error.message, "error");
+        updateProgress(0);
+        progressBar.style.display = "none";
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
+
 </html>

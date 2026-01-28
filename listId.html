@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>إدارة بيانات الطلاب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --danger-color: #e74c3c;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Actions Bar */
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+            outline: none;
+        }
+
+        select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 15px;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #f1f4f9;
+        }
+
+        .delete-single {
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .delete-single:hover {
+            transform: scale(1.2);
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .stats-card {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div>جاري تحميل البيانات...</div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <button class="btn btn-secondary" onclick="window.location.href='teacher_dashboard.html'"
+            style="margin-bottom: 20px;">
+            ↩ العودة للوحة التحكم
+        </button>
+
+        <h1>💎 إدارة بيانات الطلاب</h1>
+
+        <div class="stats-card">
+            <div class="stat-item">
+                <div class="stat-label">إجمالي الطلاب</div>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرقم التعريفي..."
+                    oninput="handleFilter()">
+            </div>
+
+            <select id="gradeFilter" onchange="handleFilter()">
+                <option value="">كل الصفوف</option>
+            </select>
+
+            <select id="classFilter" onchange="handleFilter()">
+                <option value="">كل الشعب</option>
+            </select>
+
+            <button class="btn btn-danger" onclick="deleteSelected()" id="bulkDeleteBtn" disabled>
+                🗑 حذف المحدد (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                        <th>الرقم التعريفي</th>
+                        <th>اسم الطالب</th>
+                        <th>الصف</th>
+                        <th>الشعبة</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsBody">
+                    <!-- Data rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResults" style="display: none; text-align: center; padding: 40px; color: #777;">
+            لا توجد نتائج مطابقة لبحثك
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let allStudents = [];
+        let filteredStudents = [];
+
+        // Auth & Permission Check
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "login_teacher.html";
+                return;
+            }
+
+            // Quick check if teacher
+            db.collection('teacehr_log').doc(user.email).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        alert("غير مصرح لك بدخول هذه الصفحة");
+                        firebase.auth().signOut().then(() => { window.location.href = "index.html"; });
+                        return;
+                    }
+                    initPage();
+                })
+                .catch(err => {
+                    console.error("Auth error:", err);
+                    window.location.href = "index.html";
+                });
+        });
+
+        async function initPage() {
+            try {
+                const snapshot = await db.collection('std_id').get();
+                allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                populateFilterOptions();
+                filteredStudents = [...allStudents];
+                renderTable();
+
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('totalCount').textContent = allStudents.length;
+            } catch (error) {
+                console.error("Error fetching students:", error);
+                alert("حدث خطأ أثناء تحميل البيانات");
+            }
+        }
+
+        function populateFilterOptions() {
+            const grades = [...new Set(allStudents.map(s => s.std_grade).filter(Boolean))].sort();
+            const classes = [...new Set(allStudents.map(s => s.std_class).filter(Boolean))].sort();
+
+            const gSelect = document.getElementById('gradeFilter');
+            const cSelect = document.getElementById('classFilter');
+
+            grades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                gSelect.appendChild(opt);
+            });
+
+            classes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                cSelect.appendChild(opt);
+            });
+        }
+
+        function handleFilter() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const grade = document.getElementById('gradeFilter').value;
+            const classVal = document.getElementById('classFilter').value;
+
+            filteredStudents = allStudents.filter(s => {
+                const matchesSearch = (s.std_name || "").toLowerCase().includes(searchTerm) ||
+                    (s.std_id || "").toLowerCase().includes(searchTerm);
+                const matchesGrade = grade === "" || s.std_grade === grade;
+                const matchesClass = classVal === "" || s.std_class === classVal;
+
+                return matchesSearch && matchesGrade && matchesClass;
+            });
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const body = document.getElementById('studentsBody');
+            const noRes = document.getElementById('noResults');
+            body.innerHTML = "";
+
+            if (filteredStudents.length === 0) {
+                noRes.style.display = 'block';
+            } else {
+                noRes.style.display = 'none';
+                filteredStudents.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+            <td><input type="checkbox" class="std-checkbox" data-id="${s.id}" onclick="updateSelectedCount()"></td>
+            <td>${s.std_id || '-'}</td>
+            <td>${s.std_name || '-'}</td>
+            <td>${s.std_grade || '-'}</td>
+            <td>${s.std_class || '-'}</td>
+            <td>${s.std_email || '-'}</td>
+            <td><span class="delete-single" onclick="deleteStudent('${s.id}', '${s.std_name}')">🗑</span></td>
+          `;
+                    body.appendChild(tr);
+                });
+            }
+            updateSelectedCount();
+        }
+
+        function toggleSelectAll(master) {
+            document.querySelectorAll('.std-checkbox').forEach(cb => {
+                cb.checked = master.checked;
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('.std-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = selected;
+            document.getElementById('bulkDeleteBtn').disabled = selected === 0;
+        }
+
+        async function deleteStudent(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف الطالب: ${name}؟`)) return;
+
+            try {
+                await db.collection('std_id').doc(id).delete();
+                allStudents = allStudents.filter(s => s.id !== id);
+                handleFilter();
+                document.getElementById('totalCount').textContent = allStudents.length;
+            } catch (error) {
+                alert("خطأ أثناء الحذف: " + error.message);
+            }
+        }
+
+        async function deleteSelected() {
+            const selectedCheckboxes = document.querySelectorAll('.std-checkbox:checked');
+            const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
+
+            if (!confirm(`هل أنت متأكد من حذف ${idsToDelete.length} طلاب؟`)) return;
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const batch = db.batch();
+                idsToDelete.forEach(id => {
+                    batch.delete(db.collection('std_id').doc(id));
+                });
+                await batch.commit();
+
+                allStudents = allStudents.filter(s => !idsToDelete.includes(s.id));
+                handleFilter();
+                document.getElementById('totalCount').textContent = allStudents.length;
+                document.getElementById('selectAll').checked = false;
+            } catch (error) {
+                alert("خطأ أثناء الحذف الجماعي: " + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -3,6 +3,16 @@ document.addEventListener('DOMContentLoaded', function () {
     checkAndDisplayProfile();
 });
 
+function escapeHTML(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function checkAuthentication() {
     // Current Page Name
     const path = window.location.pathname;
@@ -88,6 +98,15 @@ function checkAndDisplayProfile() {
             classInfo = `${stdGrade}${stdClass}`;
         }
 
+        // Display in Hero Section if element exists
+        const heroStudentInfo = document.getElementById('hero-student-info');
+        if (heroStudentInfo) {
+            let infoArray = [stdName];
+            if (stdGrade) infoArray.push(stdGrade);
+            if (stdClass) infoArray.push(stdClass);
+            heroStudentInfo.textContent = infoArray.join(' ');
+        }
+
         // Create HTML Structure
         const profileHTML = `
             <div class="user-profile-controls" style="display:flex; align-items:center;">
@@ -131,10 +150,10 @@ function checkAndDisplayProfile() {
                 <div class="profile-wrapper">
                     <div class="user-profile" id="userProfileTrigger">
                         <div class="user-info-col">
-                            <span class="user-name">${displayName}</span>
-                            ${classInfo ? `<span class="user-class">${classInfo}</span>` : ''}
+                            <span class="user-name">${escapeHTML(displayName)}</span>
+                            ${classInfo ? `<span class="user-class">${escapeHTML(classInfo)}</span>` : ''}
                         </div>
-                        <div class="user-initials-badge">${initials}</div>
+                        <div class="user-initials-badge">${escapeHTML(initials)}</div>
                     </div>
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-item" id="logoutBtn">
@@ -292,10 +311,10 @@ function checkAndDisplayProfile() {
 
                 item.innerHTML = `
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="font-size:13px; ${titleStyle}">${n.title}</span>
-                        <span style="font-size:10px; color:#999;">${date}</span>
+                        <span style="font-size:13px; ${titleStyle}">${escapeHTML(n.title)}</span>
+                        <span style="font-size:10px; color:#999;">${escapeHTML(date)}</span>
                     </div>
-                    <div style="font-size:12px; color:#666; line-height:1.4;">${n.message || n.body}</div>
+                    <div style="font-size:12px; color:#666; line-height:1.4;">${escapeHTML(n.message || n.body)}</div>
                 `;
 
                 notifList.appendChild(item);
@@ -328,6 +347,10 @@ function checkAndDisplayProfile() {
             }).catch(e => console.error(e));
         }
 
-        if (typeof db !== 'undefined') loadAndRenderNotifications();
+        if (typeof db !== 'undefined') {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) loadAndRenderNotifications();
+            });
+        }
     }
 }

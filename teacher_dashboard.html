@@ -226,13 +226,51 @@
       cursor: not-allowed;
     }
 
-    button {
-      margin: 5px;
+    /* Security: Hide content until authorized */
+    .container,
+    .results-table {
+      display: none;
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 20px;
+      color: #3498db;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
+  <div id="loadingOverlay">
+    <div style="margin-bottom: 20px;">جاري التحقق من الصلاحيات...</div>
+    <div
+      style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;">
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
   <div class="container">
     <h1>لوحة تحكم المعلم</h1>
     <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
@@ -243,18 +281,22 @@
     <button class="download-btn" style="background: #9b59b6;" onclick="window.location.href='lesson_control.html'">إدارة
       ظهور الدروس</button>
     <button class="download-btn" onclick="exportData()">تحميل البيانات Excel</button>
+    <button class="download-btn" style="background: #2980b9;" onclick="window.location.href='listId.html'">👥 إدارة
+      الطلاب</button>
+    <button class="download-btn" style="background: #6366f1;" onclick="window.location.href='std_auth_reg.html'">🔑
+      تسجيل دخول الطلاب</button>
     <button class="download-btn" style="background: #8e44ad;" onclick="window.location.href='send_notification.html'">📢
       إرسال
       إشعارات</button>
     <div class="filter-section">
-      <select id="testNameFilter" onchange="filterResults()">
-        <option value="">كل الاختبارات</option>
+      <select id="studentClassFilter" onchange="updateClassOptions(); filterResults()">
+        <option value="">كل الصفوف</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
       </select>
       <select id="classFilter" onchange="filterResults()">
         <option value="">كل الشعب</option>
-      </select>
-      <select id="studentClassFilter" onchange="filterResults()">
-        <option value="">كل الصفوف</option>
       </select>
       <button class="search-btn" onclick="fetchExamResults()">بحث 🔍</button>
     </div>
@@ -311,9 +353,32 @@
 
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
+      function updateClassOptions() {
+        const grade = document.getElementById("studentClassFilter").value;
+        const classFilter = document.getElementById("classFilter");
+        classFilter.innerHTML = '<option value="">كل الشعب</option>';
+
+        let options = [];
+        if (grade === "7") {
+          options = ["أ", "ب"];
+        } else if (grade === "8") {
+          options = ["أ", "ب", "ج", "د", "هـ", "و"];
+        } else if (grade === "9") {
+          options = ["أ", "ب", "ج", "د"];
+        }
+
+        options.forEach((opt) => {
+          let o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          classFilter.appendChild(o);
+        });
+      }
+
       const firebaseConfig = {
         apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
         authDomain: "examsy-21dc3.firebaseapp.com",
@@ -327,6 +392,49 @@
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
+      // Auth & Role Check
+      firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Verify teacher role in database
+        db.collection('teacehr_log').doc(user.email).get()
+          .then(doc => {
+            if (!doc.exists) {
+              // Try query fallback for legacy
+              return db.collection('teacehr_log').where('email', '==', user.email).get();
+            }
+            return { exists: true, fromDoc: true };
+          })
+          .then(result => {
+            const isAuthorized = result.fromDoc || (result && !result.empty);
+            console.log("Authorization result:", isAuthorized);
+
+            if (!isAuthorized) {
+              console.warn("Unauthorized access attempt by:", user.email);
+              alert("غير مصرح لك بدخول هذه الصفحة. سيتم تسجيل خروجك.");
+              firebase.auth().signOut().then(() => {
+                window.location.href = "index.html";
+              });
+            } else {
+              console.log("Teacher authorized:", user.email);
+              // Authorized! Show content
+              document.getElementById('loadingOverlay').style.display = 'none';
+              document.querySelector('.container').style.display = 'block';
+              document.querySelector('.results-table').style.display = 'table';
+            }
+          })
+          .catch(err => {
+            console.error("Auth verify error:", err);
+            // If check fails, stay safe and logout
+            firebase.auth().signOut().then(() => {
+              window.location.href = "index.html";
+            });
+          });
+      });
+
       let allResults = [];
       let testNames = new Set();
       let classes = new Set();
@@ -337,81 +445,78 @@
       let allStudentsList = []; // Kept if needed for other features, or remove if unused. Let's keep minimal cleanup.
 
       function fetchExamResults() {
-        db.collection("examResults")
-          .orderBy("timestamp", "desc")
+        const selectedGrade = document.getElementById("studentClassFilter").value;
+        const selectedClass = document.getElementById("classFilter").value;
+
+        let query = db.collection("examResults");
+
+        if (selectedClass) {
+          query = query.where("class", "==", selectedClass);
+        }
+
+        query.orderBy("timestamp", "desc")
           .get()
           .then((querySnapshot) => {
             allResults = [];
-            testNames.clear();
-            classes.clear();
-            studentClasses.clear();
 
             querySnapshot.forEach((doc) => {
               const data = doc.data();
               data.id = doc.id;
-              data.studentClass = data.testName
-                ? data.testName.split("-")[0]
-                : "غير معروف";
-              allResults.push(data);
 
-              if (data.testName) testNames.add(data.testName);
-              if (data.class) classes.add(data.class);
-              studentClasses.add(data.studentClass);
+              // Derive studentClass (Grade) from testName
+              if (data.testName) {
+                data.studentClass = data.testName.split("-")[0];
+              } else {
+                data.studentClass = "غير معروف";
+              }
+
+              // Apply Grade filter client-side since it is not a database field
+              if (!selectedGrade || data.studentClass === selectedGrade) {
+                allResults.push(data);
+              }
             });
 
-            populateFilters();
             filteredResults = allResults;
             displayResults(filteredResults);
           })
           .catch((error) => {
             console.error("Error fetching:", error);
+            if (error.code === 'permission-denied') {
+              alert("خطأ في الصلاحيات! يبدو أن حسابك يحتاج إلى تحديث أمني.");
+            } else {
+              alert("حدث خطأ أثناء جلب البيانات:\n" + error.message);
+            }
           });
       }
 
       function populateFilters() {
-        const testNameFilter = document.getElementById("testNameFilter");
-        const classFilter = document.getElementById("classFilter");
-        const studentClassFilter =
-          document.getElementById("studentClassFilter");
-
-        testNameFilter.innerHTML = '<option value="">كل الاختبارات</option>';
-        classFilter.innerHTML = '<option value="">كل الشعب</option>';
-        studentClassFilter.innerHTML = '<option value="">كل الصفوف</option>';
-
-        testNames.forEach((t) => {
-          let o = document.createElement("option");
-          o.value = t;
-          o.textContent = t;
-          testNameFilter.appendChild(o);
-        });
-        classes.forEach((c) => {
-          let o = document.createElement("option");
-          o.value = c;
-          o.textContent = c;
-          classFilter.appendChild(o);
-        });
-        studentClasses.forEach((sc) => {
-          let o = document.createElement("option");
-          o.value = sc;
-          o.textContent = sc;
-          studentClassFilter.appendChild(o);
-        });
+        // This function is now less critical since we have static options and server-side filtering
+        // but it can still be used to populate unique classes found in results if needed.
+        // For now, we'll keep the static behavior defined in updateClassOptions.
       }
 
       function filterResults() {
-        const t = document.getElementById("testNameFilter").value;
         const c = document.getElementById("classFilter").value;
         const sc = document.getElementById("studentClassFilter").value;
 
         filteredResults = allResults.filter((r) => {
           return (
-            (t ? r.testName === t : true) &&
             (c ? r.class === c : true) &&
             (sc ? r.studentClass === sc : true)
           );
         });
 
         displayResults(filteredResults);
+      }
+
+      function escapeHTML(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
       function displayResults(results) {
@@ -428,18 +533,16 @@
         results.forEach((r) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td><input type="checkbox" class="rowCheckbox" data-id="${r.id
-            }"></td>
-             <td>${r.testName || ""}</td>
-              <td>${r.name || ""}</td>
-             <td>${r.studentClass || ""}</td>
-              <td>${r.class || ""}</td>
-            <td>${r.score || ""}</td>
-            <td>${r.maxScore || ""}</td>
-            <td>${r.date || ""}</td>
-            <td>${r.time || ""}</td>
-            <td><button class="delete-btn" onclick="deleteResult('${r.id
-            }')">🗑</button></td>
+            <td><input type="checkbox" class="rowCheckbox" data-id="${escapeHTML(r.id)}"></td>
+             <td>${escapeHTML(r.testName)}</td>
+              <td>${escapeHTML(r.name)}</td>
+             <td>${escapeHTML(r.studentClass)}</td>
+              <td>${escapeHTML(r.class)}</td>
+            <td>${escapeHTML(r.score)}</td>
+            <td>${escapeHTML(r.maxScore)}</td>
+            <td>${escapeHTML(r.date)}</td>
+            <td>${escapeHTML(r.time)}</td>
+            <td><button class="delete-btn" onclick="deleteResult('${escapeHTML(r.id)}')">🗑</button></td>
         `;
           // عند النقر على الصف، حدد أو ألغ تحديد الـ checkbox
           row.addEventListener("click", function (e) {
@@ -517,7 +620,11 @@
       }
 
       function logout() {
-        window.location.href = "index.html";
+        firebase.auth().signOut().then(() => {
+          window.location.href = "index.html";
+        }).catch((error) => {
+          console.error("Logout error:", error);
+        });
       }
 
       function goToStdReg() {

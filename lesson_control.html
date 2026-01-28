@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة عروض الدروس - Examsy</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
         :root {
@@ -25,8 +26,26 @@
         }
 
         .container {
+            display: none;
             max-width: 900px;
             margin: 0 auto;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: bold;
         }
 
         .header {
@@ -60,7 +79,7 @@
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 44px 6px rgba(0, 0, 0, 0.05);
         }
 
         .grade-title {
@@ -165,6 +184,8 @@
 
 <body>
 
+    <div id="loadingOverlay">جاري التحقق من الصلاحيات...</div>
+
     <div class="container">
         <div class="header">
             <h1>إدارة ظهور الدروس للطلاب</h1>
@@ -190,6 +211,45 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // Auth & Role Check
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Verify teacher role in database
+            db.collection('teacehr_log').doc(user.email).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        return db.collection('teacehr_log').where('email', '==', user.email).get();
+                    }
+                    return { exists: true, fromDoc: true };
+                })
+                .then(result => {
+                    const isAuthorized = result.fromDoc || (result && !result.empty);
+                    if (!isAuthorized) {
+                        alert("غير مصرح لك بدخول هذه الصفحة. سيتم تسجيل خروجك.");
+                        firebase.auth().signOut().then(() => {
+                            window.location.href = "index.html";
+                        });
+                    } else {
+                        // Authorized! Show content
+                        const overlay = document.getElementById('loadingOverlay');
+                        if (overlay) overlay.style.display = 'none';
+
+                        document.querySelector('.container').style.display = 'block';
+                        loadStates(); // Initialize load after authorized
+                    }
+                })
+                .catch(err => {
+                    console.error("Auth verify error:", err);
+                    firebase.auth().signOut().then(() => {
+                        window.location.href = "index.html";
+                    });
+                });
+        });
+
         const CURRICULUM = {
             "7": {
                 "3": [
@@ -206,17 +266,17 @@
             },
             "8": {
                 "3": [
-                    { id: "8-3-1", name: "اصلاح الأعطال" },
-                    { id: "8-3-2", name: "صيانة الأعطال المادية" },
-                    { id: "8-3-3", name: "صيانة الأعطال البرمجية" },
-                    { id: "8-3-4", name: "اصلاح الاعطال باستخدام ادوات نظام التشغيل" }
+                    { id: "8-3-1", name: "البيانات والمعلومات" },
+                    { id: "8-3-2", name: "البحث عن المعلومات باستخدام الانترنت" },
+                    { id: "8-3-3", name: "  تحليل البيانات" },
+                    { id: "8-3-4", name: "النماذج الحسابية وتجميع البيانات" }
                 ],
                 "4": [
-                    { id: "8-4-1", name: "مقدمة في برمجية سكراتش" },
-                    { id: "8-4-2", name: "عناصر التصميم في سكراتش" },
-                    { id: "8-4-3", name: "عناصر البرمجة في سكراتش" },
-                    { id: "8-4-4", name: "المتغيرات في سكراتش" },
-                    { id: "8-4-5", name: "لبنات التحكم في سكراتش" }
+                    { id: "8-4-1", name: "تنظيم الشبكات" },
+                    { id: "8-4-2", name: "تمدد الشبكات وموثوقيتها" },
+                    { id: "8-4-3", name: "اساسيات محاكاة برنامج باك تريسر" },
+                    { id: "8-4-4", name: "استخدام برنامج باك تريسر للشبكات المحلية" },
+                    { id: "8-4-5", name: "محاكاة انترنت الاشياء باستخدام باك تريسر" }
                 ]
             },
             "9": {
@@ -349,61 +409,25 @@
         }
 
         async function saveChanges() {
-            // Show Modal
-            document.getElementById('authModal').style.display = 'flex';
-        }
-
-        async function verifyAndSave() {
-            const usernameInput = document.getElementById('modalUser').value;
-            const passwordInput = document.getElementById('modalPass').value;
-            const modalError = document.getElementById('modalError');
-            const confirmBtn = document.getElementById('confirmBtn');
-
-            if (!usernameInput || !passwordInput) {
-                modalError.innerText = 'يرجى إدخال اسم المستخدم وكلمة المرور';
-                return;
+            const saveBtn = document.querySelector('.save-bar');
+            if (saveBtn) {
+                saveBtn.innerText = 'جاري الحفظ...';
+                saveBtn.disabled = true;
             }
 
-            confirmBtn.disabled = true;
-            confirmBtn.innerText = 'جاري التحقق...';
-            modalError.innerText = '';
-
             try {
-                // Verify Credentials
-                const snapshot = await db.collection('teacehr_log')
-                    .where('username', '==', usernameInput)
-                    .where('password', '==', passwordInput)
-                    .get();
-
-                if (snapshot.empty) {
-                    throw new Error('بيانات الدخول غير صحيحة');
-                }
-
-                const teacherDoc = snapshot.docs[0];
-                const teacherName = teacherDoc.data().username; // Or name field if available
-
-                // Proceed to Save
-                const saveBtn = document.querySelector('.save-bar');
-                if (saveBtn) {
-                    saveBtn.innerText = 'جاري الحفظ...';
-                    saveBtn.disabled = true;
-                }
-
                 // 1. Save Visibility
                 await db.collection('settings').doc('lesson_visibility').set(currentStates, { merge: true });
 
                 // 2. Save Timers
-                // Determine if any timer changed? For now, simpler to just overwrite.
-                // We add a `lastModified` timestamp to the timers doc itself or separate log
                 const timersInfo = {
                     ...currentTimers,
                     lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-                    modifiedBy: teacherName
+                    modifiedBy: firebase.auth().currentUser ? firebase.auth().currentUser.email : 'Unknown'
                 };
                 await db.collection('settings').doc('lesson_timers').set(timersInfo, { merge: true });
 
-                alert('تم التحقق وحفظ التعديلات بنجاح! ✅');
-                closeModal();
+                alert('تم حفظ التعديلات بنجاح! ✅');
 
                 if (saveBtn) {
                     saveBtn.innerText = 'حفظ التعديلات';
@@ -412,105 +436,16 @@
 
             } catch (e) {
                 console.error(e);
-                modalError.innerText = e.message || 'حدث خطأ أثناء الحفظ';
-                confirmBtn.disabled = false;
-                confirmBtn.innerText = 'تأكيد وحفظ';
+                alert('حدث خطأ أثناء الحفظ');
+                if (saveBtn) {
+                    saveBtn.innerText = 'حفظ التعديلات';
+                    saveBtn.disabled = false;
+                }
             }
         }
 
-        function closeModal() {
-            document.getElementById('authModal').style.display = 'none';
-            document.getElementById('modalUser').value = '';
-            document.getElementById('modalPass').value = '';
-            document.getElementById('modalError').innerText = '';
-            document.getElementById('confirmBtn').disabled = false;
-            document.getElementById('confirmBtn').innerText = 'تأكيد وحفظ';
-        }
-
-        loadStates();
+        // loadStates(); // Removed, handled in onAuthStateChanged
     </script>
-
-    <!-- Auth Modal -->
-    <div id="authModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3>🔐 تأكيد هوية المعلم</h3>
-            <p>يرجى إدخال بيانات الدخول لحفظ التعديلات</p>
-
-            <input type="text" id="modalUser" class="modal-input" placeholder="اسم المستخدم">
-            <input type="password" id="modalPass" class="modal-input" placeholder="كلمة المرور">
-
-            <div id="modalError" style="color: red; margin-bottom: 10px; font-size: 0.9rem;"></div>
-
-            <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeModal()">إلغاء</button>
-                <button id="confirmBtn" class="modal-btn confirm" onclick="verifyAndSave()">تأكيد وحفظ</button>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-content h3 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .modal-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .modal-btn.confirm {
-            background: #137fec;
-            color: white;
-        }
-
-        .modal-btn.cancel {
-            background: #e74c3c;
-            color: white;
-        }
-    </style>
-
 </body>
 
 </html>

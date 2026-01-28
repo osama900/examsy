@@ -46,6 +46,11 @@
             background-color: #45a049;
         }
 
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
         .error {
             color: red;
             margin-top: 10px;
@@ -56,13 +61,14 @@
 <body>
     <div class="login-container">
         <h2>تسجيل دخول المعلمين</h2>
-        <input type="text" id="username" placeholder="اسم المستخدم" required>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required oninput="validateEmail()">
         <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button onclick="teacherLogin()">تسجيل الدخول</button>
+        <button id="loginBtn" onclick="teacherLogin()" disabled>تسجيل الدخول</button>
         <div id="error" class="error"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
         const firebaseConfig = {
@@ -78,24 +84,49 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        function validateEmail() {
+            const email = document.getElementById('email').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            loginBtn.disabled = !emailRegex.test(email);
+        }
+
         function teacherLogin() {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('error');
 
-            db.collection('teacehr_log')
-                .where('username', '==', username)
-                .where('password', '==', password)
-                .get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
+            if (!email || !password) {
+                errorDiv.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Check if teacher exists in teacehr_log using Document ID (Email)
+                    return db.collection('teacehr_log').doc(email).get();
+                })
+                .then((doc) => {
+                    if (doc.exists) {
                         window.location.href = 'teacher_dashboard.html';
                     } else {
-                        errorDiv.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+                        // Retry with query just in case (Legacy support)
+                        return db.collection('teacehr_log').where('email', '==', email).get()
+                            .then(snapshot => {
+                                if (!snapshot.empty) {
+                                    window.location.href = 'teacher_dashboard.html';
+                                } else {
+                                    throw { code: 'not-authorized-teacher' };
+                                }
+                            });
                     }
                 })
                 .catch((error) => {
-                    errorDiv.textContent = 'حدث خطأ: ' + error.message;
+                    console.error("Login Error:", error);
+                    firebase.auth().signOut();
+                    let msg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                    if (error.code === 'not-authorized-teacher') msg = 'هذا الحساب ليس حساب معلم مسجل';
+                    errorDiv.textContent = msg + ` (${error.code || 'N/A'})`;
                 });
         }
     </script>
