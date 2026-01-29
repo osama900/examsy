@@ -79,6 +79,7 @@ async function fetchQuestionsFromGoogleSheet() {
           .sort(() => Math.random() - 0.5);
         const correctAnswer = columns[6].trim();
         const score = parseFloat(columns[7].trim() || 1);
+        const type = parseInt(columns[9]?.trim() || 1);
 
         // قراءة الوقت: فقط إذا كان رقمًا موجبًا، وإلا 0
         let timeInMinutes = 0;
@@ -88,7 +89,7 @@ async function fetchQuestionsFromGoogleSheet() {
           if (parsed > 0) timeInMinutes = parsed;
         }
 
-        return { question, options, correctAnswer, score, timeInMinutes };
+        return { question, options, correctAnswer, score, timeInMinutes, type };
       })
       .sort(() => Math.random() - 0.5);
 
@@ -96,6 +97,7 @@ async function fetchQuestionsFromGoogleSheet() {
       question: q.question,
       options: q.options,
       score: q.score,
+      type: q.type
     }));
     encryptedCorrectAnswers = allData.map((q) => encryptData(q.correctAnswer));
 
@@ -203,31 +205,17 @@ function loadQuestion() {
 
   questionContainer.innerHTML = `
         <div class="question">
-            <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${question.question
-    }</h3>
-            ${question.options
-      .map(
-        (option, index) => `
-                <div class="option ${selectedAnswer === option ? "selected" : ""
-          }" onclick="selectAnswer('${option.replace(
-            /'/g,
-            "\\'"
-          )}', ${currentQuestionIndex})">
-                    <span class="option-label">${String.fromCharCode(65 + index)}</span>
-                    <span class="option-text">${option}</span>
-                </div>
-            `
-      )
-      .join("")}
+            <h3>سؤال ${currentQuestionIndex + 1} من ${questions.length}: ${question.question}</h3>
+            
+            ${question.type === 2 ? renderDragDrop(question, currentQuestionIndex) : renderMultipleChoice(question, currentQuestionIndex, selectedAnswer)}
+            
         </div>
         <div class="navigation">
             <div>
-                <button onclick="previousQuestion()" ${currentQuestionIndex === 0 ? "disabled" : ""
-    }>السابق</button>
+                <button onclick="previousQuestion()" ${currentQuestionIndex === 0 ? "disabled" : ""}>السابق</button>
             </div>
             <div>
-                <span>سؤال ${currentQuestionIndex + 1} من ${questions.length
-    }</span>
+                <span>سؤال ${currentQuestionIndex + 1} من ${questions.length}</span>
             </div>
             <div>
                 ${currentQuestionIndex < questions.length - 1
@@ -240,9 +228,7 @@ function loadQuestion() {
             ${questions
       .map(
         (_, index) => `
-                <div class="indicator ${userAnswers[index] ? "answered" : "unanswered"
-          } ${index === currentQuestionIndex ? "current" : ""
-          }" onclick="goToQuestion(${index})">
+                <div class="indicator ${userAnswers[index] && (Array.isArray(userAnswers[index]) ? userAnswers[index].length > 0 : true) ? "answered" : "unanswered"} ${index === currentQuestionIndex ? "current" : ""}" onclick="goToQuestion(${index})">
                     ${index + 1}
                 </div>
             `
@@ -250,6 +236,114 @@ function loadQuestion() {
       .join("")}
         </div>
     `;
+}
+
+function renderMultipleChoice(question, qIndex, selectedAnswer) {
+  return question.options
+    .map(
+      (option, index) => `
+                <div class="option ${selectedAnswer === option ? "selected" : ""}" onclick="selectAnswer('${option.replace(/'/g, "\\'")}', ${qIndex})">
+                    <span class="option-label">${String.fromCharCode(65 + index)}</span>
+                    <span class="option-text">${option}</span>
+                </div>
+            `
+    )
+    .join("");
+}
+
+function renderDragDrop(question, qIndex) {
+  const currentAnswer = userAnswers[qIndex] || [];
+
+  // Split each option into words and flatten the list to create individual word chips
+  // Shuffle all words to randomize their appearance in the pool
+  const allWordOptions = question.options
+    .flatMap(option => option.split(/\s+/).filter(word => word.length > 0))
+    .sort(() => Math.random() - 0.5);
+
+  // The pool should only contain words not already in the current answer sequence
+  const pool = allWordOptions.filter(word => {
+    const countInPool = allWordOptions.filter(w => w === word).length;
+    const countInAnswer = currentAnswer.filter(w => w === word).length;
+    return countInAnswer < countInPool;
+  });
+
+  return `
+    <div class="drag-drop-container">
+      <span class="drop-label">رتب الإجابة هنا (اسحب لإعادة الترتيب):</span>
+      <div class="drop-zone" id="drop-zone" 
+           ondragover="event.preventDefault(); this.classList.add('drag-over')" 
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="this.classList.remove('drag-over'); handleDrop(event, -1)">
+        ${currentAnswer.map((word, i) => `
+          <div class="draggable-word" draggable="true" 
+               ondragstart="handleDragStart(event, '${word.replace(/'/g, "\\'")}', ${i})"
+               ondrop="handleDrop(event, ${i}); event.stopPropagation();"
+               onclick="removeWordFromAnswer(${i})">${word}</div>
+        `).join("")}
+      </div>
+      
+      <span class="pool-label">اختر الكلمات:</span>
+      <div class="word-pool" id="word-pool">
+        ${pool.map((word) => `
+          <div class="draggable-word" draggable="true" 
+               ondragstart="handleDragStart(event, '${word.replace(/'/g, "\\'")}', -1)" 
+               onclick="addWordToAnswer('${word.replace(/'/g, "\\'")}')">
+            ${word}
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function handleDragStart(e, word, index) {
+  e.dataTransfer.setData("text/plain", word);
+  e.dataTransfer.setData("sourceIndex", index);
+}
+
+function handleDrop(e, toIndex) {
+  e.preventDefault();
+  const word = e.dataTransfer.getData("text/plain");
+  const fromIndex = parseInt(e.dataTransfer.getData("sourceIndex"));
+
+  if (fromIndex === -1) {
+    // Adding from pool
+    addWordToAnswer(word, toIndex);
+  } else {
+    // Reordering within drop zone
+    moveWordInAnswer(fromIndex, toIndex);
+  }
+}
+
+function addWordToAnswer(word, toIndex = -1) {
+  if (!userAnswers[currentQuestionIndex]) userAnswers[currentQuestionIndex] = [];
+  if (!userAnswers[currentQuestionIndex].includes(word)) {
+    if (toIndex === -1) {
+      userAnswers[currentQuestionIndex].push(word);
+    } else {
+      userAnswers[currentQuestionIndex].splice(toIndex, 0, word);
+    }
+    loadQuestion();
+  }
+}
+
+function moveWordInAnswer(fromIndex, toIndex) {
+  const answer = userAnswers[currentQuestionIndex];
+  if (!answer) return;
+
+  // If dropped on the general zone (toIndex -1), move to end
+  const targetIndex = toIndex === -1 ? answer.length - 1 : toIndex;
+
+  const [movedWord] = answer.splice(fromIndex, 1);
+  answer.splice(targetIndex, 0, movedWord);
+  loadQuestion();
+}
+
+function removeWordFromAnswer(index) {
+  if (userAnswers[currentQuestionIndex]) {
+    userAnswers[currentQuestionIndex].splice(index, 1);
+    loadQuestion();
+  }
 }
 
 function selectAnswer(answer, qIndex) {
@@ -319,10 +413,11 @@ function submitExam() {
   questions.forEach((q, index) => {
     const encryptedCorrect = encryptedCorrectAnswers[index];
     const correctAnswer = decryptData(encryptedCorrect);
-    const isCorrect = userAnswers[index] === correctAnswer;
+    const userAnswer = Array.isArray(userAnswers[index]) ? userAnswers[index].join(" ") : userAnswers[index];
+    const isCorrect = userAnswer === correctAnswer;
     totalScore += isCorrect ? q.score : 0;
     const answerClass = isCorrect ? "correct-answer" : "wrong-answer";
-    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${escapeHTML(q.question)}<br>إجابتك: <span class="${answerClass}">${escapeHTML(userAnswers[index]) || "لم تجب"}</span><br>الإجابة الصحيحة: <span class="correct-answer">${escapeHTML(correctAnswer)}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0}</span></li>`;
+    resultsHtml += `<li class="result-item">سؤال ${index + 1}: ${escapeHTML(q.question)}<br>إجابتك: <span class="${answerClass}">${escapeHTML(userAnswer) || "لم تجب"}</span><br>الإجابة الصحيحة: <span class="correct-answer">${escapeHTML(correctAnswer)}</span><br>نقاط: <span class="score">${isCorrect ? q.score : 0}</span></li>`;
   });
 
   resultsHtml += `</ul>`;
@@ -383,6 +478,9 @@ function submitExam() {
   );
   const maxScore = questions.reduce((sum, q) => sum + q.score, 0);
 
+  const storedStudent = JSON.parse(localStorage.getItem('loggedInStudent') || '{}');
+  const studentEmail = storedStudent.email || localStorage.getItem('std_email') || "guest@examsy.com";
+
   const examData = {
     name: studentName,
     class: studentClass,
@@ -392,17 +490,39 @@ function submitExam() {
     date: now.toLocaleDateString(),
     time: now.toLocaleTimeString(),
     timestamp: firebase.firestore.Timestamp.fromDate(now),
-    studentEmail: localStorage.getItem('std_email') // Required for Firestore Rules
+    studentEmail: studentEmail // Required for Firestore Rules
   };
 
-  db.collection("examResults")
-    .add(examData)
-    .then((docRef) => {
-      alert("تم حفظ النتائج بنجاح في قاعدة البيانات!");
-    })
-    .catch((error) => {
-      alert("حدث خطأ أثناء حفظ النتائج!");
-    });
+  console.log("Attempting to save exam data:", examData);
+
+  const saveToFirebase = (data) => {
+    db.collection("examResults")
+      .add(data)
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+        alert("تم حفظ النتائج بنجاح في قاعدة البيانات!");
+      })
+      .catch((error) => {
+        console.error("Firestore Error:", error);
+        alert("حدث خطأ أثناء حفظ النتائج! " + (error.message || ""));
+      });
+  };
+
+  // Ensure we are authenticated before writing
+  const user = firebase.auth().currentUser;
+  if (user) {
+    saveToFirebase(examData);
+  } else {
+    console.log("Waiting for auth state...");
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        saveToFirebase(examData);
+      } else {
+        console.error("Unauthorized: No user logged in.");
+        alert("فشل حفظ النتائج: يرجى تسجيل الدخول أولاً.");
+      }
+    }, { once: true });
+  }
 
   // Award Coins logic
   if (window.coinsManager) {
