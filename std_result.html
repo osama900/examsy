@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نتائج الطلاب - Examsy</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #f39c12;
+            --bg: #f5f7fa;
+            --text: #2c3e50;
+            --white: #ffffff;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: "Tajawal", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            direction: rtl;
+            color: var(--text);
+        }
+
+        h1 {
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: auto;
+            /* Align with inputs */
+            height: 46px;
+            /* Match select height roughly */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .results-table th {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table tr:hover {
+            background-color: #f1f8ff;
+            cursor: pointer;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .rank-1 {
+            background: #f1c40f;
+            color: white;
+            box-shadow: 0 2px 5px rgba(241, 196, 15, 0.4);
+        }
+
+        .rank-2 {
+            background: #bdc3c7;
+            color: white;
+        }
+
+        .rank-3 {
+            background: #e67e22;
+            color: white;
+        }
+
+        .progress-bar-bg {
+            width: 100px;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .details-row {
+            display: none;
+            background: #fafafa;
+        }
+
+        .details-content {
+            padding: 20px;
+            text-align: right;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .detail-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .detail-card .stat {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText">جاري التحقق من الصلاحيات...</div>
+    </div>
+
+    <div class="container" style="display: none;">
+        <div class="header-controls">
+            <a href="teacher_dashboard.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l7-7-7-7" />
+                </svg>
+                العودة للوحة التحكم
+            </a>
+            <h1 style="margin:0;">تحليل نتائج الطلاب</h1>
+            <div style="width: 100px;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-group">
+                <label>الصف</label>
+                <select id="gradeFilter" onchange="updateClassOptions()">
+                    <option value="">اختر الصف</option>
+                    <option value="7">السابع</option>
+                    <option value="8">الثامن</option>
+                    <option value="9">التاسع</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>الشعبة</label>
+                <select id="classFilter">
+                    <option value="">كل الشعب</option>
+                </select>
+            </div>
+
+            <button class="search-btn" onclick="fetchStudentResults()">بحث عن النتائج</button>
+        </div>
+
+        <table class="results-table" id="resultsTable">
+            <thead>
+                <tr>
+                    <th>الترتيب</th>
+                    <th>اسم الطالب</th>
+                    <th>الشعبة</th>
+                    <th>نسبة الإنجاز</th>
+                    <th>الكوينز 🪙</th>
+                    <th>علامات الاختبارات 📝</th>
+                    <th>وقت الدراسة الكلي</th>
+                    <th>تفاصيل</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+                <tr>
+                    <td colspan="8" style="color: #999; padding: 40px;">يرجى اختيار الصف والشعبة والضغط على بحث</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="noResults"
+            style="display: none; text-align: center; margin-top: 30px; color: #7f8c8d; font-size: 18px;">
+            لا توجد نتائج مطابقة
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // --- Configuration & Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+            authDomain: "examsy-21dc3.firebaseapp.com",
+            projectId: "examsy-21dc3",
+            storageBucket: "examsy-21dc3.firebasestorage.app",
+            messagingSenderId: "357464025229",
+            appId: "1:357464025229:web:b920c8290f985f54339ac4",
+            measurementId: "G-CWZ7MR4V26",
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Curriculum Def
+        const CURRICULUM = {
+            "7": {
+                "3": ["7-3-1", "7-3-2", "7-3-3", "7-3-4"],
+                "4": ["7-4-1", "7-4-2", "7-4-3"]
+            },
+            "8": {
+                "3": ["8-3-1", "8-3-2", "8-3-3", "8-3-4"],
+                "4": ["8-4-1", "8-4-2", "8-4-3", "8-4-4", "8-4-5"]
+            },
+            "9": {
+                "3": ["9-3-1", "9-3-2", "9-3-3", "9-3-4", "9-3-5"],
+                "4": ["9-4-1", "9-4-2", "9-4-3", "9-4-4"]
+            }
+        };
+
+        // --- Auth Check ---
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            db.collection('teacehr_log').doc(user.email).get()
+                .then(doc => {
+                    if (!doc.exists) return db.collection('teacehr_log').where('email', '==', user.email).get();
+                    return { exists: true, fromDoc: true };
+                })
+                .then(result => {
+                    const isAuthorized = result.fromDoc || (result && !result.empty);
+                    if (!isAuthorized) {
+                        alert("غير مصرح لك الدخول.");
+                        window.location.href = "index.html";
+                    } else {
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        document.querySelector('.container').style.display = 'block';
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    window.location.href = "index.html";
+                });
+        });
+
+        // --- UI Logic ---
+        function updateClassOptions() {
+            const grade = document.getElementById("gradeFilter").value;
+            const classFilter = document.getElementById("classFilter");
+            classFilter.innerHTML = '<option value="">كل الشعب</option>';
+
+            let options = [];
+            if (grade === "7") options = ["أ", "ب"];
+            else if (grade === "8") options = ["أ", "ب", "ج", "د", "هـ", "و"];
+            else if (grade === "9") options = ["أ", "ب", "ج", "د"];
+
+            options.forEach(opt => {
+                let o = document.createElement("option");
+                o.value = opt;
+                o.textContent = opt;
+                classFilter.appendChild(o);
+            });
+        }
+
+        async function fetchStudentResults() {
+            const grade = document.getElementById("gradeFilter").value;
+            const section = document.getElementById("classFilter").value;
+            const tbody = document.getElementById("resultsBody");
+            const loadingText = document.getElementById("loadingText");
+
+            if (!grade) {
+                alert("يرجى اختيار الصف");
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            loadingText.textContent = "جاري جلب بيانات الطلاب وتحليل النتائج...";
+
+            try {
+                // 0. Fetch Visibility Settings (Crucial for matching Index logic)
+                let visibilityMap = {};
+                try {
+                    const visDoc = await db.collection('settings').doc('lesson_visibility').get();
+                    if (visDoc.exists) visibilityMap = visDoc.data();
+                } catch (e) {
+                    console.error("Error fetching visibility:", e);
+                }
+
+                // 1. Fetch Students
+                let query = db.collection('std_id').where('std_grade', '==', grade);
+                if (section) {
+                    query = query.where('std_class', '==', section);
+                }
+
+                const studentsSnap = await query.get();
+                let students = [];
+
+                studentsSnap.forEach(doc => {
+                    students.push({ id: doc.id, ...doc.data() });
+                });
+
+                if (students.length === 0) {
+                    tbody.innerHTML = '';
+                    document.getElementById('noResults').style.display = 'block';
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    return;
+                }
+                document.getElementById('noResults').style.display = 'none';
+
+                // 1.5 Fetch Exam Results for this class
+                let examResultsMap = {};
+                let examQuery = db.collection('examResults');
+                if (section) examQuery = examQuery.where('class', '==', section);
+
+                const examsSnap = await examQuery.get();
+
+                // Build Maps
+                const studentMap = new Map();
+                students.forEach(s => studentMap.set(s.id, s));
+                const studentNameMap = new Map();
+                students.forEach(s => { if (s.std_name) studentNameMap.set(s.std_name, s); });
+
+                examsSnap.forEach(doc => {
+                    const data = doc.data();
+                    let sId = null;
+                    if (data.studentEmail && studentMap.has(data.studentEmail)) sId = data.studentEmail;
+                    else if (data.name && studentNameMap.has(data.name)) sId = studentNameMap.get(data.name).id;
+
+                    if (sId) {
+                        if (!examResultsMap[sId]) examResultsMap[sId] = [];
+                        examResultsMap[sId].push(data);
+                    }
+                });
+
+                // 2. Process Students
+                const results = await Promise.all(students.map(async (student) => {
+                    // A. Study Time
+                    let totalTime = 0;
+                    let pageTimes = {};
+
+                    const activitySnap = await db.collection('std_id').doc(student.id).collection('study_activity').get();
+                    activitySnap.forEach(doc => {
+                        const data = doc.data();
+                        const pid = doc.id;
+                        const time = data.sessionTimeSeconds || 0;
+                        const target = data.targetTimeSeconds || 30; // Default 30s
+                        // Store both time and target for accurate check
+                        pageTimes[pid] = { time, target };
+                        totalTime += time;
+                    });
+
+                    // B. Prepare Exam Map for this student (Best Score per Test)
+                    const studentExamsList = examResultsMap[student.id] || [];
+                    const studentExamMap = {}; // { testName: { score, maxScore } }
+
+                    // For Display (Filtered)
+                    const displayExams = {};
+                    let totalScoreDisplay = 0;
+                    let totalMaxDisplay = 0;
+
+                    studentExamsList.forEach(ex => {
+                        const tName = ex.testName ? ex.testName.trim() : "Unknown";
+
+                        // Logic for "Best Score"
+                        if (!studentExamMap[tName] || Number(ex.score) > Number(studentExamMap[tName].score)) {
+                            studentExamMap[tName] = ex;
+                        }
+
+                        // For Display Table (Apply Filter: Unit 3+)
+                        const parts = tName.split('-');
+                        let isRelevant = true;
+                        if (grade === '8' || grade === '9') {
+                            if (parts.length > 1) {
+                                const unit = parseInt(parts[1]);
+                                if (!isNaN(unit) && unit < 3) isRelevant = false;
+                            }
+                        }
+                        if (isRelevant) {
+                            if (!displayExams[tName] || Number(ex.score) > Number(displayExams[tName].score)) {
+                                displayExams[tName] = ex;
+                            }
+                        }
+                    });
+
+                    // Sum up Display Scores
+                    Object.values(displayExams).forEach(ex => {
+                        totalScoreDisplay += Number(ex.score) || 0;
+                        totalMaxDisplay += Number(ex.maxScore) || 0;
+                    });
+
+                    // C. Calculate Completion % (Index Logic)
+                    let openLessonsCount = 0;
+                    let completedLessonsCount = 0;
+
+                    if (CURRICULUM[grade]) {
+                        Object.values(CURRICULUM[grade]).forEach(unitLessons => {
+                            unitLessons.forEach(lId => {
+                                // 1. Visibility Check
+                                // In index.html: isLocked = visibilityMap[lesson.id] !== true;
+                                // So if visibilityMap[lId] === true, it is OPEN.
+                                if (visibilityMap[lId] === true) {
+                                    openLessonsCount++;
+
+                                    // 2. Check Sub-Activities Completion
+                                    // Sub-activities: prep, task, mind, quiz (-1)
+                                    const subs = ['-prep', '-task', 'mind', '-1'];
+                                    let isLessonComplete = true;
+
+                                    subs.forEach(suffix => {
+                                        const actId = lId + suffix;
+
+                                        if (suffix === '-1') {
+                                            // Quiz Check
+                                            // key in examMap is usually the ID e.g. "9-3-1-1"
+                                            const quizId = lId + '-1'; // e.g. 7-3-1-1
+                                            const exData = studentExamMap[quizId];
+                                            if (exData) {
+                                                const max = exData.maxScore || 1; // avoid div/0
+                                                const passing = max / 2;
+                                                if (Number(exData.score) < passing) isLessonComplete = false;
+                                            } else {
+                                                isLessonComplete = false; // No exam taken = incomplete
+                                            }
+                                        } else {
+                                            // Time Check
+                                            // e.g. 7-3-1-prep
+                                            let realActId = actId;
+                                            // Handle 'mind' suffix logic from index.html: "lesson.id + suffix"
+                                            // suffix is 'mind' (no dash). id="7-3-1". result "7-3-1mind".
+                                            // My array above has 'mind'.
+                                            // Wait, index.html code: `const subActivities = ['-prep', '-task', 'mind', '-1'];`
+                                            // `const actId = lesson.id + suffix;`
+                                            // So: 7-3-1-prep, 7-3-1-task, 7-3-1mind, 7-3-1-1.
+                                            // Note the missing dash for mind in array but maybe strictly appended?
+                                            // Let's verify standard naming.
+                                            // In time_tracker.js or similar, 'mind' usually has dash? 
+                                            // Index.html Line 937: `['-prep', '-task', 'mind', '-1']`
+                                            // Line 941: `lesson.id + suffix`.
+                                            // Result: `9-3-1mind`. 
+                                            // Warning: In previous contexts I saw `9-3-1-mind` (with dash).
+                                            // Let's check `pageTimes` keys to be sure.
+                                            // I'll check both `lId + suffix` and `lId + '-' + suffix` if suffix is 'mind' just to be safe?
+                                            // No, consistency implies following index.html. 
+                                            // However, if index.html is buggy on 'mind', I should fix or replicate.
+                                            // Most likely index.html is correct for the deployment.
+
+                                            const pData = pageTimes[realActId];
+                                            if (!pData || pData.time < (pData.target || 30)) {
+                                                // Fallback for 'mind': check with dash?
+                                                if (suffix === 'mind' && !pData) {
+                                                    const altId = lId + '-mind';
+                                                    const altData = pageTimes[altId];
+                                                    if (!altData || altData.time < (altData.target || 30)) {
+                                                        isLessonComplete = false;
+                                                    }
+                                                } else {
+                                                    isLessonComplete = false;
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    if (isLessonComplete) completedLessonsCount++;
+                                }
+                            });
+                        });
+                    }
+
+                    const completionPct = openLessonsCount > 0
+                        ? Math.round((completedLessonsCount / openLessonsCount) * 100)
+                        : 0;
+
+                    return {
+                        name: student.std_name || "غير معروف",
+                        class: student.std_class || "-",
+                        coins: parseInt(student.coins || 0),
+                        completion: completionPct,
+                        totalTime: totalTime,
+                        pageTimes: pageTimes, // {pid: {time, target}}
+                        examTotal: totalScoreDisplay,
+                        examMax: totalMaxDisplay,
+                        exams: Object.values(displayExams)
+                    };
+                }));
+
+                // 4. Sort & Rank
+                results.sort((a, b) => b.completion - a.completion);
+                renderTable(results);
+
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ أثناء جلب البيانات: " + e.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("resultsBody");
+            tbody.innerHTML = "";
+
+            data.forEach((student, index) => {
+                const tr = document.createElement("tr");
+                const rank = index + 1;
+
+                const hours = Math.floor(student.totalTime / 3600);
+                const minutes = Math.floor((student.totalTime % 3600) / 60);
+                const timeStr = hours > 0 ? `${hours}س ${minutes}د` : `${minutes}د`;
+
+                tr.innerHTML = `
+                <td><span class="rank-badge rank-${rank <= 3 ? rank : 'other'}">${rank}</span></td>
+                <td style="font-weight:bold;">${student.name}</td>
+                <td>${student.class}</td>
+                <td>
+                    <span style="font-weight:bold; color:var(--primary)">${student.completion}%</span>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${student.completion}%"></div></div>
+                </td>
+                <td>${student.coins}</td>
+                <td><span style="font-weight:bold; color:#8e44ad;">${student.examTotal}</span> <span style="font-size:12px; color:#999">/ ${student.examMax}</span></td>
+                <td>${timeStr}</td>
+                <td><button class="search-btn" style="padding: 5px 15px; font-size:12px; background:#95a5a6" onclick="toggleDetails(this)">عرض</button></td>
+            `;
+
+                // Details Row
+                const detailsTr = document.createElement("tr");
+                detailsTr.className = "details-row";
+
+                let detailsHTML = `<td colspan="8"><div class="details-content">`;
+
+                // 1. Exams Section
+                if (student.exams.length > 0) {
+                    detailsHTML += `<div style="grid-column: 1 / -1; font-weight:bold; color:var(--secondary); margin-bottom:5px; border-bottom:1px solid #ddd;">📝 الاختبارات</div>`;
+                    student.exams.forEach(ex => {
+                        detailsHTML += `
+                        <div class="detail-card" style="border-right: 3px solid #8e44ad;">
+                            <h4>${ex.testName}</h4>
+                            <div class="stat">${ex.score} <span style="font-size:12px; color:#999">/ ${ex.maxScore}</span></div>
+                        </div>
+                     `;
+                    });
+                } else {
+                    detailsHTML += `<div style="grid-column: 1 / -1; font-weight:bold; color:var(--secondary); margin-bottom:5px; border-bottom:1px solid #ddd;">📝 الاختبارات</div>`;
+                    detailsHTML += `<div style="color:#999; grid-column: 1 / -1;">لا توجد اختبارات مسجلة</div>`;
+                }
+
+                // 2. Activity Time Section
+                const pages = Object.entries(student.pageTimes).sort((a, b) => b[1] - a[1]);
+                if (pages.length > 0) {
+                    detailsHTML += `<div style="grid-column: 1 / -1; font-weight:bold; color:var(--secondary); margin-top:15px; margin-bottom:5px; border-bottom:1px solid #ddd;">⏱️ وقت النشاط</div>`;
+                    pages.forEach(([pid, seconds]) => {
+                        const val = seconds;
+                        const t = (typeof val === 'object') ? val.time : val;
+                        if (t < 10) return;
+                        const m = Math.floor(t / 60);
+                        const s = Math.floor(t % 60);
+                        detailsHTML += `
+                        <div class="detail-card">
+                            <h4>${pid}</h4>
+                            <div class="stat">${m}:${s.toString().padStart(2, '0')}</div>
+                        </div>
+                    `;
+                    });
+                }
+
+                detailsHTML += `</div></td>`;
+                detailsTr.innerHTML = detailsHTML;
+
+                tbody.appendChild(tr);
+                tbody.appendChild(detailsTr);
+            });
+        }
+
+        window.toggleDetails = function (btn) {
+            const tr = btn.closest("tr");
+            const nextTr = tr.nextElementSibling;
+            if (nextTr && nextTr.classList.contains("details-row")) {
+                nextTr.style.display = nextTr.style.display === "table-row" ? "none" : "table-row";
+                btn.textContent = nextTr.style.display === "table-row" ? "إخفاء" : "عرض";
+            }
+        };
+
+    </script>
+</body>
+
+</html>
