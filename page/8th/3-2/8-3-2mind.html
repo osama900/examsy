@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>البحث عن المعلومات باستخدام الانترنت 📶</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "البحث عن المعلومات باستخدام الإنترنت 🌐",
+        children: [
+
+          {
+            content: "محركات البحث",
+            children: [
+              { content: "برامج للبحث عن المعلومات على الإنترنت." },
+              { content: "تُعد البوابة الرئيسة للوصول إلى المعرفة الرقمية." },
+              {
+                content: "أمثلة",
+                children: [
+                  { content: "Google" },
+                  { content: "Bing" },
+                  { content: "Yahoo" },
+                  { content: "Ask" },
+                  { content: "DuckDuckGo" }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مراحل البحث في محركات البحث",
+            children: [
+              {
+                content: "الزحف (Crawling)",
+                children: [
+                  { content: "جمع النصوص والصور والفيديوهات من صفحات الإنترنت." }
+                ]
+              },
+              {
+                content: "الفهرسة (Indexing)",
+                children: [
+                  { content: "تنظيم وتحليل المعلومات." },
+                  { content: "تخزينها في قواعد بيانات ضخمة." }
+                ]
+              },
+              {
+                content: "عرض نتائج البحث",
+                children: [
+                  { content: "إظهار نتائج مناسبة لاستعلام المستخدم." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مصطلحات البحث",
+            children: [
+              { content: "كلمات أو عبارات يكتبها المستخدم في شريط البحث." },
+              { content: "يجب أن تكون واضحة ومحددة." },
+              { content: "استخدام المرادفات عند الحاجة." }
+            ]
+          },
+
+          {
+            content: "عوامل تحسين البحث",
+            children: [
+              {
+                content: "علامات الاقتباس \" \"",
+                children: [
+                  { content: "البحث عن عبارة كاملة وبالترتيب نفسه." }
+                ]
+              },
+              {
+                content: "عامل OR",
+                children: [
+                  { content: "البحث عن أحد المصطلحين أو كليهما." }
+                ]
+              },
+              {
+                content: "الرمز (-)",
+                children: [
+                  { content: "استبعاد كلمات أو نتائج غير مرغوب فيها." }
+                ]
+              },
+              {
+                content: "site:",
+                children: [
+                  { content: "حصر البحث في موقع أو نطاق معين." }
+                ]
+              },
+              {
+                content: "filetype:",
+                children: [
+                  { content: "تحديد نوع الملف المطلوب مثل PDF أو PPTX." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "أدوات البحث",
+            children: [
+              { content: "تصفية النتائج حسب البلد." },
+              { content: "تصفية النتائج حسب اللغة." },
+              { content: "تحديد الزمن (حديث / قديم)." },
+              { content: "استخدام البحث المتقدم." }
+            ]
+          },
+
+          {
+            content: "أنواع البحث",
+            children: [
+              {
+                content: "البحث النصي",
+                children: [
+                  { content: "استخدام الكلمات والعبارات المكتوبة." }
+                ]
+              },
+              {
+                content: "البحث الصوتي",
+                children: [
+                  { content: "إدخال استعلام البحث باستخدام الصوت." }
+                ]
+              },
+              {
+                content: "البحث بالصورة",
+                children: [
+                  { content: "التعرف على الصور أو معرفة مصدرها." }
+                ]
+              },
+              {
+                content: "البحث عن الكتب",
+                children: [
+                  { content: "الوصول إلى ملايين الكتب والمراجع." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "تقييم نتائج البحث",
+            children: [
+              { content: "التحقق من موثوقية المصدر." },
+              { content: "التأكد من حداثة المعلومات." },
+              { content: "مقارنة أكثر من مصدر." },
+              { content: "تجنب المواقع المشكوك في مصداقيتها." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "8-3-2mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
