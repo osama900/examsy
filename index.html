@@ -688,7 +688,7 @@
     const db = firebase.firestore();
 
     // Helper function: Calculate student completion percentage
-    async function calculateStudentCompletion(studentId, studentEmail, stdGrade) {
+    async function calculateStudentCompletion(studentId, studentEmail, stdGrade, preCalculatedExamMap = null) {
       if (!CURRICULUM[stdGrade]) return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
 
       try {
@@ -697,25 +697,34 @@
         const activityMap = {};
         activitySnapshot.forEach(doc => activityMap[doc.id] = doc.data());
 
-        // Fetch student exams
-        const examSnapshot = await db.collection('examResults').where('studentEmail', '==', studentEmail).get();
-        const examMap = {};
-        examSnapshot.forEach(doc => {
-          const d = doc.data();
-          if (d.testName) {
-            const t = d.testName.trim();
-            if (!examMap[t] || d.score > examMap[t].score) {
-              examMap[t] = d;
+        // Use pre-calculated exam map if provided, otherwise fetch
+        let examMap = {};
+        if (preCalculatedExamMap) {
+          examMap = preCalculatedExamMap;
+        } else {
+          const examSnapshot = await db.collection('examResults').where('studentEmail', '==', studentEmail).get();
+          examSnapshot.forEach(doc => {
+            const d = doc.data();
+            if (d.testName) {
+              const t = d.testName.trim();
+              if (!examMap[t] || d.score > examMap[t].score) {
+                examMap[t] = d;
+              }
             }
-          }
-        });
+          });
+        }
 
-        // Fetch visibility settings
+        // Fetch visibility and timer settings
         let visibilityMap = {};
+        let timerMap = {};
         try {
-          const visibilityDoc = await db.collection('settings').doc('lesson_visibility').get();
+          const [visibilityDoc, timersDoc] = await Promise.all([
+            db.collection('settings').doc('lesson_visibility').get(),
+            db.collection('settings').doc('lesson_timers').get()
+          ]);
           if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
-        } catch (e) { }
+          if (timersDoc.exists) timerMap = timersDoc.data();
+        } catch (e) { console.error("Error fetching settings:", e); }
 
         let openLessons = 0;
         let completedOpenLessons = 0;
@@ -736,8 +745,8 @@
                   if (examData) {
                     const max = examData.maxScore || 1;
                     const score = examData.score;
-                    const passing = max / 2;
-                    if (score < passing) {
+                    const completeThreshold = max - 1;
+                    if (score < completeThreshold) {
                       isCurrentComplete = false;
                     }
                   } else {
@@ -745,9 +754,24 @@
                   }
                 } else {
                   const data = activityMap[actId];
-                  const target = data?.targetTimeSeconds || 30;
+
+                  // Determine Target Time
+                  // 1. Centralized Settings (Minutes -> Seconds)
+                  // 2. Stored Target (Seconds)
+                  // 3. Default (30s)
+                  let target = 30;
+                  if (timerMap[actId]) {
+                    target = timerMap[actId] * 60;
+                  } else if (data?.targetTimeSeconds) {
+                    target = data.targetTimeSeconds;
+                  }
+
                   const spent = data?.sessionTimeSeconds || 0;
-                  if (!data || spent < target) {
+
+                  // If no data exists, checking if spent < target (0 < 30) => true (incomplete)
+                  // But we must also check if data exists at all? 
+                  // If data doesn't exist, spent is 0. 0 < target is true. So incomplete. Correct.
+                  if (spent < target) {
                     isCurrentComplete = false;
                   }
                 }
@@ -849,37 +873,83 @@
           .where('std_class', '==', stdClass)
           .get();
 
-        // NEW: Fetch completion % and exam scores for all students
-        const studentsInClass = [];
-        const studentPromises = [];
+        // NEW: Fetch completion % and exam scores for all students efficiently
+        const studentDataList = [];
+        const studentMap = {}; // id -> student data
+        const studentNameMap = {}; // name -> student data
 
         classSnapshot.forEach(doc => {
           const data = doc.data();
-          const studentId = doc.id;
-          const studentEmail = data.std_email;
-          const studentName = data.std_name;
-
-          // Create promise to fetch completion and scores
-          const studentPromise = Promise.all([
-            calculateStudentCompletion(studentId, studentEmail, stdGrade),
-            calculateTotalExamScore(studentEmail, stdGrade)
-          ]).then(([completionData, totalExamScore]) => {
-            return {
-              id: studentId,
-              name: studentName,
-              email: studentEmail,
-              time: data.totalStudyTimeSeconds || 0,
-              completionPercent: completionData.completionPercent,
-              totalExamScore: totalExamScore
-            };
-          });
-
-          studentPromises.push(studentPromise);
+          const s = {
+            id: doc.id,
+            name: data.std_name || "بدون اسم",
+            email: data.std_email || "",
+            time: data.totalStudyTimeSeconds || 0,
+            completionPercent: 0,
+            totalExamScore: 0
+          };
+          studentDataList.push(s);
+          studentMap[s.id] = s;
+          if (s.name) studentNameMap[s.name] = s;
         });
 
-        // Wait for all student data to be fetched
+        // 1. Fetch ALL exam results for this class in ONE query
+        const examsSnapshot = await db.collection('examResults').where('class', '==', stdClass).get();
+        const allExamsByStudent = {}; // sId -> Array of exam data
+
+        examsSnapshot.forEach(doc => {
+          const d = doc.data();
+          let sId = null;
+          // Strategy: Match by Email first, then by Name
+          if (d.studentEmail && studentMap[d.studentEmail]) sId = d.studentEmail;
+          else if (d.name && studentNameMap[d.name]) sId = studentNameMap[d.name].id;
+
+          if (sId) {
+            if (!allExamsByStudent[sId]) allExamsByStudent[sId] = [];
+            allExamsByStudent[sId].push(d);
+          }
+        });
+
+        // 2. Calculate Completion and Scores for each student
+        const studentPromises = studentDataList.map(async (std) => {
+          // A. Calculate Total Exam Score (synchronized logic)
+          const studentExams = allExamsByStudent[std.id] || [];
+          const bestScores = {};
+          studentExams.forEach(ex => {
+            const tName = (ex.testName || "").trim();
+            if (!tName) return;
+
+            // Filter: Grade 8/9 Unit 3+
+            let isRelevant = true;
+            if (stdGrade === '8' || stdGrade === '9') {
+              const parts = tName.split('-');
+              if (parts.length > 1) {
+                const unit = parseInt(parts[1]);
+                if (!isNaN(unit) && unit < 3) isRelevant = false;
+              }
+            }
+            if (isRelevant) {
+              const score = Number(ex.score) || 0;
+              if (!bestScores[tName] || score > Number(bestScores[tName].score)) {
+                bestScores[tName] = ex;
+              }
+            }
+          });
+          // Sum scores from the bestScores map
+          std.totalExamScore = Object.values(bestScores).reduce((sum, ex) => sum + (Number(ex.score) || 0), 0);
+
+          // B. Calculate Completion % using pre-calculated bestScores map
+          try {
+            const completionData = await calculateStudentCompletion(std.id, std.email, stdGrade, bestScores);
+            std.completionPercent = completionData.completionPercent;
+          } catch (e) { console.error("Error calculating completion for", std.name, e); }
+
+          return std;
+        });
+
         const allStudentsData = await Promise.all(studentPromises);
 
+        // Final Rank Calculation and Display logic continues...
         // MULTI-LEVEL SORT: Primary by completion %, Secondary by exam scores
         allStudentsData.sort((a, b) => {
           // First, compare by completion percentage
@@ -1087,13 +1157,18 @@
         const activityMap = {};
         snapshot.forEach(doc => activityMap[doc.id] = doc.data());
 
-        // Fetch global visibility settings
+        // Fetch global visibility & timer settings
         let visibilityMap = {};
+        let timerMap = {};
         try {
-          const visibilityDoc = await db.collection('settings').doc('lesson_visibility').get();
+          const [visibilityDoc, timersDoc] = await Promise.all([
+            db.collection('settings').doc('lesson_visibility').get(),
+            db.collection('settings').doc('lesson_timers').get()
+          ]);
           if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
+          if (timersDoc.exists) timerMap = timersDoc.data();
         } catch (e) {
-          console.error("Error fetching visibility:", e);
+          console.error("Error fetching settings:", e);
         }
 
         // Fetch Exam Results (Score based) for this student
@@ -1141,10 +1216,8 @@
                   if (examData) {
                     const max = examData.maxScore || 1;
                     const score = examData.score;
-
-                    // Full marks or -1 from full marks = complete
-                    // Lower than that (even if passing) = incomplete for lesson status
-                    if (score < max - 1) {
+                    const completeThreshold = max - 1;
+                    if (score < completeThreshold) {
                       isCurrentComplete = false;
                     }
                   } else {
@@ -1153,10 +1226,24 @@
                 } else {
                   // Standard Time Logic for Prep, Task, Mind
                   const data = activityMap[actId];
-                  const target = data?.targetTimeSeconds || 30;
+
+                  // Determine Target Time
+                  // 1. Centralized Settings (Minutes -> Seconds)
+                  // 2. Stored Target (Seconds)
+                  // 3. Default (30s)
+                  let target = 30;
+                  if (timerMap[actId]) {
+                    target = timerMap[actId] * 60;
+                  } else if (data?.targetTimeSeconds) {
+                    target = data.targetTimeSeconds;
+                  }
+
                   const spent = data?.sessionTimeSeconds || 0;
 
-                  if (!data || spent < target) {
+                  // Explicit Debug Log
+                  console.log(`Debug Time: ${actId} -> Spent: ${spent}s / Target: ${target}s`);
+
+                  if (spent < target) {
                     isCurrentComplete = false;
                   }
                 }

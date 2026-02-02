@@ -440,13 +440,18 @@
             loadingText.textContent = "جاري جلب بيانات الطلاب وتحليل النتائج...";
 
             try {
-                // 0. Fetch Visibility Settings (Crucial for matching Index logic)
+                // 0. Fetch Visibility & Timer Settings (Crucial for matching Index logic)
                 let visibilityMap = {};
+                let timerMap = {};
                 try {
-                    const visDoc = await db.collection('settings').doc('lesson_visibility').get();
+                    const [visDoc, timersDoc] = await Promise.all([
+                        db.collection('settings').doc('lesson_visibility').get(),
+                        db.collection('settings').doc('lesson_timers').get()
+                    ]);
                     if (visDoc.exists) visibilityMap = visDoc.data();
+                    if (timersDoc.exists) timerMap = timersDoc.data();
                 } catch (e) {
-                    console.error("Error fetching visibility:", e);
+                    console.error("Error fetching settings:", e);
                 }
 
                 // 1. Fetch Students
@@ -556,76 +561,82 @@
                     let completedLessonsCount = 0;
 
                     if (CURRICULUM[grade]) {
-                        Object.values(CURRICULUM[grade]).forEach(unitLessons => {
-                            unitLessons.forEach(lId => {
-                                // 1. Visibility Check
-                                // In index.html: isLocked = visibilityMap[lesson.id] !== true;
-                                // So if visibilityMap[lId] === true, it is OPEN.
-                                if (visibilityMap[lId] === true) {
-                                    openLessonsCount++;
+                        // Filter Units: If Grade 8 or 9, only count Unit 3 and 4
+                        const unitsToCount = (grade === '8' || grade === '9') ? [3, 4] : Object.keys(CURRICULUM[grade]);
 
-                                    // 2. Check Sub-Activities Completion
-                                    // Sub-activities: prep, task, mind, quiz (-1)
-                                    const subs = ['-prep', '-task', 'mind', '-1'];
-                                    let isLessonComplete = true;
+                        unitsToCount.forEach(unitNum => {
+                            const unitLessons = CURRICULUM[grade][unitNum];
+                            if (unitLessons) {
+                                unitLessons.forEach(lId => {
+                                    // 1. Visibility Check
+                                    // In index.html: isLocked = visibilityMap[lesson.id] !== true;
+                                    // So if visibilityMap[lId] === true, it is OPEN.
+                                    if (visibilityMap[lId] === true) {
+                                        openLessonsCount++;
 
-                                    subs.forEach(suffix => {
-                                        const actId = lId + suffix;
+                                        // 2. Check Sub-Activities Completion
+                                        // Sub-activities: prep, task, mind, quiz (-1)
+                                        const subs = ['-prep', '-task', 'mind', '-1'];
+                                        let isLessonComplete = true;
 
-                                        if (suffix === '-1') {
-                                            // Quiz Check
-                                            // key in examMap is usually the ID e.g. "9-3-1-1"
-                                            const quizId = lId + '-1'; // e.g. 7-3-1-1
-                                            const exData = studentExamMap[quizId];
-                                            if (exData) {
-                                                const max = exData.maxScore || 1; // avoid div/0
-                                                const passing = max / 2;
-                                                if (Number(exData.score) < passing) isLessonComplete = false;
+                                        subs.forEach(suffix => {
+                                            const actId = lId + suffix;
+
+                                            if (suffix === '-1') {
+                                                // Quiz Check
+                                                // key in examMap is usually the ID e.g. "9-3-1-1"
+                                                const quizId = lId + '-1'; // e.g. 7-3-1-1
+                                                const exData = studentExamMap[quizId];
+                                                if (exData) {
+                                                    const max = exData.maxScore || 1; // avoid div/0
+                                                    const completeThreshold = max - 1;
+                                                    if (Number(exData.score) < completeThreshold) isLessonComplete = false;
+                                                } else {
+                                                    isLessonComplete = false; // No exam taken = incomplete
+                                                }
                                             } else {
-                                                isLessonComplete = false; // No exam taken = incomplete
-                                            }
-                                        } else {
-                                            // Time Check
-                                            // e.g. 7-3-1-prep
-                                            let realActId = actId;
-                                            // Handle 'mind' suffix logic from index.html: "lesson.id + suffix"
-                                            // suffix is 'mind' (no dash). id="7-3-1". result "7-3-1mind".
-                                            // My array above has 'mind'.
-                                            // Wait, index.html code: `const subActivities = ['-prep', '-task', 'mind', '-1'];`
-                                            // `const actId = lesson.id + suffix;`
-                                            // So: 7-3-1-prep, 7-3-1-task, 7-3-1mind, 7-3-1-1.
-                                            // Note the missing dash for mind in array but maybe strictly appended?
-                                            // Let's verify standard naming.
-                                            // In time_tracker.js or similar, 'mind' usually has dash? 
-                                            // Index.html Line 937: `['-prep', '-task', 'mind', '-1']`
-                                            // Line 941: `lesson.id + suffix`.
-                                            // Result: `9-3-1mind`. 
-                                            // Warning: In previous contexts I saw `9-3-1-mind` (with dash).
-                                            // Let's check `pageTimes` keys to be sure.
-                                            // I'll check both `lId + suffix` and `lId + '-' + suffix` if suffix is 'mind' just to be safe?
-                                            // No, consistency implies following index.html. 
-                                            // However, if index.html is buggy on 'mind', I should fix or replicate.
-                                            // Most likely index.html is correct for the deployment.
+                                                // Time Check
+                                                const realActId = actId;
+                                                const pData = pageTimes[realActId];
+                                                const spent = pData ? pData.time : 0;
 
-                                            const pData = pageTimes[realActId];
-                                            if (!pData || pData.time < (pData.target || 30)) {
-                                                // Fallback for 'mind': check with dash?
-                                                if (suffix === 'mind' && !pData) {
-                                                    const altId = lId + '-mind';
-                                                    const altData = pageTimes[altId];
-                                                    if (!altData || altData.time < (altData.target || 30)) {
+                                                // Determine Target Time logic
+                                                let target = 30;
+                                                if (timerMap[realActId]) {
+                                                    target = timerMap[realActId] * 60;
+                                                } else if (pData && pData.target) {
+                                                    target = pData.target;
+                                                }
+
+                                                if (spent < target) {
+                                                    // Fallback for 'mind': check with dash?
+                                                    if (suffix === 'mind' && !pData) {
+                                                        const altId = lId + '-mind';
+                                                        const altData = pageTimes[altId];
+                                                        const altSpent = altData ? altData.time : 0;
+
+                                                        // Check timer for altId too
+                                                        let altTarget = 30;
+                                                        if (timerMap[altId]) {
+                                                            altTarget = timerMap[altId] * 60;
+                                                        } else if (altData && altData.target) {
+                                                            altTarget = altData.target;
+                                                        }
+
+                                                        if (altSpent < altTarget) {
+                                                            isLessonComplete = false;
+                                                        }
+                                                    } else {
                                                         isLessonComplete = false;
                                                     }
-                                                } else {
-                                                    isLessonComplete = false;
                                                 }
                                             }
-                                        }
-                                    });
+                                        });
 
-                                    if (isLessonComplete) completedLessonsCount++;
-                                }
-                            });
+                                        if (isLessonComplete) completedLessonsCount++;
+                                    }
+                                });
+                            }
                         });
                     }
 

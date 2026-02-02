@@ -28,12 +28,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         const db = firebase.firestore();
 
         try {
-            // 1. Fetch Study Activity (Time based)
-            const activitySnapshot = await db.collection('std_id').doc(stdId).collection('study_activity').get();
+            // 1. Fetch Study Activity (Time based) & Centralized Timers
+            const [activitySnapshot, timersDoc] = await Promise.all([
+                db.collection('std_id').doc(stdId).collection('study_activity').get(),
+                db.collection('settings').doc('lesson_timers').get()
+            ]);
+
             const activityMap = {};
             activitySnapshot.forEach(doc => {
                 activityMap[doc.id] = doc.data();
             });
+
+            const timerMap = timersDoc.exists ? timersDoc.data() : {};
 
             // 2. Fetch Exam Results (Score based)
             let examMap = {};
@@ -123,22 +129,32 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 } else {
                     // Standard Time Logic
-                    if (studyData) {
-                        const sessionTime = studyData.sessionTimeSeconds || 0;
-                        const targetTime = studyData.targetTimeSeconds || 30;
+                    const sessionTime = studyData ? (studyData.sessionTimeSeconds || 0) : 0;
 
-                        if (sessionTime >= targetTime) {
-                            icon = "✅";
-                            color = "green";
-                        } else if (sessionTime >= (targetTime - 5)) {
-                            icon = "⚠️";
-                            color = "orange";
-                        } else {
-                            icon = "❌";
-                            color = "red";
-                        }
-                        title = `Time: ${sessionTime}s / ${targetTime}s`;
+                    // Determine Target Time
+                    // 1. Centralized Settings (Minutes -> Seconds)
+                    // 2. Stored Target (Seconds)
+                    // 3. Default (30s)
+                    let targetTime = 30;
+                    if (timerMap[pageId]) {
+                        targetTime = timerMap[pageId] * 60;
+                    } else if (studyData && studyData.targetTimeSeconds) {
+                        targetTime = studyData.targetTimeSeconds;
                     }
+
+                    console.log(`Debug Tracker: Checking ${pageId} -> Spent: ${sessionTime}s / Target: ${targetTime}s (Found in Settings: ${!!timerMap[pageId]})`);
+
+                    if (sessionTime >= targetTime) {
+                        icon = "✅";
+                        color = "green";
+                    } else if (sessionTime >= (targetTime - 5)) {
+                        icon = "⚠️";
+                        color = "orange";
+                    } else {
+                        icon = "❌";
+                        color = "red";
+                    }
+                    title = `Time: ${sessionTime}s / ${targetTime}s`;
                 }
 
                 // Create Icon Element
