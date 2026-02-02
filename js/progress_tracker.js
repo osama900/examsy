@@ -3,7 +3,7 @@
 // Fetches student activity from Firestore and updates elements with data-page-id attributes.
 
 document.addEventListener('DOMContentLoaded', async function () {
-    console.log("Progress Tracker: Initializing...");
+
 
     const stdId = localStorage.getItem('std_id');
     const stdName = localStorage.getItem('std_name'); // Get name for exam lookup
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Initialize logic AFTER Auth is ready
     firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) {
-            console.log("Progress Tracker: Waiting for login...");
+
             return;
         }
 
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         targetTime = studyData.targetTimeSeconds;
                     }
 
-                    console.log(`Debug Tracker: Checking ${pageId} -> Spent: ${sessionTime}s / Target: ${targetTime}s (Found in Settings: ${!!timerMap[pageId]})`);
+
 
                     if (sessionTime >= targetTime) {
                         icon = "✅";

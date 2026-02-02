@@ -789,11 +789,7 @@
         const completionPercent = openLessons > 0 ? Math.round((completedOpenLessons / openLessons) * 100) : 0;
         return { completionPercent, completedLessons: completedOpenLessons, totalOpenLessons: openLessons };
       } catch (error) {
-        if (error.code === 'permission-denied') {
-          console.warn("Permission denied while calculating completion for student:", studentId);
-        } else {
-          console.error("Error calculating completion for student", studentId, error);
-        }
+
         return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
       }
     }
@@ -1061,12 +1057,12 @@
     // Initialize Auth Listener
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log("Auth State: User signed in", user.email);
+
         loadDashboardStats();
         loadAllUnitsProgress();
         updateDashboardNotificationCard();
       } else {
-        console.log("Auth State: No user signed in");
+
       }
     });
 
@@ -1137,7 +1133,7 @@
         } catch (e) { console.error("Error fetching email fallback:", e); }
       }
 
-      console.log("Debug Lessons: stdEmail =", stdEmail, "stdGrade =", stdGrade);
+
 
       if (!stdEmail || !CURRICULUM[stdGrade]) {
         console.warn("Debug Lessons: Missing stdEmail or curriculum for grade", stdGrade);
@@ -1241,7 +1237,7 @@
                   const spent = data?.sessionTimeSeconds || 0;
 
                   // Explicit Debug Log
-                  console.log(`Debug Time: ${actId} -> Spent: ${spent}s / Target: ${target}s`);
+
 
                   if (spent < target) {
                     isCurrentComplete = false;

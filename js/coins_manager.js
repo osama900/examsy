@@ -72,7 +72,7 @@
             // 3. Process pending toasts from previous pages
             this.processPendingToasts();
 
-            console.log("CoinsManager: Initialized with", this.coins, "coins.");
+
         }
 
         processPendingToasts() {
@@ -129,7 +129,7 @@
             }
 
             if (today > lastLogin) {
-                console.log("CoinsManager: Awarding daily login bonus.");
+
                 // Set flag BEFORE awaiting to prevent race conditions
                 sessionStorage.setItem('daily_login_checked', 'true');
 

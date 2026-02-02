@@ -409,7 +409,7 @@
           })
           .then(result => {
             const isAuthorized = result.fromDoc || (result && !result.empty);
-            console.log("Authorization result:", isAuthorized);
+
 
             if (!isAuthorized) {
               console.warn("Unauthorized access attempt by:", user.email);
@@ -418,7 +418,7 @@
                 window.location.href = "index.html";
               });
             } else {
-              console.log("Teacher authorized:", user.email);
+
               // Authorized! Show content
               document.getElementById('loadingOverlay').style.display = 'none';
               document.querySelector('.container').style.display = 'block';

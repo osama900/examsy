@@ -3,7 +3,7 @@
 // Fetches student activity for multiple sub-pages and displays an aggregate status icon.
 
 document.addEventListener('DOMContentLoaded', async function () {
-    console.log("Aggregate Progress: Initializing...");
+
 
     const stdId = localStorage.getItem('std_id');
     if (!stdId) {
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         status = "red";
                     }
 
-                    console.log(`Aggregate Debug: Page ${pageId} -> Status: ${status}`, { examData, activityData });
+
 
 
 

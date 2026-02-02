@@ -3,7 +3,7 @@
 // AUTOMATICALLY LOADS FIREBASE SDKs if not present.
 
 (async function () {
-    console.log("Time Tracker: Initializing...");
+
 
     // 1. Dynamic Firebase Loading
     const firebaseConfig = {
@@ -31,13 +31,13 @@
     }
 
     if (typeof firebase === 'undefined') {
-        console.log("Time Tracker: Loading Firebase SDKs...");
+
         try {
             await loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
             await loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"); // Add Auth SDK
             await loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js");
             firebase.initializeApp(firebaseConfig);
-            console.log("Time Tracker: Firebase loaded and initialized.");
+
         } catch (e) {
             console.error("Time Tracker: Failed to load Firebase SDKs", e);
             return;
@@ -61,7 +61,7 @@
                 }
             }
             await loadScript(coinsManagerUrl);
-            console.log("Time Tracker: Coins Manager loaded.");
+
         } catch (e) {
             console.warn("Time Tracker: Failed to load Coins Manager", e);
         }
@@ -71,13 +71,13 @@
     const initTracker = async () => {
         // Double check firebase.auth exists 
         if (!firebase.auth) {
-            console.log("Time Tracker: firebase.auth not found, reloading...");
+
             await loadScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js");
         }
 
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                console.log("Time Tracker: User authenticated, starting...");
+
                 const db = firebase.firestore();
                 // ... logic continues ...
                 // 1. Fetch Centralized Timer Settings
@@ -93,7 +93,7 @@
                             if (timers && timers[pageId] && timers[pageId] > 0) {
                                 const customTimeMinutes = timers[pageId];
                                 PAGE_TIME_CONFIG.targetTimeSeconds = customTimeMinutes * 60;
-                                console.log(`Time Tracker: Using centralized target time: ${customTimeMinutes}m (${PAGE_TIME_CONFIG.targetTimeSeconds}s)`);
+
                             }
                         }
                     }
@@ -104,7 +104,7 @@
                 // Proceed with tracker logic...
                 startTracker(db);
             } else {
-                console.log("Time Tracker: Waiting for user login...");
+
             }
         });
     }
@@ -210,7 +210,7 @@
                     alreadyCompleted = true; // Mark as done locally to prevent double reward
                 }
 
-                console.log(`Time Tracker: Saved +${deltaSeconds}s. Total: ${accumulatedTime}s`);
+
             } catch (error) {
                 console.error("Time Tracker: Error saving time:", error);
                 // If save failed, we might want to revert lastSavedTimestamp or accumulatedTime? 

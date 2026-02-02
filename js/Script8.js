@@ -475,13 +475,13 @@ function submitExam() {
     studentEmail: studentEmail // Required for Firestore Rules
   };
 
-  console.log("Attempting to save exam data:", examData);
+
 
   const saveToFirebase = (data) => {
     db.collection("examResults")
       .add(data)
       .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
+
         alert("تم حفظ النتائج بنجاح في قاعدة البيانات!");
       })
       .catch((error) => {
@@ -495,7 +495,7 @@ function submitExam() {
   if (user) {
     saveToFirebase(examData);
   } else {
-    console.log("Waiting for auth state...");
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         saveToFirebase(examData);
