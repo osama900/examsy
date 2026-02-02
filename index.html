@@ -581,6 +581,21 @@
           <span class="stat-value" id="studentRank">--</span>
         </div>
       </div>
+
+      <!-- Top 3 Students Card -->
+      <div class="stat-card" style="border-right: 4px solid #2ecc71;">
+        <div class="stat-icon" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+          <span style="font-size: 24px;">🏆</span>
+        </div>
+        <div class="stat-info" style="width: 100%; overflow: hidden;">
+          <span class="stat-label">الأوائل على الشعبة</span>
+          <div id="topStudentsList"
+            style="font-size: 0.9rem; color: #2c3e50; font-weight: 600; margin-top: 5px; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
+            جاري التحميل...
+          </div>
+        </div>
+      </div>
+
       <div class="stat-card progress-card">
         <div class="stat-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -672,6 +687,134 @@
     }
     const db = firebase.firestore();
 
+    // Helper function: Calculate student completion percentage
+    async function calculateStudentCompletion(studentId, studentEmail, stdGrade) {
+      if (!CURRICULUM[stdGrade]) return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
+
+      try {
+        // Fetch student activities
+        const activitySnapshot = await db.collection('std_id').doc(studentId).collection('study_activity').get();
+        const activityMap = {};
+        activitySnapshot.forEach(doc => activityMap[doc.id] = doc.data());
+
+        // Fetch student exams
+        const examSnapshot = await db.collection('examResults').where('studentEmail', '==', studentEmail).get();
+        const examMap = {};
+        examSnapshot.forEach(doc => {
+          const d = doc.data();
+          if (d.testName) {
+            const t = d.testName.trim();
+            if (!examMap[t] || d.score > examMap[t].score) {
+              examMap[t] = d;
+            }
+          }
+        });
+
+        // Fetch visibility settings
+        let visibilityMap = {};
+        try {
+          const visibilityDoc = await db.collection('settings').doc('lesson_visibility').get();
+          if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
+        } catch (e) { }
+
+        let openLessons = 0;
+        let completedOpenLessons = 0;
+
+        // Check units 3 and 4
+        [3, 4].forEach(unitNum => {
+          const unitLessons = CURRICULUM[stdGrade][unitNum];
+          if (unitLessons && unitLessons.length > 0) {
+            unitLessons.forEach((lesson) => {
+              const subActivities = ['-prep', '-task', 'mind', '-1'];
+              let isCurrentComplete = true;
+
+              subActivities.forEach(suffix => {
+                const actId = lesson.id + suffix;
+
+                if (suffix === '-1') {
+                  const examData = examMap[actId];
+                  if (examData) {
+                    const max = examData.maxScore || 1;
+                    const score = examData.score;
+                    const passing = max / 2;
+                    if (score < passing) {
+                      isCurrentComplete = false;
+                    }
+                  } else {
+                    isCurrentComplete = false;
+                  }
+                } else {
+                  const data = activityMap[actId];
+                  const target = data?.targetTimeSeconds || 30;
+                  const spent = data?.sessionTimeSeconds || 0;
+                  if (!data || spent < target) {
+                    isCurrentComplete = false;
+                  }
+                }
+              });
+
+              const isLocked = visibilityMap[lesson.id] !== true;
+              if (!isLocked) {
+                openLessons++;
+                if (isCurrentComplete) completedOpenLessons++;
+              }
+            });
+          }
+        });
+
+        const completionPercent = openLessons > 0 ? Math.round((completedOpenLessons / openLessons) * 100) : 0;
+        return { completionPercent, completedLessons: completedOpenLessons, totalOpenLessons: openLessons };
+      } catch (error) {
+        if (error.code === 'permission-denied') {
+          console.warn("Permission denied while calculating completion for student:", studentId);
+        } else {
+          console.error("Error calculating completion for student", studentId, error);
+        }
+        return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
+      }
+    }
+
+    // Helper function: Calculate total exam scores for a student
+    async function calculateTotalExamScore(studentEmail, stdGrade) {
+      try {
+        const examSnapshot = await db.collection('examResults').where('studentEmail', '==', studentEmail).get();
+        const bestScores = {}; // Map to store best score per testName
+
+        examSnapshot.forEach(doc => {
+          const data = doc.data();
+          const tName = (data.testName || "").trim();
+          if (!tName) return;
+
+          // Apply filter: If Grade 8 or 9, only count Unit 3 and above
+          let isRelevant = true;
+          if (stdGrade === '8' || stdGrade === '9') {
+            const parts = tName.split('-');
+            if (parts.length > 1) {
+              const unit = parseInt(parts[1]);
+              if (!isNaN(unit) && unit < 3) isRelevant = false;
+            }
+          }
+
+          if (isRelevant) {
+            const score = Number(data.score) || 0;
+            if (!bestScores[tName] || score > bestScores[tName]) {
+              bestScores[tName] = score;
+            }
+          }
+        });
+
+        // Sum the best scores
+        return Object.values(bestScores).reduce((sum, score) => sum + score, 0);
+      } catch (error) {
+        if (error.code === 'permission-denied') {
+          console.warn("Permission denied while calculating exam scores for:", studentEmail);
+        } else {
+          console.error("Error calculating exam scores for", studentEmail, error);
+        }
+        return 0;
+      }
+    }
+
     async function loadDashboardStats() {
       const stdId = localStorage.getItem('std_id');
       if (!stdId) return;
@@ -706,23 +849,53 @@
           .where('std_class', '==', stdClass)
           .get();
 
+        // NEW: Fetch completion % and exam scores for all students
         const studentsInClass = [];
+        const studentPromises = [];
+
         classSnapshot.forEach(doc => {
           const data = doc.data();
-          studentsInClass.push({
-            id: doc.id,
-            time: data.totalStudyTimeSeconds || 0
+          const studentId = doc.id;
+          const studentEmail = data.std_email;
+          const studentName = data.std_name;
+
+          // Create promise to fetch completion and scores
+          const studentPromise = Promise.all([
+            calculateStudentCompletion(studentId, studentEmail, stdGrade),
+            calculateTotalExamScore(studentEmail, stdGrade)
+          ]).then(([completionData, totalExamScore]) => {
+            return {
+              id: studentId,
+              name: studentName,
+              email: studentEmail,
+              time: data.totalStudyTimeSeconds || 0,
+              completionPercent: completionData.completionPercent,
+              totalExamScore: totalExamScore
+            };
           });
+
+          studentPromises.push(studentPromise);
         });
 
-        // Sort students by time (descending)
-        studentsInClass.sort((a, b) => b.time - a.time);
+        // Wait for all student data to be fetched
+        const allStudentsData = await Promise.all(studentPromises);
 
+        // MULTI-LEVEL SORT: Primary by completion %, Secondary by exam scores
+        allStudentsData.sort((a, b) => {
+          // First, compare by completion percentage
+          if (b.completionPercent !== a.completionPercent) {
+            return b.completionPercent - a.completionPercent;
+          }
+          // If completion % is equal, compare by total exam score
+          return b.totalExamScore - a.totalExamScore;
+        });
+
+        // Calculate current student's rank based on sorted order
         let rank = 0;
-        const totalCompetitors = studentsInClass.length;
+        const totalCompetitors = allStudentsData.length;
 
-        for (let i = 0; i < studentsInClass.length; i++) {
-          if (studentsInClass[i].id === stdId) {
+        for (let i = 0; i < allStudentsData.length; i++) {
+          if (allStudentsData[i].id === stdId) {
             rank = i + 1;
             break;
           }
@@ -735,6 +908,31 @@
           };
           const ordinalText = ordinals[rank] ? ` ( ${ordinals[rank]} )` : '';
           document.getElementById('studentRank').textContent = `${rank} / ${totalCompetitors}${ordinalText}`;
+        }
+
+        // --- Top 3 Students Display (Already Sorted) ---
+        const top3Container = document.getElementById('topStudentsList');
+        if (top3Container) {
+          if (allStudentsData.length > 0) {
+            // Take top 3 (already sorted correctly)
+            const top3 = allStudentsData.slice(0, 3);
+
+            let htmlHTML = '';
+            const medals = ['🥇', '🥈', '🥉'];
+
+            top3.forEach((std, index) => {
+              const medal = medals[index] || `#${index + 1}`;
+              // If student has 0% completion, show "..."
+              const displayName = (std.completionPercent === 0) ? "..." : (std.name || "طالب");
+              htmlHTML += `<div style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${medal} ${displayName}
+              </div>`;
+            });
+
+            top3Container.innerHTML = htmlHTML;
+          } else {
+            top3Container.textContent = "لا يوجد بيانات بعد";
+          }
         }
 
       } catch (error) {
@@ -877,19 +1075,15 @@
       }
 
       try {
-        // Fetch user document by email
-        const userQuery = await db.collection('std_id').where('std_email', '==', stdEmail).limit(1).get();
-
-        if (userQuery.empty) {
-          console.error("Debug Lessons: No student found with email", stdEmail);
+        // Use stdId directly if available (Avoid permission issues with collection queries)
+        const userId = stdId;
+        if (!userId) {
+          console.error("Debug Lessons: No student ID found in localStorage");
           return;
         }
 
-        const userDoc = userQuery.docs[0];
-        const userId = userDoc.id; // Correct Document ID from query
-
-        // Fetch user activities using the correct Document ID
-        const snapshot = await userDoc.ref.collection('study_activity').get();
+        // Fetch user activities directly using the Document ID
+        const snapshot = await db.collection('std_id').doc(userId).collection('study_activity').get();
         const activityMap = {};
         snapshot.forEach(doc => activityMap[doc.id] = doc.data());
 
@@ -946,8 +1140,11 @@
 
                   if (examData) {
                     const max = examData.maxScore || 1;
-                    const passing = max / 2;
-                    if (examData.score < passing) {
+                    const score = examData.score;
+
+                    // Full marks or -1 from full marks = complete
+                    // Lower than that (even if passing) = incomplete for lesson status
+                    if (score < max - 1) {
                       isCurrentComplete = false;
                     }
                   } else {

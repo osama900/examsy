@@ -646,8 +646,13 @@
                     };
                 }));
 
-                // 4. Sort & Rank
-                results.sort((a, b) => b.completion - a.completion);
+                // 4. Sort & Rank (2 Stages: Completion then Exam Scores)
+                results.sort((a, b) => {
+                    if (b.completion !== a.completion) {
+                        return b.completion - a.completion;
+                    }
+                    return b.examTotal - a.examTotal;
+                });
                 renderTable(results);
 
             } catch (e) {
