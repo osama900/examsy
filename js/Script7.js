@@ -498,41 +498,65 @@ function submitExam() {
 
 
   const saveToFirebase = (data) => {
-    db.collection("examResults")
+    return db.collection("examResults")
       .add(data)
       .then((docRef) => {
-
         alert("تم حفظ النتائج بنجاح في قاعدة البيانات!");
+        return docRef;
       })
       .catch((error) => {
         console.error("Firestore Error:", error);
         alert("حدث خطأ أثناء حفظ النتائج! " + (error.message || ""));
+        throw error;
       });
+  };
+
+  const checkAndAwardCoins = async (currentDocId) => {
+    if (!window.coinsManager) return;
+
+    try {
+      const examsSnapshot = await db.collection('examResults')
+        .where('studentEmail', '==', studentEmail)
+        .where('testName', '==', testName)
+        .get();
+
+      let previouslyHadScore = false;
+      let previouslyHadFullScore = false;
+
+      examsSnapshot.forEach(doc => {
+        if (doc.id === currentDocId) return;
+
+        const d = doc.data();
+        const score = Number(d.score) || 0;
+        const max = Number(d.maxScore) || 0;
+
+        if (score > 0) previouslyHadScore = true;
+        if (max > 0 && score >= max) previouslyHadFullScore = true;
+      });
+
+      if (totalScore === maxScore && maxScore > 0 && !previouslyHadFullScore) {
+        window.coinsManager.addCoins(50, "علامة كاملة في الاختبار");
+      } else if (totalScore > 0 && !previouslyHadScore) {
+        window.coinsManager.addCoins(10, "إكمال الاختبار");
+      }
+    } catch (e) {
+      console.warn("Coins Check: Failed to check previous results", e);
+    }
   };
 
   // Ensure we are authenticated before writing
   const user = firebase.auth().currentUser;
   if (user) {
-    saveToFirebase(examData);
+    saveToFirebase(examData).then((docRef) => checkAndAwardCoins(docRef.id));
   } else {
-
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        saveToFirebase(examData);
+        saveToFirebase(examData).then((docRef) => checkAndAwardCoins(docRef.id));
       } else {
         console.error("Unauthorized: No user logged in.");
         alert("فشل حفظ النتائج: يرجى تسجيل الدخول أولاً.");
       }
     }, { once: true });
-  }
-
-  // Award Coins logic
-  if (window.coinsManager) {
-    if (totalScore === maxScore && maxScore > 0) {
-      window.coinsManager.addCoins(50, "علامة كاملة في الاختبار");
-    } else if (totalScore > 0) {
-      window.coinsManager.addCoins(10, "إكمال الاختبار");
-    }
   }
 }
 
