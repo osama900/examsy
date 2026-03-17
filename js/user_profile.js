@@ -302,10 +302,10 @@ function checkAndDisplayProfile() {
                 item.onmouseenter = () => { item.style.backgroundColor = isRead ? '#f9f9f9' : '#e1f0fa'; };
                 item.onmouseleave = () => { item.style.backgroundColor = isRead ? '#fff' : '#ebf5fb'; };
 
-                item.onclick = (e) => {
+                item.addEventListener('click', (e) => {
                     e.stopPropagation();
                     updateReadMap(n.id);
-                };
+                });
 
                 const titleStyle = isRead ? 'font-weight:normal; color:#555;' : 'font-weight:bold; color:#2c3e50;';
 
@@ -315,7 +315,74 @@ function checkAndDisplayProfile() {
                         <span style="font-size:10px; color:#999;">${escapeHTML(date)}</span>
                     </div>
                     <div style="font-size:12px; color:#666; line-height:1.4;">${escapeHTML(n.message || n.body)}</div>
+                    <div class="notif-reply-section" style="margin-top: 8px;">
+                        <button class="reply-toggle-btn" style="background: none; border: none; color: #8e44ad; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: bold;">↩ رد على الإشعار</button>
+                        <div class="reply-input-area" style="display: none; margin-top: 5px;">
+                            <textarea placeholder="اكتب ردك هنا..." style="width: 100%; box-sizing: border-box; padding: 5px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; resize: none; height: 60px;"></textarea>
+                            <button class="reply-send-btn" style="background: #8e44ad; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; margin-top: 4px; cursor: pointer;">إرسال</button>
+                        </div>
+                    </div>
                 `;
+
+                // Toggle reply area visibility
+                const toggleBtn = item.querySelector('.reply-toggle-btn');
+                const replyArea = item.querySelector('.reply-input-area');
+                const replySection = item.querySelector('.notif-reply-section');
+                const textarea = item.querySelector('textarea');
+
+                // منع انتشار الضغط من منطقة الرد إلى عنصر الإشعار (يمنع الاختفاء)
+                replySection.addEventListener('click', (e) => e.stopPropagation());
+                textarea.addEventListener('click', (e) => e.stopPropagation());
+                textarea.addEventListener('focus', (e) => e.stopPropagation());
+
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    replyArea.style.display = replyArea.style.display === 'none' ? 'block' : 'none';
+                });
+
+                // Send reply to Firestore
+                const sendBtn = item.querySelector('.reply-send-btn');
+                sendBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const msg = textarea.value.trim();
+                    if (!msg) return;
+
+                    sendBtn.disabled = true;
+                    sendBtn.textContent = 'جاري الإرسال...';
+
+                    const stdId = localStorage.getItem('std_id');
+                    const stdName = localStorage.getItem('std_name') || 'غير محدد';
+                    const stdGrade = localStorage.getItem('std_grade') || '';
+                    const stdClass = localStorage.getItem('std_class') || '';
+
+                    const firestore = (typeof db !== 'undefined') ? db : (window.db || null);
+                    if (!firestore) {
+                        alert('خطأ: قاعدة البيانات غير متاحة');
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = 'إرسال';
+                        return;
+                    }
+
+                    firestore.collection('notification_replies').add({
+                        notificationId: n.id,
+                        notificationTitle: n.title || '',
+                        studentId: stdId,
+                        studentName: stdName,
+                        studentClassInfo: stdGrade + ' - ' + stdClass,
+                        message: msg,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        alert('تم إرسال الرد بنجاح ✅');
+                        textarea.value = '';
+                        replyArea.style.display = 'none';
+                    }).catch(err => {
+                        console.error('Error sending reply:', err);
+                        alert('حدث خطأ أثناء الإرسال: ' + err.message);
+                    }).finally(() => {
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = 'إرسال';
+                    });
+                });
 
                 notifList.appendChild(item);
             });

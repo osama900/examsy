@@ -131,11 +131,38 @@
 
         let startTime = Date.now();
 
-
         let accumulatedTime = 0;
         let alreadyCompleted = false;
         let lastSavedTimestamp = Date.now();
         let initialFetchDone = false;
+
+        // --- Inactivity Pause Logic ---
+        const INACTIVITY_LIMIT_MS = 15 * 1000; // 15 seconds
+        let isIdle = false;
+        let inactivityTimer = null;
+
+        function onActivity() {
+            if (isIdle) {
+                // Resume: reset lastSavedTimestamp so idle gap is NOT counted
+                isIdle = false;
+                lastSavedTimestamp = Date.now();
+            }
+            // Reset the inactivity countdown
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                // Pause: save current delta before going idle
+                saveTime();
+                isIdle = true;
+            }, INACTIVITY_LIMIT_MS);
+        }
+
+        // Listen to all meaningful user interactions
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
+            document.addEventListener(evt, onActivity, { passive: true });
+        });
+
+        // Start the countdown immediately on load
+        onActivity();
 
         // Fetch initial state once
         const activityRef = db.collection('std_id').doc(stdId).collection('study_activity').doc(PAGE_TIME_CONFIG.pageId);
@@ -164,6 +191,9 @@
                 // Slight heuristic: if coins manager not loaded yet, maybe we are too early? 
                 // But valid target time could be 0? Unlikely for a tracked page.
             }
+
+            // Don't count time while student is idle
+            if (isIdle) return;
 
             const now = Date.now();
             const deltaSeconds = Math.floor((now - lastSavedTimestamp) / 1000);
