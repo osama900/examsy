@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>  </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "النماذج الحسابية وتجميع البيانات 📊",
+        children: [
+
+          {
+            content: "مفهوم النموذج الحسابي",
+            children: [
+              { content: "تمثيل رياضي لظاهرة أو نظام." },
+              { content: "يستخدم للتحليل والتنبؤ." },
+              { content: "يعتمد على المعادلات الرياضية." }
+            ]
+          },
+
+          {
+            content: "أهمية النماذج الحسابية",
+            children: [
+              { content: "فهم العلاقات بين المتغيرات." },
+              { content: "تحليل البيانات." },
+              { content: "التنبؤ بالأحداث المستقبلية." },
+              { content: "محاكاة الأنظمة الواقعية." }
+            ]
+          },
+
+          {
+            content: "عناصر النموذج الحسابي",
+            children: [
+              {
+                content: "المتغيرات",
+                children: [
+                  { content: "متغيرات إدخال" },
+                  { content: "متغيرات إخراج" }
+                ]
+              },
+              {
+                content: "المعلمات",
+                children: [
+                  { content: "ثوابت لا تتغير أثناء التحليل." }
+                ]
+              },
+              {
+                content: "المعادلات",
+                children: [
+                  { content: "تربط بين المتغيرات." },
+                  { content: "خطية أو غير خطية." }
+                ]
+              },
+              {
+                content: "الافتراضات",
+                children: [
+                  { content: "تبسيط المشكلة." },
+                  { content: "تسهيل الحل." }
+                ]
+              },
+              {
+                content: "المجال",
+                children: [
+                  { content: "مثل الأحياء أو الاقتصاد." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "أنواع النماذج الحسابية",
+            children: [
+              {
+                content: "النموذج الخطي",
+                children: [
+                  { content: "يمثل بخط مستقيم." },
+                  { content: "علاقة بسيطة بين المتغيرات." },
+                  { content: "قد لا يناسب العلاقات المعقدة." }
+                ]
+              },
+              {
+                content: "النموذج غير الخطي",
+                children: [
+                  { content: "يمثل بمنحنيات." },
+                  { content: "يعالج العلاقات المعقدة." },
+                  {
+                    content: "أنواعه",
+                    children: [
+                      { content: "الانحدار الأسي" },
+                      { content: "الانحدار اللوغاريتمي" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "المتغيرات في التجارب",
+            children: [
+              { content: "المتغير المستقل: يتم التحكم به." },
+              { content: "المتغير التابع: يتأثر بالنتائج." }
+            ]
+          },
+
+          {
+            content: "بناء نموذج حسابي",
+            children: [
+              { content: "تحديد المشكلة." },
+              { content: "تحديد المتغيرات والافتراضات." },
+              { content: "صياغة المعادلات." },
+              { content: "تحليل النتائج." }
+            ]
+          },
+
+          {
+            content: "النمذجة باستخدام Excel",
+            children: [
+              { content: "إدخال البيانات." },
+              { content: "رسم مخطط الانتشار." },
+              { content: "إضافة خط الاتجاه." },
+              { content: "حساب معامل الارتباط." },
+              { content: "التنبؤ بالقيم المستقبلية." }
+            ]
+          },
+
+          {
+            content: "الانحدار الخطي",
+            children: [
+              { content: "معادلة: Y = a + bX" },
+              { content: "a: التقاطع" },
+              { content: "b: الميل" },
+              { content: "يستخدم للتنبؤ." }
+            ]
+          },
+
+          {
+            content: "تجميع البيانات",
+            children: [
+              { content: "تلخيص مجموعة من القيم." },
+              { content: "إنتاج قيمة واحدة." }
+            ]
+          },
+
+          {
+            content: "دوال التجميع في Excel",
+            children: [
+              { content: "SUM: المجموع" },
+              { content: "AVERAGE: المتوسط" },
+              { content: "MAX: أكبر قيمة" },
+              { content: "MIN: أصغر قيمة" },
+              { content: "COUNT: عدد القيم" }
+            ]
+          },
+
+          {
+            content: "تصفية البيانات (الفلاتر)",
+            children: [
+              { content: "عرض بيانات محددة." },
+              { content: "تسهيل التحليل." },
+              { content: "اختيار شروط معينة." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: " " // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
