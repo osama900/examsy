@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>  </title>
+  <title>تنظيم الشبكات 🌐</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../../css/style.css" />
 
@@ -106,159 +106,151 @@
       () => window.markmap,
       null,
       {
-        content: "النماذج الحسابية وتجميع البيانات 📊",
+        content: "تنظيم الشبكات 🌐",
         children: [
 
           {
-            content: "مفهوم النموذج الحسابي",
+            content: "مقدمة تنظيم الشبكات",
             children: [
-              { content: "تمثيل رياضي لظاهرة أو نظام." },
-              { content: "يستخدم للتحليل والتنبؤ." },
-              { content: "يعتمد على المعادلات الرياضية." }
+              { content: "تتكون من أجهزة وبروتوكولات ووسائط اتصال." },
+              { content: "الشبكات المعقدة تحتاج تنظيم خاص." },
+              { content: "تهدف لتسهيل التواصل بين الأجهزة." }
             ]
           },
 
           {
-            content: "أهمية النماذج الحسابية",
+            content: "نموذج OSI",
             children: [
-              { content: "فهم العلاقات بين المتغيرات." },
-              { content: "تحليل البيانات." },
-              { content: "التنبؤ بالأحداث المستقبلية." },
-              { content: "محاكاة الأنظمة الواقعية." }
+              { content: "إطار معياري لتنظيم الاتصال." },
+              { content: "حل مشكلة اختلاف البروتوكولات." },
+              { content: "يوحد الاتصال بين الشبكات." }
             ]
           },
 
           {
-            content: "عناصر النموذج الحسابي",
+            content: "طبقات OSI",
             children: [
+              { content: "7 طبقات متتالية." },
               {
-                content: "المتغيرات",
+                content: "الطبقة الفيزيائية",
                 children: [
-                  { content: "متغيرات إدخال" },
-                  { content: "متغيرات إخراج" }
+                  { content: "نقل البيانات عبر الكوابل." }
                 ]
               },
               {
-                content: "المعلمات",
+                content: "ربط البيانات",
                 children: [
-                  { content: "ثوابت لا تتغير أثناء التحليل." }
+                  { content: "تقسيم البيانات إلى إطارات." },
+                  { content: "كشف الأخطاء." }
                 ]
               },
               {
-                content: "المعادلات",
+                content: "طبقة الشبكة",
                 children: [
-                  { content: "تربط بين المتغيرات." },
-                  { content: "خطية أو غير خطية." }
+                  { content: "توجيه البيانات باستخدام IP." }
                 ]
               },
               {
-                content: "الافتراضات",
+                content: "طبقة النقل",
                 children: [
-                  { content: "تبسيط المشكلة." },
-                  { content: "تسهيل الحل." }
+                  { content: "ضمان نقل البيانات بدون أخطاء." }
                 ]
               },
               {
-                content: "المجال",
+                content: "طبقة الجلسة",
                 children: [
-                  { content: "مثل الأحياء أو الاقتصاد." }
+                  { content: "إنشاء الاتصال بين الأجهزة." }
+                ]
+              },
+              {
+                content: "طبقة العرض",
+                children: [
+                  { content: "تنسيق وتحويل البيانات." }
+                ]
+              },
+              {
+                content: "طبقة التطبيق",
+                children: [
+                  { content: "تشغيل البرامج مثل البريد الإلكتروني." }
                 ]
               }
             ]
           },
 
           {
-            content: "أنواع النماذج الحسابية",
+            content: "الأجهزة المادية",
             children: [
               {
-                content: "النموذج الخطي",
+                content: "الخادم Server",
                 children: [
-                  { content: "يمثل بخط مستقيم." },
-                  { content: "علاقة بسيطة بين المتغيرات." },
-                  { content: "قد لا يناسب العلاقات المعقدة." }
-                ]
-              },
-              {
-                content: "النموذج غير الخطي",
-                children: [
-                  { content: "يمثل بمنحنيات." },
-                  { content: "يعالج العلاقات المعقدة." },
-                  {
-                    content: "أنواعه",
-                    children: [
-                      { content: "الانحدار الأسي" },
-                      { content: "الانحدار اللوغاريتمي" }
-                    ]
-                  }
+                  { content: "إدارة الشبكة." },
+                  { content: "التحقق من المستخدمين." },
+                  { content: "تأمين الشبكة." },
+                  { content: "مراقبة الأنشطة." }
                 ]
               }
             ]
           },
 
           {
-            content: "المتغيرات في التجارب",
+            content: "معدات ربط الشبكة",
             children: [
-              { content: "المتغير المستقل: يتم التحكم به." },
-              { content: "المتغير التابع: يتأثر بالنتائج." }
+              {
+                content: "المحول Switch",
+                children: [
+                  { content: "يربط أجهزة الشبكة المحلية." },
+                  { content: "يستخدم عناوين MAC." },
+                  { content: "يعمل في طبقة ربط البيانات." },
+                  { content: "يوجه البيانات بكفاءة." }
+                ]
+              },
+              {
+                content: "الإطار Frame",
+                children: [
+                  { content: "وحدة نقل البيانات." },
+                  { content: "يتكون من رأس وبيانات وتذييل." },
+                  { content: "يستخدم لكشف الأخطاء." }
+                ]
+              },
+              {
+                content: "الموجه Router",
+                children: [
+                  { content: "يربط بين الشبكات." },
+                  { content: "يستخدم عناوين IP." },
+                  { content: "يحدد أفضل مسار." },
+                  { content: "يحسن الأداء والأمان." }
+                ]
+              }
             ]
           },
 
           {
-            content: "بناء نموذج حسابي",
+            content: "الأجهزة الخارجية",
             children: [
-              { content: "تحديد المشكلة." },
-              { content: "تحديد المتغيرات والافتراضات." },
-              { content: "صياغة المعادلات." },
-              { content: "تحليل النتائج." }
+              { content: "الطابعات." },
+              { content: "أجهزة التخزين." },
+              { content: "نقاط الوصول اللاسلكية." },
+              { content: "أجهزة الطاقة." },
+              { content: "إنترنت الأشياء." }
             ]
           },
 
           {
-            content: "النمذجة باستخدام Excel",
+            content: "ربط الأجهزة بالشبكة",
             children: [
-              { content: "إدخال البيانات." },
-              { content: "رسم مخطط الانتشار." },
-              { content: "إضافة خط الاتجاه." },
-              { content: "حساب معامل الارتباط." },
-              { content: "التنبؤ بالقيم المستقبلية." }
+              { content: "سلكيًا باستخدام Ethernet." },
+              { content: "لاسلكيًا باستخدام Wi-Fi." },
+              { content: "تعيين عنوان IP لكل جهاز." }
             ]
           },
 
           {
-            content: "الانحدار الخطي",
+            content: "ربط الطابعة",
             children: [
-              { content: "معادلة: Y = a + bX" },
-              { content: "a: التقاطع" },
-              { content: "b: الميل" },
-              { content: "يستخدم للتنبؤ." }
-            ]
-          },
-
-          {
-            content: "تجميع البيانات",
-            children: [
-              { content: "تلخيص مجموعة من القيم." },
-              { content: "إنتاج قيمة واحدة." }
-            ]
-          },
-
-          {
-            content: "دوال التجميع في Excel",
-            children: [
-              { content: "SUM: المجموع" },
-              { content: "AVERAGE: المتوسط" },
-              { content: "MAX: أكبر قيمة" },
-              { content: "MIN: أصغر قيمة" },
-              { content: "COUNT: عدد القيم" }
-            ]
-          },
-
-          {
-            content: "تصفية البيانات (الفلاتر)",
-            children: [
-              { content: "عرض بيانات محددة." },
-              { content: "تسهيل التحليل." },
-              { content: "اختيار شروط معينة." }
+              { content: "توصيل الطابعة بالشبكة." },
+              { content: "انتظار تعيين IP." },
+              { content: "إضافتها من لوحة التحكم." },
+              { content: "تثبيت التعريفات." }
             ]
           }
 
@@ -272,10 +264,9 @@
 
 
 
-
   <script>
     const PAGE_TIME_CONFIG = {
-      pageId: " " // Unique ID for this page
+      pageId: "8-4-1mind" // Unique ID for this page
     };
   </script>
   <script src="../../../js/time_tracker.js"></script>
