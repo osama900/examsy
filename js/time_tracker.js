@@ -141,6 +141,61 @@
         let isIdle = false;
         let inactivityTimer = null;
 
+        // --- YouTube API Integration ---
+        let activePlayers = [];
+        const isVideoPlaying = () => {
+            return activePlayers.some(player => {
+                try {
+                    return player && typeof player.getPlayerState === 'function' && player.getPlayerState() === 1; // 1 = YT.PlayerState.PLAYING
+                } catch (e) {
+                    return false;
+                }
+            });
+        };
+
+        const setupYouTubeAPI = () => {
+            // Check if API already loaded
+            if (!window.YT) {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            }
+
+            window.onYouTubeIframeAPIReady = () => {
+                const iframes = document.querySelectorAll('iframe[src*="youtube.com"]');
+                iframes.forEach((iframe, index) => {
+                    // Force enablejsapi=1
+                    let src = iframe.src;
+                    if (!src.includes('enablejsapi=1')) {
+                        src += (src.includes('?') ? '&' : '?') + 'enablejsapi=1';
+                        iframe.src = src;
+                    }
+
+                    // Assign an ID if missing
+                    if (!iframe.id) iframe.id = `yt-player-${index}`;
+
+                    const player = new YT.Player(iframe.id, {
+                        events: {
+                            'onStateChange': (event) => {
+                                if (event.data === 1) { // PLAYING
+                                    onActivity();
+                                }
+                            }
+                        }
+                    });
+                    activePlayers.push(player);
+                });
+            };
+
+            // If API already loaded, manually trigger scan
+            if (window.YT && window.YT.Player) {
+                window.onYouTubeIframeAPIReady();
+            }
+        };
+
+        setupYouTubeAPI();
+
         function onActivity() {
             if (isIdle) {
                 // Resume: reset lastSavedTimestamp so idle gap is NOT counted
@@ -150,6 +205,11 @@
             // Reset the inactivity countdown
             clearTimeout(inactivityTimer);
             inactivityTimer = setTimeout(() => {
+                // If a video is playing, don't go idle, just reset the activity timer
+                if (isVideoPlaying()) {
+                    onActivity();
+                    return;
+                }
                 // Pause: save current delta before going idle
                 saveTime();
                 isIdle = true;
