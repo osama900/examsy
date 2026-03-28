@@ -609,6 +609,17 @@
         </div>
       </div>
 
+      <div class="stat-card" style="border-right: 4px solid #e74c3c;">
+        <div class="stat-icon" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;">
+          <span style="font-size: 24px;">📝</span>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">علامة الامتحان الأول</span>
+          <span class="stat-value" id="firstExamGrade">-- / 20</span>
+          <span class="stat-label" id="firstExamEval" style="color: #e74c3c; font-weight: bold;">--</span>
+        </div>
+      </div>
+
       <div class="stat-card" style="border-right: 4px solid #f39c12;">
         <div class="stat-icon" style="background: rgba(243, 156, 18, 0.1); color: #f39c12;">
           <span style="font-size: 24px;">🪙</span>
@@ -999,6 +1010,39 @@
           } else {
             top3Container.textContent = "لا يوجد بيانات بعد";
           }
+        }
+
+        // --- Manual Grade Fetching ---
+        try {
+          const studentDoc = await db.collection('std_id').doc(stdId).get();
+          const gradeElem = document.getElementById('firstExamGrade');
+          const evalElem = document.getElementById('firstExamEval');
+
+          if (gradeElem && evalElem) {
+            const studentData = studentDoc.exists ? studentDoc.data() : {};
+            const score = studentData.first_grade;
+
+            if (score !== undefined && score !== null) {
+              gradeElem.textContent = `${score} / 20`;
+
+              // Evaluation Logic
+              let evaluation = "";
+              let color = "";
+              if (score >= 18) { evaluation = "ممتاز ✨"; color = "#27ae60"; }
+              else if (score >= 15) { evaluation = "جيد جداً 👍"; color = "#2ecc71"; }
+              else if (score >= 12) { evaluation = "جيد 🙂"; color = "#3498db"; }
+              else if (score >= 10) { evaluation = "مقبول 😐"; color = "#f39c12"; }
+              else { evaluation = "ضعيف ⚠️"; color = "#e74c3c"; }
+
+              evalElem.textContent = `التقدير: ${evaluation}`;
+              evalElem.style.color = color;
+            } else {
+              gradeElem.textContent = "-- من 20";
+              evalElem.textContent = "لم ترصد بعد";
+            }
+          }
+        } catch (e) {
+          console.error("Error fetching manual grade:", e);
         }
 
       } catch (error) {

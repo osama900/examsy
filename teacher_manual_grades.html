@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>رصد العلامات اليدوية</title>
+  <style>
+    body {
+      font-family: "Tajawal", Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    select, input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      min-width: 150px;
+    }
+
+    .btn {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-search {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-search:hover {
+      background: #2980b9;
+    }
+
+    .btn-save {
+      background: #27ae60;
+      color: white;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .btn-save:hover {
+      background: #219150;
+    }
+
+    .btn-save:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .grades-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .grades-table th, .grades-table td {
+      padding: 12px;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+    }
+
+    .grades-table th {
+      background: #f1f2f6;
+      color: #2f3542;
+    }
+
+    .grade-input {
+      width: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .status-msg {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+      text-align: center;
+    }
+
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 9999;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .spinner {
+      width: 50px; height: 50px; border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db; border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loadingOverlay">
+    <div style="margin-bottom: 20px;">جاري التحقق من الصلاحيات...</div>
+    <div class="spinner"></div>
+  </div>
+
+  <div class="container">
+    <a href="teacher_dashboard.html" style="text-decoration: none; color: #3498db;">← العودة للوحة التحكم</a>
+    <h1>رصد العلامات اليدوية (الامتحان الأول)</h1>
+
+    <div class="filter-section">
+      <div class="form-group">
+        <label>الصف:</label>
+        <select id="gradeSelect">
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>الشعبة:</label>
+        <select id="sectionSelect">
+          <option value="أ">أ</option>
+          <option value="ب">ب</option>
+          <option value="ج">ج</option>
+          <option value="د">د</option>
+          <option value="هـ">هـ</option>
+          <option value="و">و</option>
+        </select>
+      </div>
+      <button class="btn btn-search" onclick="fetchStudents()">بحث 🔍</button>
+      <button class="btn" style="background: #e67e22; color: white;" onclick="triggerExcelUpload()">📁 استيراد من Excel</button>
+      <input type="file" id="excelUpload" accept=".xlsx, .xls" style="display: none;" onchange="handleExcelFile(event)">
+    </div>
+
+    <div id="studentsArea" style="display: none;">
+      <table class="grades-table">
+        <thead>
+          <tr>
+            <th>اسم الطالب</th>
+            <th>البريد الإلكتروني</th>
+            <th>علامة الامتحان الأول</th>
+          </tr>
+        </thead>
+        <tbody id="studentsBody"></tbody>
+      </table>
+      <button id="saveBtn" class="btn btn-save" onclick="saveGrades()">حفظ العلامات ✅</button>
+    </div>
+
+    <div id="statusMsg" class="status-msg"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+      authDomain: "examsy-21dc3.firebaseapp.com",
+      projectId: "examsy-21dc3",
+      storageBucket: "examsy-21dc3.firebasestorage.app",
+      messagingSenderId: "357464025229",
+      appId: "1:357464025229:web:b920c8290f985f54339ac4",
+      measurementId: "G-CWZ7MR4V26",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let teacherEmail = "";
+
+    // Auth & Role Check
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      teacherEmail = user.email;
+
+      db.collection('teacehr_log').doc(user.email).get()
+        .then(doc => {
+          if (!doc.exists) {
+            return db.collection('teacehr_log').where('email', '==', user.email).get();
+          }
+          return { exists: true, fromDoc: true };
+        })
+        .then(result => {
+          const isAuthorized = result.fromDoc || (result && !result.empty);
+          if (!isAuthorized) {
+            alert("غير مصرح لك بدخول هذه الصفحة.");
+            window.location.href = "index.html";
+          } else {
+            document.getElementById('loadingOverlay').style.display = 'none';
+          }
+        })
+    });
+
+    let currentStudents = [];
+
+    async function fetchStudents() {
+      const grade = document.getElementById('gradeSelect').value;
+      const section = document.getElementById('sectionSelect').value;
+      const statusMsg = document.getElementById('statusMsg');
+      
+      statusMsg.style.display = 'none';
+      document.getElementById('studentsArea').style.display = 'none';
+
+      try {
+        const snapshot = await db.collection('std_id')
+          .where('std_grade', '==', grade)
+          .where('std_class', '==', section)
+          .get();
+
+        if (snapshot.empty) {
+          showStatus("لا يوجد طلاب في هذه الشعبة", "error");
+          return;
+        }
+
+        currentStudents = [];
+        const body = document.getElementById('studentsBody');
+        body.innerHTML = '';
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          currentStudents.push(data);
+          
+          const existingGrade = (data.first_grade !== undefined && data.first_grade !== null) ? data.first_grade : '';
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${data.std_name}</td>
+            <td>${data.std_email}</td>
+            <td><input type="number" class="grade-input" data-email="${data.std_email}" value="${existingGrade}" min="0" max="100"></td>
+          `;
+          body.appendChild(row);
+        });
+
+        document.getElementById('studentsArea').style.display = 'block';
+      } catch (e) {
+        console.error(e);
+        showStatus("حدث خطأ أثناء جلب البيانات: " + e.message, "error");
+      }
+    }
+
+    async function saveGrades() {
+      const saveBtn = document.getElementById('saveBtn');
+      const inputs = document.querySelectorAll('.grade-input');
+      const grade = document.getElementById('gradeSelect').value;
+      const section = document.getElementById('sectionSelect').value;
+
+      saveBtn.disabled = true;
+      showStatus("جاري الحفظ...", "success");
+
+      const batch = db.batch();
+      const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+      inputs.forEach(input => {
+        const studentEmail = input.dataset.email;
+        const gradeValue = input.value;
+        const student = currentStudents.find(s => s.std_email === studentEmail);
+
+        if (gradeValue !== '') {
+          const score = Number(gradeValue);
+          // Use a deterministic ID for consistent overwriting/updating
+          const docId = `${studentEmail}_FirstExam`;
+          const ref = db.collection('manual_grades').doc(docId);
+          batch.set(ref, {
+            studentEmail,
+            studentName: student.std_name,
+            grade: score,
+            examType: 'الامتحان الأول',
+            class: section,
+            gradeLevel: grade,
+            teacherEmail: teacherEmail,
+            timestamp: timestamp
+          }, { merge: true });
+
+          // Also store directly in std_id document
+          const studentRef = db.collection('std_id').doc(studentEmail);
+          batch.set(studentRef, {
+            first_grade: score
+          }, { merge: true });
+        }
+      });
+
+      try {
+        await batch.commit();
+        showStatus("تم حفظ العلامات بنجاح!", "success");
+      } catch (e) {
+        console.error(e);
+        showStatus("حدث خطأ أثناء الحفظ", "error");
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = `status-msg ${type}`;
+      el.style.display = 'block';
+    }
+
+    function triggerExcelUpload() {
+      if (document.getElementById('studentsArea').style.display === 'none') {
+        alert("الرجاء البحث عن الطلاب أولاً قبل الاستيراد لضمان مطابقة الأسماء.");
+        return;
+      }
+      document.getElementById('excelUpload').click();
+    }
+
+    function handleExcelFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+        matchExcelData(jsonData);
+      };
+      reader.readAsArrayBuffer(file);
+      // Reset input value to allow uploading same file again
+      event.target.value = '';
+    }
+
+    function matchExcelData(excelRows) {
+      let matchCount = 0;
+      const inputs = document.querySelectorAll('.grade-input');
+      
+      excelRows.forEach(row => {
+        // Try to find name and grade in common column headers
+        const name = row['الاسم'] || row['اسم الطالب'] || row['Name'] || Object.values(row)[0];
+        const grade = row['العلامة'] || row['الدرجة'] || row['Grade'] || row['Score'] || Object.values(row)[1];
+
+        if (!name || grade === undefined) return;
+
+        const normalizedExcelName = name.toString().trim().replace(/\s+/g, ' ');
+
+        // Find match in currentStudents
+        const matchedStudent = currentStudents.find(s => {
+          const normalizedStdName = s.std_name.trim().replace(/\s+/g, ' ');
+          return normalizedStdName === normalizedExcelName;
+        });
+
+        if (matchedStudent) {
+          const input = document.querySelector(`.grade-input[data-email="${matchedStudent.std_email}"]`);
+          if (input) {
+            input.value = grade;
+            matchCount++;
+          }
+        }
+      });
+
+      if (matchCount > 0) {
+        showStatus(`تمت مطابقة واستيراد علامات ${matchCount} طلاب بنجاح!`, "success");
+      } else {
+        showStatus("لا توجد أسماء مطابقة في الملف المرفوع.", "error");
+      }
+    }
+  </script>
+</body>
+
+</html>
