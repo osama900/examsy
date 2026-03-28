@@ -3,6 +3,21 @@
 // AUTOMATICALLY LOADS FIREBASE SDKs if not present.
 
 (async function () {
+    // 0. Login Check (Prevent access to lessons without login)
+    if (!localStorage.getItem("std_id")) {
+        const path = window.location.pathname;
+        // Don't redirect if already on login/reg pages (though they usually don't include this script)
+        if (!path.endsWith("std_login.html") && !path.endsWith("std_reg.html")) {
+            alert("يرجى تسجيل الدخول أولاً للوصول إلى هذا المحتوى");
+            let redirectUrl = "std_login.html";
+            if (path.includes('/page/')) {
+                redirectUrl = "../../../std_login.html";
+            }
+            window.location.href = redirectUrl;
+            return;
+        }
+    }
+
 
 
     // 1. Dynamic Firebase Loading
