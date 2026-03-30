@@ -324,7 +324,8 @@
         };
 
         // Strategy: Periodic Overwrite (Robust "Save on Exit")
-        setInterval(saveTime, 5000);
+        // Increased from 5s to 60s to avoid Firebase Quota Exceeded errors
+        setInterval(saveTime, 60000);
 
         // Also try to save on exit just in case
         document.addEventListener('visibilitychange', () => {
