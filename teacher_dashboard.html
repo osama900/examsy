@@ -171,6 +171,71 @@
       margin-bottom: 20px;
     }
 
+    /* Dashboard UI Improvement */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f4f8;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 40px;
+    }
+
+    .dashboard-card {
+        background: rgba(15, 23, 42, 0.12);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .card-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #2c3e50;
+        text-align: right;
+    }
+
+    @media (max-width: 1200px) {
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .header-section { flex-direction: column; gap: 15px; text-align: center; }
+    }
+
     .form-group {
       margin-bottom: 15px;
     }
@@ -272,22 +337,58 @@
   </style>
 
   <div class="container">
-    <h1>لوحة تحكم المعلم</h1>
-    <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    <div class="header-section">
+      <h1 style="margin: 0;">🎓 لوحة تحكم المعلم</h1>
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    </div>
 
-    <button class="download-btn" onclick="window.location.href='std_add.html'">إضافة طالب جديد</button>
-    <button class="download-btn" style="background: #9b59b6;" onclick="window.location.href='lesson_control.html'">إدارة
-      ظهور الدروس</button>
-    <button class="download-btn" onclick="exportData()">تحميل البيانات Excel</button>
-    <button class="download-btn" style="background: #2980b9;" onclick="window.location.href='listId.html'">👥 إدارة
-      الطلاب</button>
-    <button class="download-btn" style="background: #f39c12;" onclick="window.location.href='std_result.html'">📊 نتائج
-      الطلاب</button>
+    <div class="dashboard-grid">
+      <!-- Card 1 -->
+      <a href="std_add.html" class="dashboard-card" style="border-right: 4px solid #3498db;">
+        <div class="card-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">👨‍🎓</div>
+        <div class="card-title">إضافة طالب جديد</div>
+      </a>
 
-    <button class="download-btn" style="background: #8e44ad;" onclick="window.location.href='send_notification.html'">📢
-      إرسال إشعارات</button>
-    <button class="download-btn" style="background: #d35400;" onclick="window.location.href='teacher_manual_grades.html'">📝 رصد العلامات</button>
-    <div class="filter-section">
+      <!-- Card 2 -->
+      <a href="lesson_control.html" class="dashboard-card" style="border-right: 4px solid #9b59b6;">
+        <div class="card-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">📖</div>
+        <div class="card-title">إدارة الدروس</div>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="listId.html" class="dashboard-card" style="border-right: 4px solid #2980b9;">
+        <div class="card-icon" style="background: rgba(41, 128, 185, 0.1); color: #2980b9;">👥</div>
+        <div class="card-title">إدارة الطلاب</div>
+      </a>
+
+      <!-- Card 4 -->
+      <a href="std_result.html" class="dashboard-card" style="border-right: 4px solid #f39c12;">
+        <div class="card-icon" style="background: rgba(243, 156, 18, 0.1); color: #f39c12;">📊</div>
+        <div class="card-title">نتائج الطلاب</div>
+      </a>
+
+      <!-- Card 5 -->
+      <a href="send_notification.html" class="dashboard-card" style="border-right: 4px solid #8e44ad;">
+        <div class="card-icon" style="background: rgba(142, 68, 173, 0.1); color: #8e44ad;">📢</div>
+        <div class="card-title">إرسال إشعارات</div>
+      </a>
+
+      <!-- Card 6 -->
+      <a href="teacher_manual_grades.html" class="dashboard-card" style="border-right: 4px solid #d35400;">
+        <div class="card-icon" style="background: rgba(211, 84, 0, 0.1); color: #d35400;">📝</div>
+        <div class="card-title">رصد العلامات</div>
+      </a>
+
+      <!-- Card 7 -->
+      <div class="dashboard-card" onclick="downloadExcel()" style="border-right: 4px solid #27ae60;">
+        <div class="card-icon" style="background: rgba(39, 174, 96, 0.1); color: #27ae60;">📁</div>
+        <div class="card-title">تحميل بيانات Excel</div>
+      </div>
+    </div>
+
+    <div class="notification-section" style="border-top: 4px solid #3498db;">
+      <h2 style="font-size: 20px;">🔍 البحث عن نتائج الاختبارات</h2>
+      <div class="filter-section">
       <select id="studentClassFilter" onchange="updateClassOptions(); filterResults()">
         <option value="">كل الصفوف</option>
         <option value="7">7</option>

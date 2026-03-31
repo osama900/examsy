@@ -171,6 +171,29 @@
         .back-btn:hover {
             background: #7f8c8d;
         }
+
+        .search-btn {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            align-self: flex-end;
+            height: 45px;
+        }
+
+        .search-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 
@@ -178,22 +201,31 @@
 
     <div class="container">
         <div class="header-wrapper">
-            <h1>📢 إرسال إشعار للطلاب</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <a href="teacher_dashboard.html" class="back-btn" style="margin-top: 0;">⬅ العودة</a>
+                <h1 style="margin-bottom: 0;">📢 إرسال إشعار للطلاب</h1>
+                <div style="width: 80px;"></div> <!-- Spacer for centering title -->
+            </div>
         </div>
 
         <!-- Filters First -->
-        <div class="form-group" style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
+        <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+            <div style="flex: 2;">
                 <label for="filterGrade">الصف</label>
                 <select id="filterGrade" class="form-control">
                     <option value="">-- اختر الصف --</option>
                 </select>
             </div>
-            <div style="flex: 1;">
+            <div style="flex: 2;">
                 <label for="filterClass">الشعبة</label>
                 <select id="filterClass" class="form-control" disabled>
                     <option value="">-- اختر الشعبة --</option>
                 </select>
+            </div>
+            <div style="flex: 1;">
+                <button class="search-btn" onclick="filterStudents()">
+                    🔍 بحث
+                </button>
             </div>
         </div>
 
@@ -206,7 +238,7 @@
                     <label for="selectAll" style="margin: 0; cursor: pointer;">تحديد الكل</label>
                 </div>
                 <div id="studentCheckboxes">
-                    <div style="text-align: center; color: #95a5a6; padding: 20px;">جاري تحميل الطلاب...</div>
+                    <div style="text-align: center; color: #95a5a6; padding: 20px;">يرجى اختيار الصف والشعبة ثم الضغط على "بحث" لإظهار الطلاب.</div>
                 </div>
             </div>
         </div>
@@ -236,9 +268,7 @@
             <div style="text-align: center; color: #95a5a6; padding: 20px;">جاري تحميل الردود...</div>
         </div>
 
-        <div style="text-align: center;">
-            <a href="teacher_dashboard.html" class="back-btn">⬅ العودة للوحة التحكم</a>
-        </div>
+        <!-- Replies Section (moved button to top) -->
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -288,8 +318,8 @@
                 // Populate Grades Filter
                 populateGrades();
 
-                // Initial Populate
-                populateTargetList(allStudents);
+                // Wait for search
+                // populateTargetList(allStudents); // Removed to start empty
 
             }).catch(err => console.error("Error loading students:", err));
         });
@@ -317,9 +347,7 @@
             classSelect.innerHTML = '<option value="">-- كل الشعب --</option>';
             classSelect.disabled = !selectedGrade;
 
-            if (!selectedGrade) {
-                populateTargetList(allStudents);
-            } else {
+            if (selectedGrade) {
                 const sections = [...new Set(allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s))];
                 sections.sort();
                 sections.forEach(s => {
@@ -328,18 +356,24 @@
                     opt.textContent = `شعبة ${s}`;
                     classSelect.appendChild(opt);
                 });
-                filterStudents();
             }
         });
 
-        classSelect.addEventListener('change', filterStudents);
+        // classSelect.addEventListener('change', filterStudents); // Removed to wait for search button
 
         function filterStudents() {
             const grade = gradeSelect.value;
             const section = classSelect.value;
+
+            if (!grade) {
+                alert("يرجى اختيار الصف أولاً");
+                return;
+            }
+
             let filtered = allStudents;
             if (grade) filtered = filtered.filter(s => s.grade === grade);
             if (section) filtered = filtered.filter(s => s.section === section);
+            
             populateTargetList(filtered);
         }
 
