@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <script src="../../../js/auth_check.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> تمدد الشبكة وموثوقيتها 🖧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../css/style.css">
+</head>
+
+<body>
+    <div class="headerdiv">
+        <header class="main-header">
+            <div class="header-content">
+                <a href="../../../index.html" class="logo-link">
+                    <span class="logo-emoji">📚</span>
+                    <span class="logo-text">الاختبارات الالكترونية</span>
+                </a>
+            </div>
+        </header>
+    </div>
+
+    <div class="container">
+        <h1 class="h19"> </h1>
+        <div class="unit-section">
+            <h2 class=".h29">التحضير</h2>
+            <div class="lessons-grid-prep">
+                <br>
+
+
+                <span class="lesson-prep">
+                    <u>تـمـدد الشبكة (Network Expansion)</u><br>
+                    هو زيادة عدد العناصر المرتبطة بالشبكة (أجهزة وتطبيقات) أو زيادة نطاق التغطية دون المساس بالأداء
+                    والموثوقية. يتم ذلك من خلال: إضافة أجهزة جديدة، توسيع الوسط المادي (كابلات أو لاسلكي)، تجزئة الشبكة
+                    باستخدام المحولات والموجهات لتخفيف الضغط، زيادة عدد الخوادم (Servers)، وترقية الأجهزة والمكونات
+                    الحالية بأخرى ذات كفاءة أعلى تتوافق مع التقنيات الحديثة.
+                    <br><br>
+                </span>
+
+                <br><br>
+
+                <span class="lesson-prep">
+                    <u>موثوقية الشبكة (Network Reliability)</u><br>
+                    هي قدرة الشبكة على أداء وظائفها باستمرار دون انقطاع مع ضمان توصيل البيانات بشكل صحيح وآمن. تعتمد
+                    الموثوقية على عدة مؤشرات أهمها: التوافر (Availability) بنسبة عالية، قابلية الصيانة (Maintainability)
+                    لإصلاح الأعطال بسرعة، الأداء المستقر، التكرار (Redundancy) بوجود مسارات بديلة، والأمان (Security)
+                    لحماية المكونات من الاختراقات.
+                    <br><br>
+                </span>
+
+                <br><br>
+
+                <span class="lesson-prep">
+                    <u>العناوين الفيزيائية (MAC Address)</u><br>
+                    هي عناوين ثابتة (Permanent) تعطيها الشركة المصنعة للأجهزة، وتعمل في طبقة ربط البيانات (Layer 2).
+                    يستخدم المحول (Switch) جدول عناوين فيزيائية لتسجيل الأجهزة المرتبطة بمنافذه تلقائياً؛ فعند وصول إطار
+                    بيانات (Frame) يطلب جهازاً معيناً، يقوم المحول بفحص الجدول وإرسال الإطار للمنفذ الصحيح فقط، مما يمنع
+                    إرساله لجميع المنافذ.
+                    <br><br>
+                </span>
+
+                <br><br>
+
+                <span class="lesson-prep">
+                    <u>العنوان الرقمي (IP Address) وقناع الشبكة</u><br>
+                    عنوان منطقي (Logical) يتغير بتغير الشبكة، ويتكون (IPv4) من 4 مقاطع تفصلها نقاط (مثل 192.168.16.1).
+                    لتمييز عنوان الشبكة عن عنوان الجهاز، نستخدم "قناع الشبكة" (Subnet Mask)؛ حيث يحدد الرقم (255)
+                    الأجزاء الخاصة بالشبكة، بينما يحدد الرقم (0) الجزء الخاص بالجهاز داخل تلك الشبكة.
+                    <br><br>
+                </span>
+
+                <br><br>
+
+                <span class="lesson-prep">
+                    <u>التوجيه بين الشبكات (Routing)</u><br>
+                    عند إرسال بيانات بين شبكتين مختلفتين، نحتاج للموجه (Router) وبوابة افتراضية (Default Gateway). خلال
+                    رحلة الحزمة، تبقى عناوين IP (المصدر والهدف) ثابتة لا تتغير، بينما تتغير عناوين MAC في كل مرحلة: من
+                    الجهاز للموجه، ثم داخل الموجه لاتخاذ قرار التوجيه، وصولاً إلى الجهاز الهدف في الشبكة الأخرى.
+                    <br><br>
+                </span>
+
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/VXaI9QHzWJY" title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+            </div>
+            <footer>
+                جميع الحقوق محفوظة © Teacher Osama Omar
+            </footer>
+
+            <!-- Configure Time Tracker -->
+            <script>
+                const PAGE_TIME_CONFIG = {
+                    pageId: "8-4-2-prep" // Unique ID for this page
+                };
+            </script>
+            <script src="../../../js/time_tracker.js"></script>
+</body>
+
+</html>
