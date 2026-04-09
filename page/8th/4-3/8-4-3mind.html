@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أساسيات برنامج محاكاة الشبكات Cisco Packet Tracer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "أساسيات برنامج Packet Tracer 🌐",
+        children: [
+
+          {
+            content: "مفهوم البرنامج",
+            children: [
+              { content: "برنامج لمحاكاة شبكات الحاسوب." },
+              { content: "يوفر بيئة افتراضية للتجربة." },
+              { content: "يقلل الحاجة للأجهزة الحقيقية." },
+              { content: "يساعد على التعلم العملي." }
+            ]
+          },
+
+          {
+            content: "أهمية Packet Tracer",
+            children: [
+              { content: "فهم عمل الشبكات." },
+              { content: "تجربة تصميم الشبكات." },
+              { content: "التدريب دون تكلفة." },
+              { content: "تحليل المشكلات الشبكية." }
+            ]
+          },
+
+          {
+            content: "واجهة البرنامج",
+            children: [
+              {
+                content: "شريط الأدوات العلوي",
+                children: [
+                  { content: "أوامر: حفظ، فتح، جديد." },
+                  { content: "إدارة المشروع." }
+                ]
+              },
+              {
+                content: "شريط الأدوات السفلي",
+                children: [
+                  { content: "أجهزة الشبكة." },
+                  { content: "أسلاك التوصيل." }
+                ]
+              },
+              {
+                content: "منطقة العمل",
+                children: [
+                  { content: "تصميم الشبكة." },
+                  { content: "إضافة الأجهزة." }
+                ]
+              },
+              {
+                content: "أوضاع التشغيل",
+                children: [
+                  { content: "الوضع الحقيقي (Logical): يُستخدم لتصميم الشبكة وبنائها، حيث يتم إضافة الأجهزة مثل الحواسيب والموجّهات، وربطها بالكابلات المناسبة، وضبط إعداداتها مثل عنوان IP، دون مشاهدة حركة البيانات." },
+                  { content: "وضع المحاكاة (Simulation): يُستخدم لمراقبة عمل الشبكة بعد تصميمها، حيث يمكن تتبع حركة البيانات (Packets) بين الأجهزة، ومعرفة مسارها، واختبار الاتصال وتحليل الأخطاء." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مكونات الشبكة",
+            children: [
+              {
+                content: "الأجهزة الطرفية",
+                children: [
+                  { content: "PC (حاسوب)." },
+                  { content: "Printer (طابعة)." },
+                  { content: "Server (خادم)." }
+                ]
+              },
+              {
+                content: "أجهزة الربط",
+                children: [
+                  { content: "Router (موجه)." },
+                  { content: "Switch (محول)." }
+                ]
+              },
+              {
+                content: "أسلاك التوصيل",
+                children: [
+                  {
+                    content: "Straight-Through",
+                    children: [
+                      { content: "لربط أجهزة مختلفة مثل حاسوب بمحول." }
+                    ]
+                  },
+                  {
+                    content: "Cross-Over",
+                    children: [
+                      { content: "لربط أجهزة متشابهة مثل حاسوب بحاسوب." }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "إنشاء شبكة بسيطة",
+            children: [
+              { content: "إضافة الأجهزة." },
+              { content: "توصيل الأجهزة بالكابل." },
+              { content: "اختيار المنفذ المناسب." },
+              { content: "ظهور اللون الأخضر يعني نجاح الاتصال." }
+            ]
+          },
+
+          {
+            content: "عنونة الأجهزة",
+            children: [
+              { content: "إعطاء كل جهاز عنوان IP." },
+              { content: "مثال: 192.168.0.1" },
+              { content: "قناع الشبكة: 255.255.255.0" },
+              { content: "ضروري لعملية الاتصال." }
+            ]
+          },
+
+          {
+            content: "التحقق من الاتصال",
+            children: [
+              {
+                content: "أمر ipconfig",
+                children: [
+                  { content: "عرض عنوان IP." }
+                ]
+              },
+              {
+                content: "أمر ping",
+                children: [
+                  { content: "اختبار الاتصال بين الأجهزة." },
+                  { content: "نجاح = Reply." },
+                  { content: "فشل = Timeout." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "إرسال الرسائل",
+            children: [
+              { content: "اختيار الجهاز المرسل." },
+              { content: "تحديد الجهاز المستقبل." },
+              { content: "تشغيل المحاكاة." },
+              { content: "متابعة مسار الرسالة." },
+              { content: "✔ تعني نجاح الإرسال." }
+            ]
+          },
+
+          {
+            content: "المهارات المكتسبة",
+            children: [
+              { content: "التفكير العملي." },
+              { content: "حل المشكلات." },
+              { content: "العمل الجماعي." },
+              { content: "التعامل مع الشبكات." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "8-4-3mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
