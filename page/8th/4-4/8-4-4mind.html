@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> استخدام برنامج Packet Tracer لاعداد شبكة محلية LAN </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: " استخدام برنامج Packet Tracer لاعداد شبكة محلية LAN 🌐",
+        children: [
+
+
+
+          {
+            content: "مفاهيم أساسية",
+            children: [
+              { content: "الشبكة المحلية LAN: نطاق صغير." },
+              {
+                content: "عنوان IP",
+                children: [
+                  { content: "Static IP: يدوي." },
+                  { content: "DHCP: تلقائي." }
+                ]
+              },
+              {
+                content: "أجهزة الشبكة",
+                children: [
+                  { content: "Switch" },
+                  { content: "Router" },
+                  { content: "Wireless Router" },
+                  { content: "Server" }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "إنشاء شبكة باستخدام Switch",
+            children: [
+              { content: "إضافة حاسوب وطابعة." },
+              { content: "إضافة Switch." },
+              { content: "توصيل بكابل Copper Straight-Through." },
+              { content: "تعيين IP يدويًا." },
+              { content: "التحقق باستخدام ipconfig." },
+              { content: "إرسال رسالة بين الأجهزة." },
+              { content: "تتبع المسار Simulation." }
+            ]
+          },
+
+          {
+            content: "استخدام Server و DHCP",
+            children: [
+              { content: "إضافة Server للشبكة." },
+              { content: "تفعيل خدمة DHCP." },
+              { content: "توزيع IP تلقائيًا." },
+              { content: "منع تكرار العناوين." },
+              { content: "اختبار الاتصال ping." }
+            ]
+          },
+
+          {
+            content: "إنشاء شبكة لاسلكية",
+            children: [
+              { content: "استخدام Wireless Router." },
+              { content: "إضافة Laptop وهاتف ذكي." },
+              { content: "تغيير كرت الشبكة إلى WNIC." },
+              { content: "الحصول على IP تلقائيًا." },
+              { content: "اختبار الاتصال ping." },
+              { content: "إرسال الرسائل بين الأجهزة." }
+            ]
+          },
+
+          {
+            content: "الربط بين شبكتين",
+            children: [
+              { content: "تقسيم الأجهزة إلى شبكتين." },
+              { content: "ربط كل شبكة بـ Switch." },
+              { content: "استخدام Router للربط." },
+              { content: "تعيين IP للموجه." },
+              {
+                content: "Gateway",
+                children: [
+                  { content: "بوابة عبور بين الشبكات." },
+                  { content: "ضرورية للتواصل بين الشبكات." }
+                ]
+              },
+              { content: "اختبار الاتصال بين الشبكتين." }
+            ]
+          },
+
+          {
+            content: "المهارات المكتسبة",
+            children: [
+              { content: "تصميم الشبكات." },
+              { content: "توصيل الأجهزة." },
+              { content: "تعيين IP." },
+              { content: "اختبار الاتصال." },
+              { content: "تتبع انتقال البيانات." }
+            ]
+          },
+
+          {
+            content: "المواطنة الرقمية",
+            children: [
+              { content: "استخدام كلمات مرور قوية." },
+              { content: "حماية الشبكة." },
+              { content: "استخدام مسؤول للشبكة." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "8-4-4mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
