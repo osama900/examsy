@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> محاكاة انترنت الاشياء بإستخدام برنامج Packet Tracer </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "محاكاة إنترنت الأشياء باستخدام Packet Tracer 🌐",
+        children: [
+
+          {
+            content: "مفهوم إنترنت الأشياء (IoT)",
+            children: [
+              { content: "ربط الأجهزة عبر الإنترنت." },
+              { content: "التحكم والمراقبة عن بعد." },
+              { content: "يعتمد على المستشعرات." },
+              { content: "يستخدم في مجالات متعددة." }
+            ]
+          },
+
+          {
+            content: "أهمية إنترنت الأشياء",
+            children: [
+              { content: "تسهيل الحياة اليومية." },
+              { content: "توفير الوقت والجهد." },
+              { content: "زيادة الأمان." },
+              { content: "توفير الطاقة." }
+            ]
+          },
+
+          {
+            content: "برنامج Packet Tracer",
+            children: [
+              { content: "محاكاة شبكات الحاسوب." },
+              { content: "بناء أنظمة IoT." },
+              { content: "بيئة تعليمية آمنة." }
+            ]
+          },
+
+          {
+            content: "المنزل الذكي (Smart Home)",
+            children: [
+              { content: "أجهزة متصلة بالإنترنت." },
+              {
+                content: "أمثلة",
+                children: [
+                  { content: "إضاءة" },
+                  { content: "مكيف" },
+                  { content: "مروحة" },
+                  { content: "باب كراج" }
+                ]
+              },
+              { content: "التحكم عن بعد." }
+            ]
+          },
+
+          {
+            content: "مكونات الشبكة",
+            children: [
+              { content: "هاتف ذكي (Smartphone)" },
+              { content: "بوابة منزلية (Home Gateway)" },
+              { content: "أجهزة منزلية" },
+              { content: "أجهزة استشعار" }
+            ]
+          },
+
+          {
+            content: "إنشاء شبكة منزلية",
+            children: [
+              { content: "إضافة الأجهزة." },
+              { content: "ربط الأجهزة لاسلكيًا." },
+              { content: "استخدام SSID." },
+              { content: "توصيل الهاتف بالشبكة." }
+            ]
+          },
+
+          {
+            content: "التحكم بالأجهزة",
+            children: [
+              { content: "استخدام IoT Monitor." },
+              { content: "تشغيل وإيقاف الأجهزة." },
+              { content: "تغيير الإعدادات." }
+            ]
+          },
+
+          {
+            content: "نظام المراقبة الذكي",
+            children: [
+              { content: "كاميرا + كاشف حركة." },
+              { content: "التقاط صورة عند الحركة." },
+              { content: "استخدام Conditions." }
+            ]
+          },
+
+          {
+            content: "الأمان والخصوصية",
+            children: [
+              { content: "كلمات مرور قوية." },
+              { content: "تشفير البيانات." },
+              { content: "حماية الخصوصية." },
+              { content: "الوعي الرقمي." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "8-4-5mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
