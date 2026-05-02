@@ -156,7 +156,7 @@
 
   <div class="container">
     <a href="teacher_dashboard.html" style="text-decoration: none; color: #3498db;">← العودة للوحة التحكم</a>
-    <h1>رصد العلامات اليدوية (الامتحان الأول)</h1>
+    <h1>رصد العلامات اليدوية (الامتحان الأول والثاني)</h1>
 
     <div class="filter-section">
       <div class="form-group">
@@ -189,7 +189,7 @@
           <tr>
             <th>اسم الطالب</th>
             <th>البريد الإلكتروني</th>
-            <th>علامة الامتحان الأول</th>
+            <th>علامة الامتحان الأول والثاني (من 40)</th>
           </tr>
         </thead>
         <tbody id="studentsBody"></tbody>
@@ -273,16 +273,24 @@
         body.innerHTML = '';
 
         snapshot.forEach(doc => {
-          const data = doc.data();
-          currentStudents.push(data);
-          
+          currentStudents.push(doc.data());
+        });
+
+        // ترتيب الطلاب أبجدياً
+        currentStudents.sort((a, b) => {
+          const nameA = a.std_name || "";
+          const nameB = b.std_name || "";
+          return nameA.localeCompare(nameB, 'ar');
+        });
+
+        currentStudents.forEach(data => {
           const existingGrade = (data.first_grade !== undefined && data.first_grade !== null) ? data.first_grade : '';
 
           const row = document.createElement('tr');
           row.innerHTML = `
             <td>${data.std_name}</td>
             <td>${data.std_email}</td>
-            <td><input type="number" class="grade-input" data-email="${data.std_email}" value="${existingGrade}" min="0" max="100"></td>
+            <td><input type="number" class="grade-input" data-email="${data.std_email}" value="${existingGrade}" min="0" max="40"></td>
           `;
           body.appendChild(row);
         });
@@ -320,7 +328,7 @@
             studentEmail,
             studentName: student.std_name,
             grade: score,
-            examType: 'الامتحان الأول',
+            examType: 'الامتحان الأول والثاني',
             class: section,
             gradeLevel: grade,
             teacherEmail: teacherEmail,
