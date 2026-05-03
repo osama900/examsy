@@ -497,10 +497,16 @@
                         <div style="color: #34495e; font-size: 15px; line-height: 1.5; background: #fdfdfd; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
                             ${r.message}
                         </div>
-                        <div style="text-align: left; font-size: 11px; color: #bdc3c7; margin-top: 5px;">
-                            ${date}
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                            <button class="reply-to-student-btn" style="background: none; border: none; color: #8e44ad; font-size: 13px; cursor: pointer; padding: 0; font-weight: bold;">↩ رد على الطالب</button>
+                            <div style="font-size: 11px; color: #bdc3c7;">${date}</div>
                         </div>
                     `;
+                    
+                    item.querySelector('.reply-to-student-btn').addEventListener('click', () => {
+                        replyToStudent(r.studentId, r.studentName);
+                    });
+                    
                     repliesContainer.appendChild(item);
                 });
             }, err => {
@@ -516,6 +522,29 @@
             } catch(e) {
                 console.error('Error deleting reply', e);
                 alert('حدث خطأ أثناء الحذف');
+            }
+        }
+
+        async function replyToStudent(studentId, studentName) {
+            if (!studentId || studentId === 'undefined') {
+                alert("لا يمكن الرد على هذا الطالب لأنه لا يوجد معرف خاص به (قد يكون الرد قديمًا).");
+                return;
+            }
+            const message = prompt(`اكتب ردك للطالب ${studentName}:`);
+            if (!message || !message.trim()) return;
+
+            try {
+                await db.collection("notifications").add({
+                    title: "رد من المعلم",
+                    body: message.trim(),
+                    target: studentId,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    sender: "Teacher"
+                });
+                alert("تم إرسال الرد بنجاح! ✅");
+            } catch (err) {
+                console.error("Error sending reply:", err);
+                alert("حدث خطأ أثناء الإرسال ❌");
             }
         }
 
