@@ -197,6 +197,11 @@
         <input type="email" id="std_email" required />
       </div>
 
+      <div class="form-group" style="display: flex; align-items: center; gap: 10px; justify-content: flex-start; direction: rtl; margin-top: 15px;">
+        <input type="checkbox" id="std_graduated" style="width: 20px; height: 20px; cursor: pointer; margin: 0;" />
+        <label for="std_graduated" style="display: inline; margin: 0; cursor: pointer; font-weight: bold; color: #555;">هل الطالب متخرج؟</label>
+      </div>
+
       <button type="submit" id="submitBtn">إضافة الطالب</button>
     </form>
 
@@ -287,6 +292,7 @@
       const std_grade = document.getElementById("std_grade").value.trim();
       const std_class = document.getElementById("std_class").value.trim();
       const std_email = document.getElementById("std_email").value.trim();
+      const std_graduated = document.getElementById("std_graduated").checked;
 
       // Validate required fields
       if (
@@ -318,6 +324,7 @@
           std_class: std_class,
           std_id: std_email, // Use email as ID
           std_email: std_email,
+          std_graduated: std_graduated,
         };
 
         // Add to Firebase Firestore

@@ -192,6 +192,15 @@
           if (!querySnapshot.empty) {
             const doc = querySnapshot.docs[0];
             const studentData = doc.data();
+
+            // Check if student has graduated
+            if (studentData.std_graduated === true) {
+              firebase.auth().signOut();
+              localStorage.clear();
+              alert("نتمنى لكم التوفيق، نراكم في العام القادم 🎓");
+              return;
+            }
+
             const stdName = studentData.std_name || "";
             const stdClass = studentData.std_class || "";
             const stdGrade = String(studentData.std_grade || "");

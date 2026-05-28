@@ -514,7 +514,7 @@
   </style>
 </head>
 
-<body>
+<body style="display: none;">
   <header class="main-header">
     <div class="header-content"
       style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto;">
@@ -1099,14 +1099,72 @@
     }
 
     // Initialize Auth Listener
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
+        // Quick verification of graduation status
+        const stdId = localStorage.getItem('std_id') || user.email;
+        if (stdId) {
+          try {
+            const doc = await db.collection('std_id').doc(stdId).get();
+            if (doc.exists && doc.data().std_graduated === true) {
+              // IMMEDIATELY OVERWRITE CONTENT and display graduation screen
+              document.body.innerHTML = `
+                <div style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+                  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                  color: white;
+                  font-family: 'Tajawal', Arial, sans-serif;
+                  text-align: center;
+                  padding: 20px;
+                  direction: rtl;
+                ">
+                  <div style="font-size: 5rem; margin-bottom: 20px;">🎓</div>
+                  <h1 style="font-size: 2.5rem; margin-bottom: 15px; font-weight: bold;">نتمنى لكم التوفيق</h1>
+                  <p style="font-size: 1.5rem; margin-bottom: 30px; opacity: 0.9;">نراكم في العام القادم</p>
+                  <div style="
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid rgba(255,255,255,0.3);
+                    border-top: 5px solid white;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto;
+                  "></div>
+                </div>
+                <style>
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                </style>
+              `;
+              document.body.style.display = 'block';
 
+              // Perform logout
+              setTimeout(() => {
+                firebase.auth().signOut().then(() => {
+                  localStorage.clear();
+                  window.location.href = "std_login.html";
+                });
+              }, 4000);
+              return;
+            }
+          } catch (e) {
+            console.error("Error checking graduation status:", e);
+          }
+        }
+
+        // Show body if not graduated and load stats
+        document.body.style.display = 'block';
         loadDashboardStats();
         loadAllUnitsProgress();
         updateDashboardNotificationCard();
       } else {
-
+        document.body.style.display = 'block';
       }
     });
 

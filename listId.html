@@ -128,6 +128,16 @@
             color: white;
         }
 
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
+
         /* Table Styles */
         .table-responsive {
             overflow-x: auto;
@@ -248,16 +258,20 @@
         <div class="actions-bar">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرقم التعريفي..."
-                    oninput="handleFilter()">
+                    onkeydown="if(event.key === 'Enter') performSearch()">
             </div>
 
-            <select id="gradeFilter" onchange="handleFilter()">
-                <option value="">كل الصفوف</option>
+            <select id="gradeFilter" onchange="updateClassFilterOptions()">
+                <option value="">اختر الصف...</option>
             </select>
 
-            <select id="classFilter" onchange="handleFilter()">
+            <select id="classFilter">
                 <option value="">كل الشعب</option>
             </select>
+
+            <button class="btn btn-primary" onclick="performSearch()" id="searchBtn">
+                🔍 بحث
+            </button>
 
             <button class="btn btn-danger" onclick="deleteSelected()" id="bulkDeleteBtn" disabled>
                 🗑 حذف المحدد (<span id="selectedCount">0</span>)
@@ -274,6 +288,10 @@
                         <th>الصف</th>
                         <th>الشعبة</th>
                         <th>البريد الإلكتروني</th>
+                        <th>
+                            هل تخرج؟
+                            <input type="checkbox" id="selectAllGraduated" onclick="toggleSelectAllGraduated(this)" title="تحديد/إلغاء التخرج للكل" style="margin-right: 5px; cursor: pointer; vertical-align: middle; width: 16px; height: 16px;">
+                        </th>
                         <th>إجراءات</th>
                     </tr>
                 </thead>
@@ -333,30 +351,43 @@
                 });
         });
 
+        let searchPerformed = false;
+
         async function initPage() {
             try {
                 const snapshot = await db.collection('std_id').get();
                 allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 populateFilterOptions();
-                filteredStudents = [...allStudents];
-                renderTable();
+                showInitialMessage();
 
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('mainContainer').style.display = 'block';
-                document.getElementById('totalCount').textContent = allStudents.length;
+                document.getElementById('totalCount').textContent = '0';
             } catch (error) {
                 console.error("Error fetching students:", error);
                 alert("حدث خطأ أثناء تحميل البيانات");
             }
         }
 
+        function showInitialMessage() {
+            const body = document.getElementById('studentsBody');
+            const noRes = document.getElementById('noResults');
+            body.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #777; font-size: 1.1rem;">
+                        ℹ️ الرجاء اختيار الصف والشعبة ثم الضغط على زر "بحث" لعرض بيانات الطلاب.
+                    </td>
+                </tr>
+            `;
+            noRes.style.display = 'none';
+        }
+
         function populateFilterOptions() {
             const grades = [...new Set(allStudents.map(s => s.std_grade).filter(Boolean))].sort();
-            const classes = [...new Set(allStudents.map(s => s.std_class).filter(Boolean))].sort();
 
             const gSelect = document.getElementById('gradeFilter');
-            const cSelect = document.getElementById('classFilter');
+            gSelect.innerHTML = '<option value="">اختر الصف...</option>';
 
             grades.forEach(g => {
                 const opt = document.createElement('option');
@@ -365,7 +396,22 @@
                 gSelect.appendChild(opt);
             });
 
-            classes.forEach(c => {
+            updateClassFilterOptions();
+        }
+
+        function updateClassFilterOptions() {
+            const grade = document.getElementById('gradeFilter').value;
+            const cSelect = document.getElementById('classFilter');
+            cSelect.innerHTML = '<option value="">كل الشعب</option>';
+
+            let filteredClasses = [];
+            if (grade) {
+                filteredClasses = [...new Set(allStudents.filter(s => s.std_grade === grade).map(s => s.std_class).filter(Boolean))].sort();
+            } else {
+                filteredClasses = [...new Set(allStudents.map(s => s.std_class).filter(Boolean))].sort();
+            }
+
+            filteredClasses.forEach(c => {
                 const opt = document.createElement('option');
                 opt.value = c;
                 opt.textContent = c;
@@ -373,27 +419,40 @@
             });
         }
 
-        function handleFilter() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        function performSearch() {
             const grade = document.getElementById('gradeFilter').value;
             const classVal = document.getElementById('classFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            if (!grade) {
+                alert("الرجاء اختيار الصف أولاً!");
+                return;
+            }
+
+            searchPerformed = true;
 
             filteredStudents = allStudents.filter(s => {
                 const matchesSearch = (s.std_name || "").toLowerCase().includes(searchTerm) ||
                     (s.std_id || "").toLowerCase().includes(searchTerm);
-                const matchesGrade = grade === "" || s.std_grade === grade;
+                const matchesGrade = s.std_grade === grade;
                 const matchesClass = classVal === "" || s.std_class === classVal;
 
                 return matchesSearch && matchesGrade && matchesClass;
             });
 
             renderTable();
+            document.getElementById('totalCount').textContent = filteredStudents.length;
         }
 
         function renderTable() {
             const body = document.getElementById('studentsBody');
             const noRes = document.getElementById('noResults');
             body.innerHTML = "";
+
+            if (!searchPerformed) {
+                showInitialMessage();
+                return;
+            }
 
             if (filteredStudents.length === 0) {
                 noRes.style.display = 'block';
@@ -408,12 +467,84 @@
             <td>${s.std_grade || '-'}</td>
             <td>${s.std_class || '-'}</td>
             <td>${s.std_email || '-'}</td>
+            <td><input type="checkbox" ${s.std_graduated ? 'checked' : ''} onchange="toggleGraduation('${s.id}', this.checked)" style="width: 18px; height: 18px; cursor: pointer;"></td>
             <td><span class="delete-single" onclick="deleteStudent('${s.id}', '${s.std_name}')">🗑</span></td>
           `;
                     body.appendChild(tr);
                 });
             }
+
+            // Update selectAllGraduated status based on whether all filtered students are graduated
+            const selectAllGraduated = document.getElementById('selectAllGraduated');
+            if (selectAllGraduated) {
+                selectAllGraduated.checked = filteredStudents.length > 0 && filteredStudents.every(s => s.std_graduated === true);
+            }
+
             updateSelectedCount();
+        }
+
+        async function toggleGraduation(id, isGraduated) {
+            try {
+                await db.collection('std_id').doc(id).update({ std_graduated: isGraduated });
+                const student = allStudents.find(s => s.id === id);
+                if (student) {
+                    student.std_graduated = isGraduated;
+                }
+                
+                // Re-sync the selectAllGraduated header checkbox state
+                const selectAllGraduated = document.getElementById('selectAllGraduated');
+                if (selectAllGraduated) {
+                    selectAllGraduated.checked = filteredStudents.length > 0 && filteredStudents.every(s => s.std_graduated === true);
+                }
+            } catch (error) {
+                console.error("Error updating graduation status:", error);
+                alert("حدث خطأ أثناء تحديث حالة التخرج: " + error.message);
+                renderTable();
+            }
+        }
+
+        async function toggleSelectAllGraduated(master) {
+            const isGraduated = master.checked;
+            if (filteredStudents.length === 0) {
+                master.checked = false;
+                return;
+            }
+            
+            const confirmMsg = isGraduated 
+                ? `هل أنت متأكد من تعيين حالة "تخرج" لجميع الطلاب المعروضين في البحث الحالي وعددهم (${filteredStudents.length})؟`
+                : `هل أنت متأكد من إلغاء حالة "تخرج" لجميع الطلاب المعروضين في البحث الحالي وعددهم (${filteredStudents.length})؟`;
+                
+            if (!confirm(confirmMsg)) {
+                master.checked = !isGraduated;
+                return;
+            }
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const batch = db.batch();
+                filteredStudents.forEach(s => {
+                    batch.update(db.collection('std_id').doc(s.id), { std_graduated: isGraduated });
+                });
+                await batch.commit();
+
+                // Update local state
+                filteredStudents.forEach(s => {
+                    s.std_graduated = isGraduated;
+                    const student = allStudents.find(orig => orig.id === s.id);
+                    if (student) {
+                        student.std_graduated = isGraduated;
+                    }
+                });
+
+                renderTable();
+            } catch (error) {
+                console.error("Error batch updating graduation status:", error);
+                alert("حدث خطأ أثناء التحديث الجماعي لحالة التخرج: " + error.message);
+                master.checked = !isGraduated;
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
         }
 
         function toggleSelectAll(master) {
@@ -435,8 +566,11 @@
             try {
                 await db.collection('std_id').doc(id).delete();
                 allStudents = allStudents.filter(s => s.id !== id);
-                handleFilter();
-                document.getElementById('totalCount').textContent = allStudents.length;
+                if (searchPerformed) {
+                    performSearch();
+                } else {
+                    showInitialMessage();
+                }
             } catch (error) {
                 alert("خطأ أثناء الحذف: " + error.message);
             }
@@ -458,8 +592,11 @@
                 await batch.commit();
 
                 allStudents = allStudents.filter(s => !idsToDelete.includes(s.id));
-                handleFilter();
-                document.getElementById('totalCount').textContent = allStudents.length;
+                if (searchPerformed) {
+                    performSearch();
+                } else {
+                    showInitialMessage();
+                }
                 document.getElementById('selectAll').checked = false;
             } catch (error) {
                 alert("خطأ أثناء الحذف الجماعي: " + error.message);
