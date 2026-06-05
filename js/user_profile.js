@@ -245,6 +245,7 @@ function checkAndDisplayProfile() {
         });
 
         let fetchedNotifications = [];
+        let fetchedReplies = [];
 
         function getReadMap() {
             const sid = localStorage.getItem('std_id');
@@ -309,14 +310,48 @@ function checkAndDisplayProfile() {
 
                 const titleStyle = isRead ? 'font-weight:normal; color:#555;' : 'font-weight:bold; color:#2c3e50;';
 
+                // Get replies for this notification and sort them oldest to newest
+                const threadReplies = fetchedReplies
+                    .filter(r => r.notificationId === n.id)
+                    .sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                let repliesHTML = '';
+                if (threadReplies.length > 0) {
+                    repliesHTML = `
+                        <div class="replies-thread" style="margin-top: 8px; margin-bottom: 8px; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #8e44ad; max-height: 200px; overflow-y: auto;">
+                            ${threadReplies.map(r => {
+                                const isTeacher = r.sender === 'Teacher';
+                                const senderName = isTeacher ? 'المعلم' : escapeHTML(r.studentName);
+                                const senderColor = isTeacher ? '#e74c3c' : '#3498db';
+                                const msgBg = isTeacher ? '#fdf2f2' : '#f0f7fc';
+                                const msgBorder = isTeacher ? '1px solid #fde8e8' : '1px solid #e1f0fa';
+                                const timeStr = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'}) : 'الآن';
+                                return `
+                                    <div style="margin-bottom: 8px; background: ${msgBg}; border: ${msgBorder}; padding: 6px 10px; border-radius: 6px; font-size: 11px; line-height: 1.4;">
+                                        <div style="display: flex; justify-content: space-between; font-weight: bold; color: ${senderColor}; margin-bottom: 3px;">
+                                            <span>${senderName}</span>
+                                            <span style="font-size: 9px; color: #999; font-weight: normal;">${timeStr}</span>
+                                        </div>
+                                        <div style="color: #2c3e50; word-break: break-word;">${escapeHTML(r.message)}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+
                 item.innerHTML = `
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <span style="font-size:13px; ${titleStyle}">${escapeHTML(n.title)}</span>
                         <span style="font-size:10px; color:#999;">${escapeHTML(date)}</span>
                     </div>
-                    <div style="font-size:12px; color:#666; line-height:1.4;">${escapeHTML(n.message || n.body)}</div>
+                    <div style="font-size:12px; color:#666; line-height:1.4; margin-bottom: 6px;">${escapeHTML(n.message || n.body)}</div>
                     <div class="notif-reply-section" style="margin-top: 8px;">
-                        <button class="reply-toggle-btn" style="background: none; border: none; color: #8e44ad; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: bold;">↩ رد على الإشعار</button>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
+                            <button class="reply-toggle-btn" style="background: none; border: none; color: #8e44ad; font-size: 11px; cursor: pointer; padding: 0; outline: none; font-weight: bold;">↩ رد على الإشعار</button>
+                            ${threadReplies.length > 0 ? `<span style="font-size: 10px; color: #999;">(${threadReplies.length} ردود)</span>` : ''}
+                        </div>
+                        ${repliesHTML}
                         <div class="reply-input-area" style="display: none; margin-top: 5px;">
                             <textarea placeholder="اكتب ردك هنا..." style="width: 100%; box-sizing: border-box; padding: 5px; font-size: 11px; border: 1px solid #ddd; border-radius: 4px; resize: none; height: 60px;"></textarea>
                             <button class="reply-send-btn" style="background: #8e44ad; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; margin-top: 4px; cursor: pointer;">إرسال</button>
@@ -332,8 +367,10 @@ function checkAndDisplayProfile() {
 
                 // منع انتشار الضغط من منطقة الرد إلى عنصر الإشعار (يمنع الاختفاء)
                 replySection.addEventListener('click', (e) => e.stopPropagation());
-                textarea.addEventListener('click', (e) => e.stopPropagation());
-                textarea.addEventListener('focus', (e) => e.stopPropagation());
+                if (textarea) {
+                    textarea.addEventListener('click', (e) => e.stopPropagation());
+                    textarea.addEventListener('focus', (e) => e.stopPropagation());
+                }
 
                 toggleBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -375,6 +412,7 @@ function checkAndDisplayProfile() {
                         alert('تم إرسال الرد بنجاح ✅');
                         textarea.value = '';
                         replyArea.style.display = 'none';
+                        loadAndRenderNotifications();
                     }).catch(err => {
                         console.error('Error sending reply:', err);
                         alert('حدث خطأ أثناء الإرسال: ' + err.message);
@@ -394,21 +432,59 @@ function checkAndDisplayProfile() {
 
             Promise.all([
                 db.collection('notifications').where('target', '==', 'all').limit(20).get(),
-                db.collection('notifications').where('target', '==', sid).limit(20).get()
+                db.collection('notifications').where('target', '==', sid).limit(20).get(),
+                db.collection('notification_replies').where('studentId', '==', sid).get()
             ]).then(results => {
                 const notifs1 = results[0].docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 const notifs2 = results[1].docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const replies = results[2].docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 let merged = [...notifs1, ...notifs2];
+
+                // Handle read map updates for replies
+                const readMap = getReadMap();
+                let updatedMap = false;
+
+                // For any unread reply notifications (from the teacher), mark original as unread
+                merged.forEach(n => {
+                    if (n.replyToNotificationId) {
+                        if (!readMap[n.id]) {
+                            delete readMap[n.replyToNotificationId];
+                            readMap[n.id] = true;
+                            updatedMap = true;
+                        }
+                    }
+                });
+
+                if (updatedMap) {
+                    localStorage.setItem('read_notifications_' + sid, JSON.stringify(readMap));
+                }
+
+                // Filter out the reply notifications from the list we show
+                let originalNotifs = merged.filter(n => !n.replyToNotificationId);
+
                 const unique = [];
                 const m = new Map();
-                for (const i of merged) {
+                for (const i of originalNotifs) {
                     if (!m.has(i.id)) { m.set(i.id, true); unique.push(i); }
                 }
 
-                unique.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                // Sort by effective timestamp: max(n.timestamp, latest_reply.timestamp)
+                unique.sort((a, b) => {
+                    const aReplies = replies.filter(r => r.notificationId === a.id);
+                    const bReplies = replies.filter(r => r.notificationId === b.id);
+
+                    const aTimestamps = [a.timestamp?.seconds || 0, ...aReplies.map(r => r.timestamp?.seconds || 0)];
+                    const bTimestamps = [b.timestamp?.seconds || 0, ...bReplies.map(r => r.timestamp?.seconds || 0)];
+
+                    const aMax = Math.max(...aTimestamps);
+                    const bMax = Math.max(...bTimestamps);
+
+                    return bMax - aMax;
+                });
 
                 fetchedNotifications = unique;
+                fetchedReplies = replies;
                 renderNotifList();
                 updateBadge();
             }).catch(e => console.error(e));

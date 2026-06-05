@@ -461,53 +461,127 @@
             }
         }
 
-        // --- Load Student Replies ---
+        function escapeHTML(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // --- Load Student Replies & Group Into Threads ---
         function loadReplies() {
             const repliesContainer = document.getElementById('repliesContainer');
-            db.collection('notification_replies').orderBy('timestamp', 'desc').limit(50).onSnapshot(snapshot => {
+            db.collection('notification_replies').orderBy('timestamp', 'desc').limit(150).onSnapshot(snapshot => {
                 repliesContainer.innerHTML = '';
                 if (snapshot.empty) {
                     repliesContainer.innerHTML = '<div style="text-align: center; color: #95a5a6; padding: 20px;">لا يوجد ردود حتى الآن</div>';
                     return;
                 }
 
+                // Group replies by notificationId + studentId
+                const threads = {};
                 snapshot.forEach(doc => {
                     const r = doc.data();
-                    const date = r.timestamp ? r.timestamp.toDate().toLocaleString('ar-EG') : 'الآن';
-                    
+                    r.id = doc.id;
+                    const key = `${r.notificationId}_${r.studentId}`;
+                    if (!threads[key]) {
+                        threads[key] = {
+                            notificationId: r.notificationId,
+                            notificationTitle: r.notificationTitle || 'بدون عنوان',
+                            studentId: r.studentId,
+                            studentName: r.studentName || 'طالب',
+                            studentClassInfo: r.studentClassInfo || '',
+                            messages: [],
+                            latestTimestamp: r.timestamp
+                        };
+                    }
+                    threads[key].messages.push(r);
+                    if (r.timestamp) {
+                        if (!threads[key].latestTimestamp || r.timestamp.seconds > threads[key].latestTimestamp.seconds) {
+                            threads[key].latestTimestamp = r.timestamp;
+                        }
+                    }
+                });
+
+                // Convert to array and sort threads by latest activity descending (newest activity at the top)
+                const sortedThreads = Object.values(threads).sort((a, b) => {
+                    const t1 = a.latestTimestamp ? a.latestTimestamp.seconds : 0;
+                    const t2 = b.latestTimestamp ? b.latestTimestamp.seconds : 0;
+                    return t2 - t1;
+                });
+
+                sortedThreads.forEach(thread => {
+                    // Sort messages in chronological order (oldest first for chat history)
+                    thread.messages.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
                     const item = document.createElement('div');
                     item.style.cssText = `
                         background: white;
                         padding: 15px;
                         border-radius: 8px;
-                        margin-bottom: 10px;
+                        margin-bottom: 15px;
                         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
                         border-right: 4px solid #3498db;
                         position: relative;
                     `;
-                    
+
+                    let messagesHTML = '';
+                    thread.messages.forEach(msg => {
+                        const isTeacher = msg.sender === 'Teacher';
+                        const senderName = isTeacher ? 'المعلم (أنت)' : msg.studentName;
+                        const senderColor = isTeacher ? '#27ae60' : '#2980b9';
+                        const msgBg = isTeacher ? '#f1fcf4' : '#f4f9fd';
+                        const msgBorder = isTeacher ? '1px solid #d4edda' : '1px solid #d1ecf1';
+                        const date = msg.timestamp ? msg.timestamp.toDate().toLocaleString('ar-EG') : 'الآن';
+                        const deleteBtn = `<button onclick="deleteReply('${msg.id}')" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size:12px; margin-right:8px;" title="حذف الرسالة">❌</button>`;
+
+                        messagesHTML += `
+                            <div style="background: ${msgBg}; border: ${msgBorder}; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; position: relative;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <span style="font-weight: bold; color: ${senderColor}; font-size: 13px;">${senderName}</span>
+                                    <div style="display: flex; align-items: center;">
+                                        <span style="font-size: 10px; color: #95a5a6;">${date}</span>
+                                        ${deleteBtn}
+                                    </div>
+                                </div>
+                                <div style="color: #34495e; font-size: 14px; line-height: 1.4; word-break: break-word;">${escapeHTML(msg.message)}</div>
+                            </div>
+                        `;
+                    });
+
+                    // Input ID must be unique
+                    const inputId = `reply_input_${thread.notificationId}_${thread.studentId}`;
+                    const buttonId = `reply_btn_${thread.notificationId}_${thread.studentId}`;
+
                     item.innerHTML = `
-                        <button onclick="deleteReply('${doc.id}')" style="position:absolute; left:10px; top:10px; background:none; border:none; color:#e74c3c; cursor:pointer; font-size:16px;" title="حذف الرد">❌</button>
                         <div style="font-weight: bold; color: #2c3e50; margin-bottom: 5px; font-size: 14px;">
-                            ${r.studentName} <span style="color: #7f8c8d; font-size: 12px;">(${r.studentClassInfo})</span>
+                            الطالب: ${escapeHTML(thread.studentName)} <span style="color: #7f8c8d; font-size: 12px;">(${escapeHTML(thread.studentClassInfo)})</span>
                         </div>
-                        <div style="font-size: 13px; color: #8e44ad; margin-bottom: 8px;">
-                            ردًا على: "${r.notificationTitle}"
+                        <div style="font-size: 13px; color: #8e44ad; margin-bottom: 12px; font-weight: bold;">
+                            ردًا على الإشعار: "${escapeHTML(thread.notificationTitle)}"
                         </div>
-                        <div style="color: #34495e; font-size: 15px; line-height: 1.5; background: #fdfdfd; padding: 10px; border-radius: 5px; border: 1px solid #eee;">
-                            ${r.message}
+                        <div style="margin-bottom: 10px; max-height: 250px; overflow-y: auto; padding-left: 5px;">
+                            ${messagesHTML}
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                            <button class="reply-to-student-btn" style="background: none; border: none; color: #8e44ad; font-size: 13px; cursor: pointer; padding: 0; font-weight: bold;">↩ رد على الطالب</button>
-                            <div style="font-size: 11px; color: #bdc3c7;">${date}</div>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <input type="text" id="${inputId}" placeholder="اكتب ردك هنا..." style="flex: 1; padding: 8px; border: 1px solid #ced6e0; border-radius: 6px; font-size: 13px;">
+                            <button id="${buttonId}" onclick="sendTeacherReply('${thread.studentId}', '${thread.studentName.replace(/'/g, "\\'")}', '${thread.notificationId}', '${thread.notificationTitle.replace(/'/g, "\\'")}')" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; transition: background 0.2s;">إرسال الرد</button>
                         </div>
                     `;
-                    
-                    item.querySelector('.reply-to-student-btn').addEventListener('click', () => {
-                        replyToStudent(r.studentId, r.studentName);
-                    });
-                    
+
                     repliesContainer.appendChild(item);
+
+                    // Allow pressing Enter in input to send reply
+                    const inputEl = item.querySelector(`#${inputId}`);
+                    inputEl.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            item.querySelector(`#${buttonId}`).click();
+                        }
+                    });
                 });
             }, err => {
                 console.error("Error loading replies:", err);
@@ -516,37 +590,59 @@
         }
 
         async function deleteReply(docId) {
-            if(!confirm('هل أنت متأكد من حذف هذا الرد؟')) return;
+            if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
             try {
                 await db.collection('notification_replies').doc(docId).delete();
-            } catch(e) {
+            } catch (e) {
                 console.error('Error deleting reply', e);
                 alert('حدث خطأ أثناء الحذف');
             }
         }
 
-        async function replyToStudent(studentId, studentName) {
-            if (!studentId || studentId === 'undefined') {
-                alert("لا يمكن الرد على هذا الطالب لأنه لا يوجد معرف خاص به (قد يكون الرد قديمًا).");
-                return;
-            }
-            const message = prompt(`اكتب ردك للطالب ${studentName}:`);
-            if (!message || !message.trim()) return;
+        async function sendTeacherReply(studentId, studentName, notificationId, notificationTitle) {
+            const inputEl = document.getElementById(`reply_input_${notificationId}_${studentId}`);
+            const btnEl = document.getElementById(`reply_btn_${notificationId}_${studentId}`);
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            btnEl.disabled = true;
+            btnEl.textContent = "جاري الإرسال...";
 
             try {
+                // 1. Add to notification_replies
+                await db.collection("notification_replies").add({
+                    notificationId: notificationId,
+                    notificationTitle: notificationTitle,
+                    studentId: studentId,
+                    studentName: studentName,
+                    studentClassInfo: "",
+                    message: message,
+                    sender: "Teacher",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 2. Add to notifications
                 await db.collection("notifications").add({
                     title: "رد من المعلم",
-                    body: message.trim(),
+                    body: message,
                     target: studentId,
+                    replyToNotificationId: notificationId,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     sender: "Teacher"
                 });
-                alert("تم إرسال الرد بنجاح! ✅");
+
+                inputEl.value = "";
             } catch (err) {
                 console.error("Error sending reply:", err);
                 alert("حدث خطأ أثناء الإرسال ❌");
+            } finally {
+                btnEl.disabled = false;
+                btnEl.textContent = "إرسال الرد";
             }
         }
+
+        window.sendTeacherReply = sendTeacherReply;
+        window.deleteReply = deleteReply;
 
         // Call loadReplies on init
         document.addEventListener('DOMContentLoaded', loadReplies);
