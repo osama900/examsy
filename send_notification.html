@@ -348,8 +348,17 @@
             classSelect.disabled = !selectedGrade;
 
             if (selectedGrade) {
-                const sections = [...new Set(allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s))];
-                sections.sort();
+                let sections = [];
+                if (selectedGrade === "7") {
+                    sections = ["أ", "ب"];
+                } else if (selectedGrade === "8") {
+                    sections = ["أ", "ب", "ج", "د", "هـ", "و"];
+                } else if (selectedGrade === "9") {
+                    sections = ["أ", "ب", "ج", "د", "هـ"];
+                } else {
+                    sections = [...new Set(allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s))];
+                    sections.sort();
+                }
                 sections.forEach(s => {
                     const opt = document.createElement('option');
                     opt.value = s;

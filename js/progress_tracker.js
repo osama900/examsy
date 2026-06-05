@@ -104,14 +104,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const score = examResult.score || 0;
                         const maxScore = examResult.maxScore || 1;
 
-                        const greenThreshold = maxScore - 1;
-                        const passingScore = maxScore / 2;
+                        const greenThreshold = maxScore * 0.6;
+                        const passingThreshold = maxScore * 0.5;
 
                         if (score >= greenThreshold) {
                             icon = "✅";
                             color = "green";
                             title = `ممتاز! العلامة: ${score}/${maxScore}`;
-                        } else if (score >= passingScore) {
+                        } else if (score >= passingThreshold) {
                             icon = "⚠️";
                             color = "orange";
                             title = `ناجح. العلامة: ${score}/${maxScore}`;

@@ -405,7 +405,13 @@
             cSelect.innerHTML = '<option value="">كل الشعب</option>';
 
             let filteredClasses = [];
-            if (grade) {
+            if (grade === "7") {
+                filteredClasses = ["أ", "ب"];
+            } else if (grade === "8") {
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ", "و"];
+            } else if (grade === "9") {
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ"];
+            } else if (grade) {
                 filteredClasses = [...new Set(allStudents.filter(s => s.std_grade === grade).map(s => s.std_class).filter(Boolean))].sort();
             } else {
                 filteredClasses = [...new Set(allStudents.map(s => s.std_class).filter(Boolean))].sort();

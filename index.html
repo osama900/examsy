@@ -756,7 +756,7 @@
                   if (examData) {
                     const max = examData.maxScore || 1;
                     const score = examData.score;
-                    const completeThreshold = max - 1;
+                    const completeThreshold = max * 0.6;
                     if (score < completeThreshold) {
                       isCurrentComplete = false;
                     }
@@ -1314,7 +1314,7 @@
                   if (examData) {
                     const max = examData.maxScore || 1;
                     const score = examData.score;
-                    const completeThreshold = max - 1;
+                    const completeThreshold = max * 0.6;
                     if (score < completeThreshold) {
                       isCurrentComplete = false;
                     }

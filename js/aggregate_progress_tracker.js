@@ -80,12 +80,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // Quiz Logic
                         const score = examData.score || 0;
                         const maxScore = examData.maxScore || 1;
-                        const greenThreshold = maxScore - 1;
-                        const passingScore = maxScore / 2;
+                        const greenThreshold = maxScore * 0.6;
+                        const passingThreshold = maxScore * 0.5;
 
                         if (score >= greenThreshold) {
                             status = "green";
-                        } else if (score >= passingScore) {
+                        } else if (score >= passingThreshold) {
                             status = "orange";
                         } else {
                             status = "red";
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
                     if (status === "red") {
+                        anyX = true;
                         allGreen = false;
                     } else if (status === "orange") {
                         anyTriangle = true;

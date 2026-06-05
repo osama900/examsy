@@ -414,7 +414,7 @@
             let options = [];
             if (grade === "7") options = ["أ", "ب"];
             else if (grade === "8") options = ["أ", "ب", "ج", "د", "هـ", "و"];
-            else if (grade === "9") options = ["أ", "ب", "ج", "د"];
+            else if (grade === "9") options = ["أ", "ب", "ج", "د", "هـ"];
 
             options.forEach(opt => {
                 let o = document.createElement("option");
@@ -589,7 +589,7 @@
                                                 const exData = studentExamMap[quizId];
                                                 if (exData) {
                                                     const max = exData.maxScore || 1; // avoid div/0
-                                                    const completeThreshold = max - 1;
+                                                    const completeThreshold = max * 0.6;
                                                     if (Number(exData.score) < completeThreshold) isLessonComplete = false;
                                                 } else {
                                                     isLessonComplete = false; // No exam taken = incomplete
