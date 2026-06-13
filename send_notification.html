@@ -20,7 +20,7 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 950px;
             background: white;
             padding: 30px;
             border-radius: 15px;
@@ -194,6 +194,233 @@
             background: #2980b9;
             transform: translateY(-1px);
         }
+
+        /* --- WhatsApp Split Pane Layout --- */
+        .chat-layout {
+            display: flex;
+            border: 1px solid #ced6e0;
+            border-radius: 12px;
+            height: 520px;
+            overflow: hidden;
+            background: #efeae2;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-sidebar {
+            width: 38%;
+            background: #ffffff;
+            border-left: 1px solid #ced6e0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-sidebar-header {
+            padding: 15px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #e9edef;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .chat-threads-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-thread-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f2f5;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: right;
+        }
+
+        .chat-thread-item:hover {
+            background: #f0f2f5;
+        }
+
+        .chat-thread-item.active {
+            background: #eae6df;
+            border-right: 4px solid #3498db;
+        }
+
+        .thread-student-name {
+            font-weight: bold;
+            color: #111b21;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .thread-meta {
+            font-size: 11px;
+            color: #667781;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .thread-snippet {
+            font-size: 12px;
+            color: #667781;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .chat-viewport {
+            width: 62%;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            background: #efeae2;
+        }
+
+        .chat-viewport-header {
+            padding: 12px 15px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #e9edef;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            text-align: right;
+        }
+
+        .chat-header-title {
+            font-weight: bold;
+            color: #111b21;
+            font-size: 15px;
+        }
+
+        .chat-header-subtitle {
+            font-size: 11px;
+            color: #667781;
+        }
+
+        .chat-viewport-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+            word-break: break-word;
+        }
+
+        .chat-bubble-student {
+            align-self: flex-start;
+            background: #ffffff;
+            color: #111b21;
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        .chat-bubble-teacher {
+            align-self: flex-end;
+            background: #d9fdd3;
+            color: #111b21;
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        .bubble-meta {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            color: #8696a0;
+            margin-top: 4px;
+        }
+
+        .delete-msg-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 0;
+            font-size: 11px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            margin-right: 5px;
+        }
+
+        .delete-msg-btn:hover {
+            opacity: 1;
+        }
+
+        .chat-viewport-footer {
+            padding: 10px 15px;
+            background: #f0f2f5;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #e9edef;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ced6e0;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            background: #ffffff;
+            box-sizing: border-box;
+        }
+
+        .chat-send-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: #219653;
+        }
+
+        .chat-send-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .chat-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #667781;
+            gap: 15px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .chat-placeholder-icon {
+            font-size: 56px;
+        }
     </style>
 </head>
 
@@ -264,8 +491,23 @@
         <div class="header-wrapper" style="margin-bottom: 20px;">
             <h2 style="color: #2c3e50; text-align: center; font-size: 20px; border-bottom: 2px solid #3498db; display: inline-block; padding-bottom: 5px;">💬 ردود الطلاب على الإشعارات</h2>
         </div>
-        <div class="replies-container" id="repliesContainer" style="border: 1px solid #ced6e0; border-radius: 8px; background: #f9f9f9; max-height: 400px; overflow-y: auto; padding: 10px; margin-bottom: 20px;">
-            <div style="text-align: center; color: #95a5a6; padding: 20px;">جاري تحميل الردود...</div>
+        
+        <div class="chat-layout">
+            <!-- Sidebar with list of students/threads -->
+            <div class="chat-sidebar">
+                <div class="chat-sidebar-header">الدردشات النشطة</div>
+                <div class="chat-threads-list" id="chatThreadsList">
+                    <div style="text-align: center; color: #95a5a6; padding: 20px; font-size: 13px;">جاري تحميل الردود...</div>
+                </div>
+            </div>
+            
+            <!-- Viewport for active chat thread -->
+            <div class="chat-viewport" id="chatViewport">
+                <div class="chat-placeholder">
+                    <span class="chat-placeholder-icon">💬</span>
+                    <div>اختر محادثة من القائمة لبدء القراءة والرد على الطلاب</div>
+                </div>
+            </div>
         </div>
 
         <!-- Replies Section (moved button to top) -->
@@ -480,142 +722,315 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // --- Load Student Replies & Group Into Threads ---
+        // --- Load All Notifications & Replies, Merge Into Threads ---
+        let activeThreads = {};
+        let selectedThreadKey = null;
+        let dbNotifications = [];
+        let dbReplies = [];
+
         function loadReplies() {
-            const repliesContainer = document.getElementById('repliesContainer');
-            db.collection('notification_replies').orderBy('timestamp', 'desc').limit(150).onSnapshot(snapshot => {
-                repliesContainer.innerHTML = '';
-                if (snapshot.empty) {
-                    repliesContainer.innerHTML = '<div style="text-align: center; color: #95a5a6; padding: 20px;">لا يوجد ردود حتى الآن</div>';
-                    return;
-                }
-
-                // Group replies by notificationId + studentId
-                const threads = {};
-                snapshot.forEach(doc => {
-                    const r = doc.data();
-                    r.id = doc.id;
-                    const key = `${r.notificationId}_${r.studentId}`;
-                    if (!threads[key]) {
-                        threads[key] = {
-                            notificationId: r.notificationId,
-                            notificationTitle: r.notificationTitle || 'بدون عنوان',
-                            studentId: r.studentId,
-                            studentName: r.studentName || 'طالب',
-                            studentClassInfo: r.studentClassInfo || '',
-                            messages: [],
-                            latestTimestamp: r.timestamp
-                        };
-                    }
-                    threads[key].messages.push(r);
-                    if (r.timestamp) {
-                        if (!threads[key].latestTimestamp || r.timestamp.seconds > threads[key].latestTimestamp.seconds) {
-                            threads[key].latestTimestamp = r.timestamp;
-                        }
-                    }
-                });
-
-                // Convert to array and sort threads by latest activity descending (newest activity at the top)
-                const sortedThreads = Object.values(threads).sort((a, b) => {
-                    const t1 = a.latestTimestamp ? a.latestTimestamp.seconds : 0;
-                    const t2 = b.latestTimestamp ? b.latestTimestamp.seconds : 0;
-                    return t2 - t1;
-                });
-
-                sortedThreads.forEach(thread => {
-                    // Sort messages in chronological order (oldest first for chat history)
-                    thread.messages.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
-
-                    const item = document.createElement('div');
-                    item.style.cssText = `
-                        background: white;
-                        padding: 15px;
-                        border-radius: 8px;
-                        margin-bottom: 15px;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                        border-right: 4px solid #3498db;
-                        position: relative;
-                    `;
-
-                    let messagesHTML = '';
-                    thread.messages.forEach(msg => {
-                        const isTeacher = msg.sender === 'Teacher';
-                        const senderName = isTeacher ? 'المعلم (أنت)' : msg.studentName;
-                        const senderColor = isTeacher ? '#27ae60' : '#2980b9';
-                        const msgBg = isTeacher ? '#f1fcf4' : '#f4f9fd';
-                        const msgBorder = isTeacher ? '1px solid #d4edda' : '1px solid #d1ecf1';
-                        const date = msg.timestamp ? msg.timestamp.toDate().toLocaleString('ar-EG') : 'الآن';
-                        const deleteBtn = `<button onclick="deleteReply('${msg.id}')" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size:12px; margin-right:8px;" title="حذف الرسالة">❌</button>`;
-
-                        messagesHTML += `
-                            <div style="background: ${msgBg}; border: ${msgBorder}; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; position: relative;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                    <span style="font-weight: bold; color: ${senderColor}; font-size: 13px;">${senderName}</span>
-                                    <div style="display: flex; align-items: center;">
-                                        <span style="font-size: 10px; color: #95a5a6;">${date}</span>
-                                        ${deleteBtn}
-                                    </div>
-                                </div>
-                                <div style="color: #34495e; font-size: 14px; line-height: 1.4; word-break: break-word;">${escapeHTML(msg.message)}</div>
-                            </div>
-                        `;
-                    });
-
-                    // Input ID must be unique
-                    const inputId = `reply_input_${thread.notificationId}_${thread.studentId}`;
-                    const buttonId = `reply_btn_${thread.notificationId}_${thread.studentId}`;
-
-                    item.innerHTML = `
-                        <div style="font-weight: bold; color: #2c3e50; margin-bottom: 5px; font-size: 14px;">
-                            الطالب: ${escapeHTML(thread.studentName)} <span style="color: #7f8c8d; font-size: 12px;">(${escapeHTML(thread.studentClassInfo)})</span>
-                        </div>
-                        <div style="font-size: 13px; color: #8e44ad; margin-bottom: 12px; font-weight: bold;">
-                            ردًا على الإشعار: "${escapeHTML(thread.notificationTitle)}"
-                        </div>
-                        <div style="margin-bottom: 10px; max-height: 250px; overflow-y: auto; padding-left: 5px;">
-                            ${messagesHTML}
-                        </div>
-                        <div style="display: flex; gap: 8px; margin-top: 10px;">
-                            <input type="text" id="${inputId}" placeholder="اكتب ردك هنا..." style="flex: 1; padding: 8px; border: 1px solid #ced6e0; border-radius: 6px; font-size: 13px;">
-                            <button id="${buttonId}" onclick="sendTeacherReply('${thread.studentId}', '${thread.studentName.replace(/'/g, "\\'")}', '${thread.notificationId}', '${thread.notificationTitle.replace(/'/g, "\\'")}')" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; transition: background 0.2s;">إرسال الرد</button>
-                        </div>
-                    `;
-
-                    repliesContainer.appendChild(item);
-
-                    // Allow pressing Enter in input to send reply
-                    const inputEl = item.querySelector(`#${inputId}`);
-                    inputEl.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            item.querySelector(`#${buttonId}`).click();
+            // 1. Listen to all notifications (filter teacher-sent individual ones in memory)
+            db.collection('notifications')
+                .orderBy('timestamp', 'desc')
+                .limit(200)
+                .onSnapshot(snapshot => {
+                    dbNotifications = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        // Only include teacher-sent notifications to individual students (not "all", not reply copies)
+                        if (data.target && data.target !== 'all' && !data.replyToNotificationId) {
+                            dbNotifications.push({ id: doc.id, ...data });
                         }
                     });
+                    processAndRenderThreads();
+                }, err => {
+                    console.error("Error loading notifications:", err);
                 });
-            }, err => {
-                console.error("Error loading replies:", err);
-                repliesContainer.innerHTML = '<div style="text-align: center; color: #e74c3c; padding: 20px;">خطأ في تحميل الردود. تأكد من إعدادات الفايربيس.</div>';
-            });
+
+            // 2. Listen to notification replies
+            db.collection('notification_replies')
+                .orderBy('timestamp', 'desc')
+                .limit(200)
+                .onSnapshot(snapshot => {
+                    dbReplies = [];
+                    snapshot.forEach(doc => {
+                        dbReplies.push({ id: doc.id, ...doc.data() });
+                    });
+                    processAndRenderThreads();
+                }, err => {
+                    console.error("Error loading replies:", err);
+                });
         }
 
-        async function deleteReply(docId) {
-            if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
+        function processAndRenderThreads() {
+            const chatThreadsList = document.getElementById('chatThreadsList');
+            const threads = {};
+
+            // Helper to lookup student info from the allStudents array
+            const getStudentInfo = (studentId) => {
+                const s = allStudents.find(std => std.id === studentId);
+                return {
+                    name: s ? s.name : 'طالب',
+                    classInfo: s ? `${s.grade} - ${s.section}` : ''
+                };
+            };
+
+            // A. Create threads from sent notifications (original messages)
+            dbNotifications.forEach(n => {
+                const studentId = n.target;
+                const key = `${n.id}_${studentId}`;
+                const stdInfo = getStudentInfo(studentId);
+
+                threads[key] = {
+                    key: key,
+                    notificationId: n.id,
+                    notificationTitle: n.title || 'بدون عنوان',
+                    studentId: studentId,
+                    studentName: stdInfo.name,
+                    studentClassInfo: stdInfo.classInfo,
+                    messages: [
+                        {
+                            id: `notif_${n.id}`,
+                            sender: 'Teacher',
+                            message: n.body || n.message || '',
+                            timestamp: n.timestamp,
+                            isOriginal: true
+                        }
+                    ],
+                    latestTimestamp: n.timestamp
+                };
+            });
+
+            // B. Merge replies into threads
+            dbReplies.forEach(r => {
+                const key = `${r.notificationId}_${r.studentId}`;
+                const stdInfo = getStudentInfo(r.studentId);
+
+                if (!threads[key]) {
+                    // Reply exists but original notification wasn't fetched (edge case)
+                    threads[key] = {
+                        key: key,
+                        notificationId: r.notificationId,
+                        notificationTitle: r.notificationTitle || 'بدون عنوان',
+                        studentId: r.studentId,
+                        studentName: stdInfo.name || r.studentName || 'طالب',
+                        studentClassInfo: stdInfo.classInfo || r.studentClassInfo || '',
+                        messages: [],
+                        latestTimestamp: r.timestamp
+                    };
+                }
+
+                // Add reply message (avoid duplicates)
+                if (!threads[key].messages.some(m => m.id === r.id)) {
+                    threads[key].messages.push(r);
+                }
+
+                // Update latest timestamp
+                if (r.timestamp) {
+                    if (!threads[key].latestTimestamp || r.timestamp.seconds > threads[key].latestTimestamp.seconds) {
+                        threads[key].latestTimestamp = r.timestamp;
+                    }
+                }
+            });
+
+            // Handle empty state
+            if (Object.keys(threads).length === 0) {
+                chatThreadsList.innerHTML = '<div style="text-align: center; color: #95a5a6; padding: 20px; font-size: 13px;">لا توجد إشعارات أو ردود حالياً</div>';
+                document.getElementById('chatViewport').innerHTML = `
+                    <div class="chat-placeholder">
+                        <span class="chat-placeholder-icon">💬</span>
+                        <div>لا توجد محادثات نشطة</div>
+                    </div>
+                `;
+                activeThreads = {};
+                return;
+            }
+
+            activeThreads = threads;
+
+            // Auto-select first thread if none selected or selected no longer exists
+            const sortedKeys = Object.keys(threads).sort((a, b) => {
+                const t1 = threads[a].latestTimestamp ? threads[a].latestTimestamp.seconds : 0;
+                const t2 = threads[b].latestTimestamp ? threads[b].latestTimestamp.seconds : 0;
+                return t2 - t1;
+            });
+
+            if (!selectedThreadKey || !threads[selectedThreadKey]) {
+                if (sortedKeys.length > 0) {
+                    selectedThreadKey = sortedKeys[0];
+                }
+            }
+
+            renderChatUI();
+        }
+
+        function renderChatUI() {
+            const chatThreadsList = document.getElementById('chatThreadsList');
+            const chatViewport = document.getElementById('chatViewport');
+
+            // Sort threads by latest activity descending
+            const sortedThreads = Object.values(activeThreads).sort((a, b) => {
+                const t1 = a.latestTimestamp ? a.latestTimestamp.seconds : 0;
+                const t2 = b.latestTimestamp ? b.latestTimestamp.seconds : 0;
+                return t2 - t1;
+            });
+
+            // Render threads list
+            chatThreadsList.innerHTML = '';
+            sortedThreads.forEach(thread => {
+                thread.messages.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+                const lastMsgObj = thread.messages[thread.messages.length - 1];
+                const lastMsgText = lastMsgObj ? lastMsgObj.message : '';
+                const lastMsgSender = lastMsgObj?.sender === 'Teacher' ? 'أنت: ' : '';
+                
+                // Count student replies only (not teacher messages)
+                const replyCount = thread.messages.filter(m => !m.isOriginal && m.sender !== 'Teacher').length;
+
+                let lastMsgDate = 'الآن';
+                if (lastMsgObj?.timestamp) {
+                    const date = lastMsgObj.timestamp.toDate();
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    lastMsgDate = `${hours}:${minutes}`;
+                }
+
+                const isActive = thread.key === selectedThreadKey;
+                const threadEl = document.createElement('div');
+                threadEl.className = `chat-thread-item ${isActive ? 'active' : ''}`;
+                threadEl.onclick = () => {
+                    selectedThreadKey = thread.key;
+                    renderChatUI();
+                };
+
+                const replyBadge = replyCount > 0
+                    ? `<span style="background: #25d366; color: white; font-size: 9px; padding: 1px 5px; border-radius: 8px; margin-right: 5px;">${replyCount} رد</span>`
+                    : `<span style="background: #aab8c2; color: white; font-size: 9px; padding: 1px 5px; border-radius: 8px; margin-right: 5px;">بدون رد</span>`;
+
+                threadEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span class="thread-student-name">${escapeHTML(thread.studentName)} ${replyBadge}</span>
+                        <span style="font-size: 10px; color: #8696a0;">${lastMsgDate}</span>
+                    </div>
+                    <div class="thread-meta">
+                        <span style="color: #8e44ad; font-weight: bold; font-size: 11px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">الإشعار: "${escapeHTML(thread.notificationTitle)}"</span>
+                        <span>${escapeHTML(thread.studentClassInfo)}</span>
+                    </div>
+                    <div class="thread-snippet">${escapeHTML(lastMsgSender)}${escapeHTML(lastMsgText)}</div>
+                `;
+                chatThreadsList.appendChild(threadEl);
+            });
+
+            // Render active thread in viewport
+            const activeThread = activeThreads[selectedThreadKey];
+            if (!activeThread) {
+                chatViewport.innerHTML = `
+                    <div class="chat-placeholder">
+                        <span class="chat-placeholder-icon">💬</span>
+                        <div>اختر محادثة من القائمة لبدء القراءة والرد على الطلاب</div>
+                    </div>
+                `;
+                return;
+            }
+
+            activeThread.messages.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+            let messagesHTML = '';
+            activeThread.messages.forEach(msg => {
+                const isTeacher = msg.sender === 'Teacher';
+                const bubbleClass = isTeacher ? 'chat-bubble-teacher' : 'chat-bubble-student';
+                
+                let dateString = 'الآن';
+                if (msg.timestamp) {
+                    const date = msg.timestamp.toDate();
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    dateString = `${hours}:${minutes}`;
+                }
+
+                // Show "إشعار أصلي" label on the original notification message
+                const originalLabel = msg.isOriginal ? '<div style="font-size: 10px; color: #8e44ad; font-weight: bold; margin-bottom: 3px;">📢 الإشعار الأصلي</div>' : '';
+                const deleteBtn = `<button onclick="deleteReply('${msg.id}', ${!!msg.isOriginal}, '${activeThread.notificationId}')" class="delete-msg-btn" title="حذف الرسالة">🗑</button>`;
+
+                messagesHTML += `
+                    <div class="chat-bubble ${bubbleClass}">
+                        ${originalLabel}
+                        <div style="font-size: 13px; color: #111b21;">${escapeHTML(msg.message)}</div>
+                        <div class="bubble-meta">
+                            <span>${dateString}</span>
+                            ${deleteBtn}
+                        </div>
+                    </div>
+                `;
+            });
+
+            chatViewport.innerHTML = `
+                <div class="chat-viewport-header">
+                    <span class="chat-header-title">${escapeHTML(activeThread.studentName)} <span style="font-weight: normal; font-size: 12px; color: #667781;">(${escapeHTML(activeThread.studentClassInfo)})</span></span>
+                    <span class="chat-header-subtitle">الإشعار: "${escapeHTML(activeThread.notificationTitle)}"</span>
+                </div>
+                <div class="chat-viewport-body" id="chatViewportBody">
+                    ${messagesHTML}
+                </div>
+                <div class="chat-viewport-footer">
+                    <input type="text" id="chatInputField" class="chat-input-field" placeholder="اكتب ردك هنا...">
+                    <button id="chatSendBtn" class="chat-send-btn" onclick="sendTeacherReply('${activeThread.studentId}', '${activeThread.studentName.replace(/'/g, "\\'")}', '${activeThread.notificationId}', '${activeThread.notificationTitle.replace(/'/g, "\\'")}')">إرسال</button>
+                </div>
+            `;
+
+            // Auto scroll to bottom
+            const bodyEl = document.getElementById('chatViewportBody');
+            if (bodyEl) {
+                bodyEl.scrollTop = bodyEl.scrollHeight;
+            }
+
+            // Keyboard enter listener
+            const inputEl = document.getElementById('chatInputField');
+            if (inputEl) {
+                inputEl.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        document.getElementById('chatSendBtn').click();
+                    }
+                });
+                inputEl.focus();
+            }
+        }
+
+        async function deleteReply(docId, isOriginal, notificationId) {
+            const msg = isOriginal ? 'هل أنت متأكد من حذف الإشعار الأصلي وكل ردوده؟' : 'هل أنت متأكد من حذف هذه الرسالة؟';
+            if (!confirm(msg)) return;
             try {
-                await db.collection('notification_replies').doc(docId).delete();
+                if (isOriginal) {
+                    // Delete original notification
+                    await db.collection('notifications').doc(notificationId).delete();
+                    // Delete all associated replies
+                    const repliesSnapshot = await db.collection('notification_replies')
+                        .where('notificationId', '==', notificationId).get();
+                    const batch = db.batch();
+                    repliesSnapshot.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+                    // Reset selection if this thread was selected
+                    if (selectedThreadKey && selectedThreadKey.startsWith(notificationId + '_')) {
+                        selectedThreadKey = null;
+                    }
+                } else {
+                    await db.collection('notification_replies').doc(docId).delete();
+                }
             } catch (e) {
-                console.error('Error deleting reply', e);
+                console.error('Error deleting message:', e);
                 alert('حدث خطأ أثناء الحذف');
             }
         }
 
         async function sendTeacherReply(studentId, studentName, notificationId, notificationTitle) {
-            const inputEl = document.getElementById(`reply_input_${notificationId}_${studentId}`);
-            const btnEl = document.getElementById(`reply_btn_${notificationId}_${studentId}`);
+            const inputEl = document.getElementById('chatInputField');
+            const btnEl = document.getElementById('chatSendBtn');
+            if (!inputEl) return;
             const message = inputEl.value.trim();
             if (!message) return;
 
             btnEl.disabled = true;
-            btnEl.textContent = "جاري الإرسال...";
+            btnEl.textContent = "إرسال...";
 
             try {
                 // 1. Add to notification_replies
@@ -630,7 +1045,7 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 2. Add to notifications
+                // 2. Add to notifications (so student sees it)
                 await db.collection("notifications").add({
                     title: "رد من المعلم",
                     body: message,
@@ -646,7 +1061,7 @@
                 alert("حدث خطأ أثناء الإرسال ❌");
             } finally {
                 btnEl.disabled = false;
-                btnEl.textContent = "إرسال الرد";
+                btnEl.textContent = "إرسال";
             }
         }
 
