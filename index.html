@@ -699,7 +699,7 @@
     const db = firebase.firestore();
 
     // Helper function: Calculate student completion percentage
-    async function calculateStudentCompletion(studentId, studentEmail, stdGrade, preCalculatedExamMap = null) {
+    async function calculateStudentCompletion(studentId, studentEmail, stdGrade, preCalculatedExamMap = null, sharedVisibilityMap = null, sharedTimerMap = null) {
       if (!CURRICULUM[stdGrade]) return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
 
       try {
@@ -725,17 +725,19 @@
           });
         }
 
-        // Fetch visibility and timer settings
-        let visibilityMap = {};
-        let timerMap = {};
-        try {
-          const [visibilityDoc, timersDoc] = await Promise.all([
-            db.collection('settings').doc('lesson_visibility').get(),
-            db.collection('settings').doc('lesson_timers').get()
-          ]);
-          if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
-          if (timersDoc.exists) timerMap = timersDoc.data();
-        } catch (e) { console.error("Error fetching settings:", e); }
+        // Use shared settings if provided, otherwise fetch
+        let visibilityMap = sharedVisibilityMap || {};
+        let timerMap = sharedTimerMap || {};
+        if (!sharedVisibilityMap) {
+          try {
+            const [visibilityDoc, timersDoc] = await Promise.all([
+              db.collection('settings').doc('lesson_visibility').get(),
+              db.collection('settings').doc('lesson_timers').get()
+            ]);
+            if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
+            if (timersDoc.exists) timerMap = timersDoc.data();
+          } catch (e) { console.error("Error fetching settings:", e); }
+        }
 
         let openLessons = 0;
         let completedOpenLessons = 0;
@@ -884,6 +886,7 @@
         const studentDataList = [];
         const studentMap = {}; // id -> student data
         const studentNameMap = {}; // name -> student data
+        const emailToIdMap = {}; // email -> doc.id
 
         classSnapshot.forEach(doc => {
           const data = doc.data();
@@ -892,12 +895,14 @@
             name: data.std_name || "بدون اسم",
             email: data.std_email || "",
             time: data.totalStudyTimeSeconds || 0,
+            coins: data.coins || 0,
             completionPercent: 0,
             totalExamScore: 0
           };
           studentDataList.push(s);
           studentMap[s.id] = s;
           if (s.name) studentNameMap[s.name] = s;
+          if (s.email) emailToIdMap[s.email.toLowerCase()] = s.id;
         });
 
         // 1. Fetch ALL exam results for this class in ONE query
@@ -907,9 +912,12 @@
         examsSnapshot.forEach(doc => {
           const d = doc.data();
           let sId = null;
-          // Strategy: Match by Email first, then by Name
-          if (d.studentEmail && studentMap[d.studentEmail]) sId = d.studentEmail;
-          else if (d.name && studentNameMap[d.name]) sId = studentNameMap[d.name].id;
+          // Strategy: Match by Email first (via emailToIdMap), then by Name
+          if (d.studentEmail) {
+            const mappedId = emailToIdMap[d.studentEmail.toLowerCase()];
+            if (mappedId) sId = mappedId;
+          }
+          if (!sId && d.name && studentNameMap[d.name]) sId = studentNameMap[d.name].id;
 
           if (sId) {
             if (!allExamsByStudent[sId]) allExamsByStudent[sId] = [];
@@ -917,7 +925,19 @@
           }
         });
 
-        // 2. Calculate Completion and Scores for each student
+        // 2. Pre-fetch shared settings ONCE for all students
+        let sharedVisibilityMap = {};
+        let sharedTimerMap = {};
+        try {
+          const [visibilityDoc, timersDoc] = await Promise.all([
+            db.collection('settings').doc('lesson_visibility').get(),
+            db.collection('settings').doc('lesson_timers').get()
+          ]);
+          if (visibilityDoc.exists) sharedVisibilityMap = visibilityDoc.data();
+          if (timersDoc.exists) sharedTimerMap = timersDoc.data();
+        } catch (e) { console.error("Error fetching shared settings:", e); }
+
+        // 3. Calculate Completion and Scores for each student
         const studentPromises = studentDataList.map(async (std) => {
           // A. Calculate Total Exam Score (synchronized logic)
           const studentExams = allExamsByStudent[std.id] || [];
@@ -945,9 +965,9 @@
           // Sum scores from the bestScores map
           std.totalExamScore = Object.values(bestScores).reduce((sum, ex) => sum + (Number(ex.score) || 0), 0);
 
-          // B. Calculate Completion % using pre-calculated bestScores map
+          // B. Calculate Completion % passing shared settings to avoid re-fetching
           try {
-            const completionData = await calculateStudentCompletion(std.id, std.email, stdGrade, bestScores);
+            const completionData = await calculateStudentCompletion(std.id, std.email, stdGrade, bestScores, sharedVisibilityMap, sharedTimerMap);
             std.completionPercent = completionData.completionPercent;
           } catch (e) { console.error("Error calculating completion for", std.name, e); }
 
@@ -956,15 +976,26 @@
 
         const allStudentsData = await Promise.all(studentPromises);
 
+        // Re-calculate the current student's completion accurately using their email directly
+        // (same method as the dashboard display, avoids batch exam-map linking issues)
+        const stdEmail = localStorage.getItem('std_email') || '';
+        const currentStudentEntry = allStudentsData.find(s => s.id === stdId);
+        if (currentStudentEntry && stdEmail) {
+          try {
+            const accurateData = await calculateStudentCompletion(stdId, stdEmail, stdGrade, null, sharedVisibilityMap, sharedTimerMap);
+            currentStudentEntry.completionPercent = accurateData.completionPercent;
+          } catch (e) { console.warn('Could not re-calculate current student completion:', e); }
+        }
+
         // Final Rank Calculation and Display logic continues...
-        // MULTI-LEVEL SORT: Primary by completion %, Secondary by exam scores
+        // MULTI-LEVEL SORT: Primary by completion %, Secondary by total points (coins)
         allStudentsData.sort((a, b) => {
           // First, compare by completion percentage
           if (b.completionPercent !== a.completionPercent) {
             return b.completionPercent - a.completionPercent;
           }
-          // If completion % is equal, compare by total exam score
-          return b.totalExamScore - a.totalExamScore;
+          // If completion % is equal, compare by total points (coins)
+          return b.coins - a.coins;
         });
 
         // Calculate current student's rank based on sorted order
@@ -999,8 +1030,7 @@
 
             top3.forEach((std, index) => {
               const medal = medals[index] || `#${index + 1}`;
-              // If student has 0% completion, show "..."
-              const displayName = (std.completionPercent === 0) ? "..." : (std.name || "طالب");
+              const displayName = (std.completionPercent === 100) ? (std.name || "طالب") : "...";
               htmlHTML += `<div style="margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 ${medal} ${displayName}
               </div>`;
