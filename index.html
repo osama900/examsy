@@ -549,6 +549,7 @@
     <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
   </header>
 
+
   <div class="dashboard-container">
     <div class="stat-cards-grid">
       <div class="stat-card">
@@ -661,6 +662,35 @@
         </div>
       </a>
 
+
+      <div class="unit-progress-card" id="unit1Card" style="display: none;">
+        <div class="unit-progress-header">
+          <div class="stat-icon"
+            style="width: 40px; height: 40px; background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <span class="unit-progress-title">تقدم دروس الوحدة الاولى</span>
+        </div>
+        <div class="lessons-list" id="unit1LessonsList"></div>
+      </div>
+
+      <div class="unit-progress-card" id="unit2Card" style="display: none;">
+        <div class="unit-progress-header">
+          <div class="stat-icon"
+            style="width: 40px; height: 40px; background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <span class="unit-progress-title">تقدم دروس الوحدة الثانية</span>
+        </div>
+        <div class="lessons-list" id="unit2LessonsList"></div>
+      </div>
+
       <div class="unit-progress-card" id="unit3Card" style="display: none;">
         <div class="unit-progress-header">
           <div class="stat-icon"
@@ -716,6 +746,8 @@
 
     // Helper function: Calculate student completion percentage
     async function calculateStudentCompletion(studentId, studentEmail, stdGrade, preCalculatedExamMap = null, sharedVisibilityMap = null, sharedTimerMap = null) {
+      const currentSubject = localStorage.getItem('selectedSubject') || 'computer_science';
+      const CURRICULUM = CURRICULUMS[currentSubject] || CURRICULUMS['computer_science'];
       if (!CURRICULUM[stdGrade]) return { completionPercent: 0, completedLessons: 0, totalOpenLessons: 0 };
 
       try {
@@ -746,21 +778,27 @@
         let timerMap = sharedTimerMap || {};
         if (!sharedVisibilityMap) {
           try {
-            const [visibilityDoc, timersDoc] = await Promise.all([
+            const [visibilityDoc, timersDoc, oldVisDoc, oldTimersDoc] = await Promise.all([
+              db.collection('settings').doc('lesson_visibility_' + currentSubject).get(),
+              db.collection('settings').doc('lesson_timers_' + currentSubject).get(),
               db.collection('settings').doc('lesson_visibility').get(),
               db.collection('settings').doc('lesson_timers').get()
             ]);
             if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
+            else if (oldVisDoc.exists) visibilityMap = oldVisDoc.data();
+
             if (timersDoc.exists) timerMap = timersDoc.data();
+            else if (oldTimersDoc.exists) timerMap = oldTimersDoc.data();
           } catch (e) { console.error("Error fetching settings:", e); }
         }
 
         let openLessons = 0;
         let completedOpenLessons = 0;
 
-        // Check units 3 and 4
-        [3, 4].forEach(unitNum => {
-          const unitLessons = CURRICULUM[stdGrade][unitNum];
+        // Check units (units 3 & 4 for Grade 8/9, all units [1, 2, 3, 4] for others)
+        const unitsToCount = (stdGrade === '8' || stdGrade === '9') ? [3, 4] : [1, 2, 3, 4];
+        unitsToCount.forEach(unitNum => {
+          const unitLessons = (CURRICULUM[stdGrade] && CURRICULUM[stdGrade][unitNum]) ? CURRICULUM[stdGrade][unitNum] : null;
           if (unitLessons && unitLessons.length > 0) {
             unitLessons.forEach((lesson) => {
               const subActivities = ['-prep', '-task', 'mind', '-1'];
@@ -1218,50 +1256,136 @@
 
 
     // Unit Progress Logic
-    const CURRICULUM = {
-      "7": {
-        "3": [
-          { id: "7-3-1", name: "المواطنة الرقمية", path: "page/7th/3-1/7c.html" },
-          { id: "7-3-2", name: "الملكية الفكرية", path: "page/7th/3-2/7c.html" },
-          { id: "7-3-3", name: "خصوصية البيانات", path: "page/7th/3-3/7c.html" },
-          { id: "7-3-4", name: "الاستخدام المتوازن لوسائل الاتصال الرقمية", path: "page/7th/3-4/7c.html" }
-        ],
-        "4": [
-          { id: "7-4-1", name: "الخوارزميات", path: "page/7th/4-1/7c.html" },
-          { id: "7-4-2", name: "تصميم الخوارزميات", path: "page/7th/4-2/7c.html" },
-          { id: "7-4-3", name: "طرق تمثيل الخوارزميات", path: "page/7th/4-3/7c.html" }
-        ]
+    const CURRICULUMS = {
+      "computer_science": {
+        "7": {
+          "1": [
+            { id: "7-1-1", name: "المواطنة الرقمية", path: "page/7th/3-1/7c.html" },
+            { id: "7-1-2", name: "الملكية الفكرية", path: "page/7th/3-2/7c.html" },
+            { id: "7-1-3", name: "خصوصية البيانات", path: "page/7th/3-3/7c.html" },
+            { id: "7-1-4", name: "الاستخدام المتوازن لوسائل الاتصال الرقمية", path: "page/7th/3-4/7c.html" }
+          ],
+          "2": [
+            { id: "7-2-1", name: "المواطنة الرقمية", path: "page/7th/3-1/7c.html" },
+            { id: "7-2-2", name: "الملكية الفكرية", path: "page/7th/3-2/7c.html" },
+            { id: "7-2-3", name: "خصوصية البيانات", path: "page/7th/3-3/7c.html" },
+            { id: "7-2-4", name: "الاستخدام المتوازن لوسائل الاتصال الرقمية", path: "page/7th/3-4/7c.html" }
+          ],
+          "3": [
+            { id: "7-3-1", name: "المواطنة الرقمية", path: "page/7th/3-1/7c.html" },
+            { id: "7-3-2", name: "الملكية الفكرية", path: "page/7th/3-2/7c.html" },
+            { id: "7-3-3", name: "خصوصية البيانات", path: "page/7th/3-3/7c.html" },
+            { id: "7-3-4", name: "الاستخدام المتوازن لوسائل الاتصال الرقمية", path: "page/7th/3-4/7c.html" }
+          ],
+          "4": [
+            { id: "7-4-1", name: "الخوارزميات", path: "page/7th/4-1/7c.html" },
+            { id: "7-4-2", name: "تصميم الخوارزميات", path: "page/7th/4-2/7c.html" },
+            { id: "7-4-3", name: "طرق تمثيل الخوارزميات", path: "page/7th/4-3/7c.html" }
+          ]
+        },
+        "8": {
+          "1": [
+            { id: "8-3-1", name: "البيانات والمعلومات", path: "page/8th/3-1/8c.html" },
+            { id: "8-3-2", name: "البحث عن المعلومات باستخدام الانترنت", path: "page/8th/3-2/8c.html" },
+            { id: "8-3-3", name: "تحليل البيانات", path: "page/8th/3-3/8c.html" },
+            { id: "8-3-4", name: "النماذج الحسابية وتجميع البيانات", path: "page/8th/3-4/8c.html" }
+          ],
+          "2": [
+            { id: "8-4-1", name: "تنظيم الشبكات", path: "page/8th/4-1/8c.html" },
+            { id: "8-4-2", name: "تمدد الشبكة وموثوقيتها", path: "page/8th/4-2/8c.html" },
+            { id: "8-4-3", name: "اساسيات برنامج محاكاة الشبكات ", path: "page/8th/4-3/8c.html" },
+            { id: "8-4-4", name: "استخدام برنامج باك تريسر للشبكات المحلية", path: "page/8th/4-4/8c.html" },
+            { id: "8-4-5", name: "محاكاة انترنت الاشياء باستخدام باك تريسر", path: "page/8th/4-5/8c.html" }
+          ],
+          "3": [
+            { id: "8-3-1", name: "البيانات والمعلومات", path: "page/8th/3-1/8c.html" },
+            { id: "8-3-2", name: "البحث عن المعلومات باستخدام الانترنت", path: "page/8th/3-2/8c.html" },
+            { id: "8-3-3", name: "تحليل البيانات", path: "page/8th/3-3/8c.html" },
+            { id: "8-3-4", name: "النماذج الحسابية وتجميع البيانات", path: "page/8th/3-4/8c.html" }
+          ],
+          "4": [
+            { id: "8-4-1", name: "تنظيم الشبكات", path: "page/8th/4-1/8c.html" },
+            { id: "8-4-2", name: "تمدد الشبكة وموثوقيتها", path: "page/8th/4-2/8c.html" },
+            { id: "8-4-3", name: "اساسيات برنامج محاكاة الشبكات ", path: "page/8th/4-3/8c.html" },
+            { id: "8-4-4", name: "استخدام برنامج باك تريسر للشبكات المحلية", path: "page/8th/4-4/8c.html" },
+            { id: "8-4-5", name: "محاكاة انترنت الاشياء باستخدام باك تريسر", path: "page/8th/4-5/8c.html" }
+          ]
+        },
+        "9": {
+          "1": [
+            { id: "9-1-1", name: "أمن البيانات و المعلومات", path: "page/9th/3-1/9c.html" },
+            { id: "9-1-2", name: "تهديدات الامن السيبراني", path: "page/9th/3-2/9c.html" },
+            { id: "9-1-3", name: "النقل الامن للبيانات", path: "page/9th/3-3/9c.html" },
+            { id: "9-1-4", name: "وسائل حماية البيانات", path: "page/9th/3-4/9c.html" },
+            { id: "9-1-5", name: "التشفير", path: "page/9th/3-5/9c.html" }
+          ],
+          "2": [
+            { id: "9-2-1", name: "مقدمة في الذكاء الاصطناعي", path: "page/9th/4-1/9c.html" },
+            { id: "9-2-2", name: "تطبيقات الذكاء الاصطناعي", path: "page/9th/4-2/9c.html" },
+            { id: "9-2-3", name: "الروبوت", path: "page/9th/4-3/9c.html" },
+            { id: "9-2-4", name: "اساسيات برمجة روبوت", path: "page/9th/4-4/9c.html" }
+          ],
+          "3": [
+            { id: "9-3-1", name: "أمن البيانات و المعلومات", path: "page/9th/3-1/9c.html" },
+            { id: "9-3-2", name: "تهديدات الامن السيبراني", path: "page/9th/3-2/9c.html" },
+            { id: "9-3-3", name: "النقل الامن للبيانات", path: "page/9th/3-3/9c.html" },
+            { id: "9-3-4", name: "وسائل حماية البيانات", path: "page/9th/3-4/9c.html" },
+            { id: "9-3-5", name: "التشفير", path: "page/9th/3-5/9c.html" }
+          ],
+          "4": [
+            { id: "9-4-1", name: "مقدمة في الذكاء الاصطناعي", path: "page/9th/4-1/9c.html" },
+            { id: "9-4-2", name: "تطبيقات الذكاء الاصطناعي", path: "page/9th/4-2/9c.html" },
+            { id: "9-4-3", name: "الروبوت", path: "page/9th/4-3/9c.html" },
+            { id: "9-4-4", name: "اساسيات برمجة روبوت", path: "page/9th/4-4/9c.html" }
+          ]
+        },
+        "10": {
+          "1": [
+            { id: "10-1-1", name: "البيانات والمعلومات", path: "page/10th/1-1/10c.html" },
+            { id: "10-1-2", name: "أنواع البيانات وطرائق تنظيمها", path: "page/10th/1-2/10c.html" },
+            { id: "10-1-3", name: "التمثيل المرئي للبيانات", path: "page/10th/1-3/10c.html" },
+            { id: "10-1-4", name: "تحليل البيانات ", path: "page/10th/1-4/10c.html" }
+          ],
+          "2": [
+            { id: "10-2-1", name: "مقدمة الى المواقع الالكترونية", path: "page/10th/2-1/10c.html" },
+            { id: "10-2-2", name: "انشاء الصفحات الالكترونية", path: "page/10th/2-2/10c.html" },
+            { id: "10-2-3", name: "تنسيق النصوص", path: "page/10th/2-3/10c.html" },
+            { id: "10-2-4", name: "التعليقات والقوائم", path: "page/10th/2-4/10c.html" },
+            { id: "10-2-5", name: "الصور", path: "page/10th/2-5/10c.html" },
+            { id: "10-2-6", name: "الوسائط المتعددة والارتباطات التشعبية", path: "page/10th/2-6/10c.html" },
+            { id: "10-2-7", name: "الجداول", path: "page/10th/2-7/10c.html" }
+          ],
+          "3": [
+            { id: "10-3-1", name: "مقدمة في انترنت الاشياء", path: "page/10th/3-1/10c.html" },
+            { id: "10-3-2", name: "امثلة عملية على انظمة ذكية", path: "page/10th/3-2/10c.html" },
+            { id: "10-3-3", name: "تصميم الشبكات وجمع البيانات", path: "page/10th/3-3/10c.html" },
+            { id: "10-3-4", name: "تطبيقات عملية لتصميم شبكة انترنت الاشياء", path: "page/10th/3-4/10c.html" }
+          ],
+          "4": [
+            { id: "10-4-1", name: "أنظمة قواعد المعرفة واهميتها", path: "page/10th/4-1/10c.html" },
+            { id: "10-4-2", name: "المنطق وعلاقته بالذكاء الاصطناعي", path: "page/10th/4-2/10c.html" },
+            { id: "10-4-3", name: "منطق الفرضيات ومنطق المسند", path: "page/10th/4-3/10c.html" },
+            { id: "10-4-4", name: "تطبيقات الذكاء الاصطناعي", path: "page/10th/4-4/10c.html" }
+          ]
+        }
       },
-      "8": {
-        "3": [
-          { id: "8-3-1", name: "البيانات والمعلومات", path: "page/8th/3-1/8c.html" },
-          { id: "8-3-2", name: "البحث عن المعلومات باستخدام الانترنت", path: "page/8th/3-2/8c.html" },
-          { id: "8-3-3", name: "تحليل البيانات", path: "page/8th/3-3/8c.html" },
-          { id: "8-3-4", name: "النماذج الحسابية وتجميع البيانات", path: "page/8th/3-4/8c.html" }
-        ],
-        "4": [
-          { id: "8-4-1", name: "تنظيم الشبكات", path: "page/8th/4-1/8c.html" },
-          { id: "8-4-2", name: "تمدد الشبكة وموثوقيتها", path: "page/8th/4-2/8c.html" },
-          { id: "8-4-3", name: "اساسيات برنامج محاكاة الشبكات ", path: "page/8th/4-3/8c.html" },
-          { id: "8-4-4", name: "استخدام برنامج باك تريسر للشبكات المحلية", path: "page/8th/4-4/8c.html" },
-          { id: "8-4-5", name: "محاكاة انترنت الاشياء باستخدام باك تريسر", path: "page/8th/4-5/8c.html" }
-        ]
-      },
-      "9": {
-
-        "3": [
-          { id: "9-3-1", name: "أمن البيانات و المعلومات", path: "page/9th/3-1/9c.html" },
-          { id: "9-3-2", name: "تهديدات الامن السيبراني", path: "page/9th/3-2/9c.html" },
-          { id: "9-3-3", name: "النقل الامن للبيانات", path: "page/9th/3-3/9c.html" },
-          { id: "9-3-4", name: "وسائل حماية البيانات", path: "page/9th/3-4/9c.html" },
-          { id: "9-3-5", name: "التشفير", path: "page/9th/3-5/9c.html" }
-        ],
-        "4": [
-          { id: "9-4-1", name: "مقدمة في الذكاء الاصطناعي", path: "page/9th/4-1/9c.html" },
-          { id: "9-4-2", name: "تطبيقات الذكاء الاصطناعي", path: "page/9th/4-2/9c.html" },
-          { id: "9-4-3", name: "الروبوت", path: "page/9th/4-3/9c.html" },
-          { id: "9-4-4", name: "اساسيات برمجة روبوت", path: "page/9th/4-4/9c.html" }
-        ]
+      "financial_culture": {
+        "10": {
+          "1": [
+            { id: "fc_10-1-1", name: "المشروع وإدارته", path: "page/financial/10th/1-1/fc_10c.html" },
+            { id: "fc_10-1-2", name: "فريق المشروع", path: "page/financial/10th/1-2/fc_10c.html" },
+            { id: "fc_10-1-3", name: "مراحل إدارة المشروع وفريق العمل", path: "page/financial/10th/1-3/fc_10c.html" },
+            { id: "fc_10-1-4", name: "نماذج بدء المشروع والتخطيط الزمني", path: "page/financial/10th/1-4/fc_10c.html" },
+            { id: "fc_10-1-5", name: "مراقبة المشروع وتقييمه", path: "page/financial/10th/1-5/fc_10c.html" }
+          ],
+          "2": [
+            { id: "fc_10-2-1", name: "دراسة الجدوى: المفهوم، والأهمية", path: "page/financial/10th/2-1/fc_10c.html" },
+            { id: "fc_10-2-2", name: "مكوّنات دراسة الجدوى: الدراسة السوقية", path: "page/financial/10th/2-2/fc_10c.html" },
+            { id: "fc_10-2-3", name: "الدراسة الفنية", path: "page/financial/10th/2-3/fc_10c.html" },
+            { id: "fc_10-2-4", name: "الدراسة المالية", path: "page/financial/10th/2-4/fc_10c.html" },
+            { id: "fc_10-2-5", name: "الدراسة القانونية للمشروع", path: "page/financial/10th/2-5/fc_10c.html" }
+          ]
+        }
       }
     };
 
@@ -1283,6 +1407,8 @@
 
 
 
+      const currentSubject = localStorage.getItem('selectedSubject') || 'computer_science';
+      const CURRICULUM = CURRICULUMS[currentSubject] || CURRICULUMS['computer_science'];
       if (!stdEmail || !CURRICULUM[stdGrade]) {
         console.warn("Debug Lessons: Missing stdEmail or curriculum for grade", stdGrade);
         return;
@@ -1305,12 +1431,17 @@
         let visibilityMap = {};
         let timerMap = {};
         try {
-          const [visibilityDoc, timersDoc] = await Promise.all([
+          const [visibilityDoc, timersDoc, oldVisDoc, oldTimersDoc] = await Promise.all([
+            db.collection('settings').doc('lesson_visibility_' + currentSubject).get(),
+            db.collection('settings').doc('lesson_timers_' + currentSubject).get(),
             db.collection('settings').doc('lesson_visibility').get(),
             db.collection('settings').doc('lesson_timers').get()
           ]);
           if (visibilityDoc.exists) visibilityMap = visibilityDoc.data();
+          else if (oldVisDoc.exists) visibilityMap = oldVisDoc.data();
+
           if (timersDoc.exists) timerMap = timersDoc.data();
+          else if (oldTimersDoc.exists) timerMap = oldTimersDoc.data();
         } catch (e) {
           console.error("Error fetching settings:", e);
         }
@@ -1336,8 +1467,8 @@
         let openLessons = 0;
         let completedOpenLessons = 0;
 
-        // Load each unit from 3 to 4
-        [3, 4].forEach(unitNum => {
+        // Load each unit from 1 to 4
+        [1, 2, 3, 4].forEach(unitNum => {
           const unitLessons = CURRICULUM[stdGrade][unitNum];
           const card = document.getElementById(`unit${unitNum}Card`);
           const container = document.getElementById(`unit${unitNum}LessonsList`);
