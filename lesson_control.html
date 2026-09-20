@@ -394,7 +394,13 @@
                 Object.keys(CURRICULUM[grade]).forEach(unit => {
                     const unitGroup = document.createElement('div');
                     unitGroup.className = 'unit-group';
-                    unitGroup.innerHTML = `<div class="unit-title">الوحدة ${unit === "3" ? "الثالثة" : unit === "4" ? "الرابعة" : unit === "1" ? "الاولى" : "الثانية"}</div>`;
+                    let semesterDivider = "";
+                    if (unit === "1") {
+                        semesterDivider = `<div style="text-align: center; margin: 15px 0 5px 0; font-size: 1.2rem; font-weight: bold; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 5px;">الفصل الدراسي الأول</div>`;
+                    } else if (unit === "3") {
+                        semesterDivider = `<div style="text-align: center; margin: 15px 0 5px 0; font-size: 1.2rem; font-weight: bold; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 5px;">الفصل الدراسي الثاني</div>`;
+                    }
+                    unitGroup.innerHTML = `${semesterDivider}<div class="unit-title">الوحدة ${unit === "3" ? "الثالثة" : unit === "4" ? "الرابعة" : unit === "1" ? "الاولى" : "الثانية"}</div>`;
 
                     CURRICULUM[grade][unit].forEach(lesson => {
                         const isOpen = currentStates[lesson.id] === true;
