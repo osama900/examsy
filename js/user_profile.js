@@ -95,14 +95,14 @@ function checkAndDisplayProfile() {
         // Class Info String (e.g. "9ب")
         let classInfo = "";
         if (stdGrade && stdClass) {
-            classInfo = `${stdGrade}${stdClass}`;
+            classInfo = `${stdGrade + " "}${stdClass}`;
         }
 
         // Display in Hero Section if element exists
         const heroStudentInfo = document.getElementById('hero-student-info');
         if (heroStudentInfo) {
             let infoArray = [stdName];
-            if (stdGrade) infoArray.push(stdGrade);
+            if (stdGrade) infoArray.push(stdGrade + " ");
             if (stdClass) infoArray.push(stdClass);
             heroStudentInfo.textContent = infoArray.join(' ');
         }
@@ -320,13 +320,13 @@ function checkAndDisplayProfile() {
                     repliesHTML = `
                         <div class="replies-thread" style="margin-top: 8px; margin-bottom: 8px; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; border-right: 3px solid #8e44ad; max-height: 200px; overflow-y: auto;">
                             ${threadReplies.map(r => {
-                                const isTeacher = r.sender === 'Teacher';
-                                const senderName = isTeacher ? 'المعلم' : escapeHTML(r.studentName);
-                                const senderColor = isTeacher ? '#e74c3c' : '#3498db';
-                                const msgBg = isTeacher ? '#fdf2f2' : '#f0f7fc';
-                                const msgBorder = isTeacher ? '1px solid #fde8e8' : '1px solid #e1f0fa';
-                                const timeStr = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'}) : 'الآن';
-                                return `
+                        const isTeacher = r.sender === 'Teacher';
+                        const senderName = isTeacher ? 'المعلم' : escapeHTML(r.studentName);
+                        const senderColor = isTeacher ? '#e74c3c' : '#3498db';
+                        const msgBg = isTeacher ? '#fdf2f2' : '#f0f7fc';
+                        const msgBorder = isTeacher ? '1px solid #fde8e8' : '1px solid #e1f0fa';
+                        const timeStr = r.timestamp ? new Date(r.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) : 'الآن';
+                        return `
                                     <div style="margin-bottom: 8px; background: ${msgBg}; border: ${msgBorder}; padding: 6px 10px; border-radius: 6px; font-size: 11px; line-height: 1.4;">
                                         <div style="display: flex; justify-content: space-between; font-weight: bold; color: ${senderColor}; margin-bottom: 3px;">
                                             <span>${senderName}</span>
@@ -335,7 +335,7 @@ function checkAndDisplayProfile() {
                                         <div style="color: #2c3e50; word-break: break-word;">${escapeHTML(r.message)}</div>
                                     </div>
                                 `;
-                            }).join('')}
+                    }).join('')}
                         </div>
                     `;
                 }

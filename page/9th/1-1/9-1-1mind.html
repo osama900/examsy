@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>وسائل التكنولوجيا الحديثة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "وسائل التكنولوجيا الحديثة (Modern Technological Means) 🌐",
+        children: [
+
+          {
+            content: "أبرز وسائل وتقنيات التكنولوجيا الحديثة",
+            children: [
+              {
+                content: "الأجهزة الذكية (Smart Devices)",
+                children: [
+                  { content: "أجهزة متصلة بالإنترنت تتبادل البيانات[cite: 3]." },
+                  { content: "تجمع البيانات وتحللها وتتخذ قرارات ذكية[cite: 3]." }
+                ]
+              },
+              {
+                content: "الحوسبة السحابية (Cloud Computing)",
+                children: [
+                  { content: "توفير خدمات (خوادم، قواعد بيانات، تخزين، برمجيات، ذكاء اصطناعي) عبر الإنترنت[cite: 3]." },
+                  { content: "الوصول للتطبيقات والبيانات من أي مكان[cite: 3]." },
+                  {
+                    content: "نماذج الخدمات السحابية",
+                    children: [
+                      { content: "البرمجيات كخدمة (SaaS)[cite: 3]" },
+                      { content: "المنصة كخدمة (PaaS)[cite: 3]" },
+                      { content: "البنية التحتية كخدمة (IaaS)[cite: 3]" }
+                    ]
+                  },
+                  { content: "أمثلة: Google Cloud, OneDrive, Microsoft Azure[cite: 3]." }
+                ]
+              },
+              {
+                content: "الواقع الافتراضي (VR) والواقع المعزز (AR)",
+                children: [
+                  { content: "تقديم تجارب تفاعلية ثلاثية الأبعاد[cite: 3]." },
+                  { content: "لكل منهما خصائص واستخدامات وأدوات فريدة[cite: 3]." }
+                ]
+              },
+              {
+                content: "الذكاء الاصطناعي (AI)",
+                children: [
+                  { content: "نظام حاسوبي يحاكي الذكاء البشري (تفكير، تعلم، حل مشكلات)[cite: 3]." },
+                  { content: "يعتمد على التعلم الآلي (Machine Learning) والتعلم العميق (Deep Learning)[cite: 3]." },
+                  { content: "أمثلة: Siri, GPS, المركبات ذاتية القيادة, Chat GPT[cite: 3]." }
+                ]
+              },
+              {
+                content: "إنترنت الأشياء (IoT)",
+                children: [
+                  { content: "شبكة أجهزة ذكية ترتبط بالإنترنت وتتفاعل بدون تدخل بشري مباشر[cite: 3]." },
+                  { content: "تعتمد على أجهزة الاستشعار (Sensors) والبرمجيات[cite: 3]." },
+                  { content: "أمثلة: الأجهزة المنزلية، الساعات، السيارات، الكاميرات[cite: 3]." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "الأثر الإيجابي لوسائل التكنولوجيا",
+            children: [
+              {
+                content: "الأثر في الفرد",
+                children: [
+                  { content: "زيادة الكفاءة والإنتاجية[cite: 3]." },
+                  { content: "تسهيل التواصل والتفاعل الاجتماعي[cite: 3]." },
+                  { content: "تطوير التعليم والتعلم الذاتي[cite: 3]." },
+                  { content: "تحقيق الراحة والرفاهية والأتمتة المنزلية[cite: 3]." },
+                  { content: "إتاحة خيارات العمل عن بُعد[cite: 3]." }
+                ]
+              },
+              {
+                content: "الأثر في المجتمع",
+                children: [
+                  { content: "دعم الابتكار وتعزيز النمو الاقتصادي[cite: 3]." },
+                  { content: "تسهيل التواصل والتعاون العالمي[cite: 3]." },
+                  { content: "زيادة الوعي والمشاركة الاجتماعية[cite: 3]." },
+                  { content: "دعم التنمية البيئية المستدامة والطاقة المتجددة[cite: 3]." },
+                  { content: "تطوير منظومة الأمان والسلامة العامة[cite: 3]." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مخاطر التكنولوجيا الحديثة",
+            children: [
+              {
+                content: "المخاطر على الفرد",
+                children: [
+                  { content: "الإدمان والتشتت وانخفاض الإنتاجية[cite: 3]." },
+                  { content: "العزلة والتأثير السلبي في العلاقات الاجتماعية[cite: 3]." },
+                  { content: "التأثير في الصحة النفسية (القلق والاكتئاب)[cite: 3]." },
+                  { content: "المشكلات الصحية (إجهاد العينين، الصداع، آلام الرقبة)[cite: 3]." },
+                  { content: "انتهاك الخصوصية والتنمر الإلكتروني[cite: 3]." }
+                ]
+              },
+              {
+                content: "المخاطر على المجتمع",
+                children: [
+                  { content: "نشوء الهوة الاجتماعية والفجوة الرقمية[cite: 3]." },
+                  { content: "البطالة التكنولوجية بسبب الأتمتة والروبوتات[cite: 3]." },
+                  { content: "التأثير السلبي في البيئة وتراكم النفايات الإلكترونية[cite: 3]." },
+                  { content: "خطر التحكم والمراقبة والتضييق على الحريات[cite: 3]." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "قواعد المواطنة الرقمية والوقاية",
+            children: [
+              { content: "الاعتدال في الاستخدام وتجنب الممارسات الخاطئة[cite: 3]." },
+              { content: "تخزين البيانات بشكل آمن واستخدام التشفير[cite: 3]." },
+              { content: "احترام حقوق الملكية الفكرية للموارد[cite: 3]." }
+            ]
+          },
+
+          {
+            content: "منتجات ونتاجات التعلم (المشروع)",
+            children: [
+              { content: "إعداد الصفحة الرئيسة للموقع الإلكتروني للصف[cite: 3]." },
+              { content: "تصميم عرض تقديمي عبر (Google Slides) يوضح المزايا والمخاطر[cite: 3]." },
+              { content: "تضمين موارد تعليمية ومشاركتها على الموقع[cite: 3]." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "9-1-1mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>

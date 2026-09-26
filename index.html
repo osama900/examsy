@@ -546,7 +546,7 @@
     <h1 style="margin:2px; padding: 2px;">👋 أهلاً بك </h1>
     <p style="font-size: 35px;" id="hero-student-info"></p>
     <p> في موقع الاختبارات الالكترونية </p>
-    <p>مدرسة زيد بن حارثة الاساسية للبنين</p>
+    <p>مدرسة تقارب</p>
   </header>
 
 
@@ -647,14 +647,14 @@
         </div>
       </div>
 
-      <a href="files/9-2.pdf" target="_self" style="text-decoration: none; color: inherit; display: block;">
+      <a id="bookLinkSemester1" href="#" target="_self" style="text-decoration: none; color: inherit; display: block;">
         <div class="stat-card" style="border-right: 4px solid #9b59b6;">
           <div class="stat-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
             <span style="font-size: 24px;">🗂️</span>
           </div>
           <div class="stat-info">
-            <span class="stat-label">كتاب الطالب</span>
-            <span class="stat-value" id="lastNotifText"
+            <span class="stat-label">كتاب الطالب الفصل الأول</span>
+            <span class="stat-value"
               style="font-size: 0.9rem; font-weight: 500; color: #555; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;">
               اضغط هنا لفتح كتاب الطالب
             </span>
@@ -662,12 +662,27 @@
         </div>
       </a>
 
-      
+      <a id="bookLinkSemester2" href="#" target="_self" style="text-decoration: none; color: inherit; display: block;">
+        <div class="stat-card" style="border-right: 4px solid #9b59b6;">
+          <div class="stat-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+            <span style="font-size: 24px;">📑</span>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">كتاب الطالب الفصل الثاني</span>
+            <span class="stat-value"
+              style="font-size: 0.9rem; font-weight: 500; color: #555; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; line-height: 1.4;">
+              اضغط هنا لفتح كتاب الطالب
+            </span>
+          </div>
+        </div>
+      </a>
+
 
 
       <div class="unit-progress-card" id="semester1Divider" style="display: none; padding: 15px; margin-top: 10px;">
         <div class="unit-progress-header" style="border: none; margin: 0; justify-content: center;">
-          <div class="stat-icon" style="width: 40px; height: 40px; background: rgba(52, 152, 219, 0.1); color: #3498db; margin-left: 10px;">
+          <div class="stat-icon"
+            style="width: 40px; height: 40px; background: rgba(52, 152, 219, 0.1); color: #3498db; margin-left: 10px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -706,7 +721,8 @@
 
       <div class="unit-progress-card" id="semester2Divider" style="display: none; padding: 15px; margin-top: 10px;">
         <div class="unit-progress-header" style="border: none; margin: 0; justify-content: center;">
-          <div class="stat-icon" style="width: 40px; height: 40px; background: rgba(52, 152, 219, 0.1); color: #3498db; margin-left: 10px;">
+          <div class="stat-icon"
+            style="width: 40px; height: 40px; background: rgba(52, 152, 219, 0.1); color: #3498db; margin-left: 10px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -1206,6 +1222,21 @@
       }
     }
 
+    // Update book links based on student grade
+    function updateBookLinks() {
+      const stdGrade = localStorage.getItem('std_grade');
+      if (!stdGrade) return;
+
+      const gradeNum = stdGrade.replace(/[^0-9]/g, ''); // extract number only
+      if (!gradeNum) return;
+
+      const link1 = document.getElementById('bookLinkSemester1');
+      const link2 = document.getElementById('bookLinkSemester2');
+
+      if (link1) link1.href = 'files/' + gradeNum + '-1.pdf';
+      if (link2) link2.href = 'files/' + gradeNum + '-2.pdf';
+    }
+
     // Initialize Auth Listener
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
@@ -1271,6 +1302,7 @@
         loadDashboardStats();
         loadAllUnitsProgress();
         updateDashboardNotificationCard();
+        updateBookLinks();
       } else {
         document.body.style.display = 'block';
       }

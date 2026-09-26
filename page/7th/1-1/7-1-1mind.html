@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> جهاز الحاسوب 💻 </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+
+    ((l, U, M, R) => {
+
+      const N = l();
+
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+
+    })(
+      () => window.markmap,
+      null,
+
+      {
+
+        content: "جهاز الحاسوب (Computer) 💻",
+
+        children: [
+
+          {
+            content: "تعريف جهاز الحاسوب",
+            children: [
+              { content: "جهاز إلكتروني." },
+              { content: "يستقبل البيانات والأوامر." },
+              { content: "يعالج البيانات وفق مجموعة من الأوامر البرمجية." },
+              { content: "يخزن البيانات والمعلومات." },
+              { content: "يُخرج المعلومات والنتائج." }
+            ]
+          },
+
+          {
+            content: "مبدأ عمل جهاز الحاسوب",
+            children: [
+
+              {
+                content: "الإدخال (Input)",
+                children: [
+                  { content: "استقبال البيانات والأوامر." },
+                  { content: "تهيئة البيانات لمعالجتها." },
+                  {
+                    content: "أمثلة",
+                    children: [
+                      { content: "لوحة المفاتيح" },
+                      { content: "الفأرة" },
+                      { content: "الكاميرا" },
+                      { content: "الميكروفون" }
+                    ]
+                  },
+                ]
+              },
+
+              {
+                content: "المعالجة (Processing)",
+                children: [
+                  { content: "معالجة البيانات بعد إدخالها." },
+                  { content: "تنفيذ العمليات الحسابية." },
+                  { content: "تنفيذ عمليات المقارنة والمنطق." },
+                  { content: "تصنيف البيانات وترتيبها وتنسيقها." },
+                  { content: "تتم بواسطة وحدة المعالجة المركزية (CPU)." }
+                ]
+              },
+
+              {
+                content: "التخزين (Storage)",
+                children: [
+                  { content: "حفظ المعلومات بعد معالجتها." },
+                  { content: "الرجوع إلى المعلومات عند الحاجة." }
+                ]
+              },
+
+              {
+                content: "الإخراج (Output)",
+                children: [
+                  { content: "عرض نتائج المعالجة للمستخدم." },
+                  { content: "يمكن للمستخدم مشاهدة النتائج أو سماعها." },
+                  {
+                    content: "أمثلة",
+                    children: [
+                      { content: "الشاشة" },
+                      { content: "الطابعة" },
+                      { content: "السماعة" }
+                    ]
+                  },
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "البيانات والمعلومات",
+            children: [
+
+              {
+                content: "البيانات (Data)",
+                children: [
+                  { content: "حقائق وعناصر أولية غير معالجة." },
+                  { content: "قد تكون أرقامًا أو صورًا أو إشارات أو رموزًا أو كلمات." },
+                  { content: "لا تحمل معنى واضحًا بمفردها." },
+                  {
+                    content: "أمثلة",
+                    children: [
+                      { content: "علامات الطلبة" },
+                      { content: "الأرقام" },
+                      { content: "النصوص" },
+                      { content: "التسجيلات الصوتية" }
+                    ]
+                  }
+                ]
+              },
+
+              {
+                content: "المعلومات (Information)",
+                children: [
+                  { content: "بيانات تم تنظيمها وتحليلها ومعالجتها." },
+                  { content: "تصبح مفيدة وذات معنى." },
+                  { content: "تساعد على فهم السياق واتخاذ القرارات." },
+                  {
+                    content: "أمثلة",
+                    children: [
+                      { content: "قائمة منظمة لأسماء الطلبة" },
+                      { content: "رسم بياني لنتائج الطلبة" },
+                      { content: "نسبة الطلبة الناجحين" }
+                    ]
+                  },
+
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "أنواع أجهزة الحاسوب",
+            children: [
+
+              {
+                content: "الحاسوب المكتبي (Desktop)",
+                children: [
+                  { content: "مصمم للاستخدام في مكان ثابت." },
+                  { content: "مناسب للمكتب والمنزل." },
+                  { content: "يتكون من وحدة نظام وشاشة ولوحة مفاتيح وفأرة." },
+                  { content: "يتميز بأداء عالٍ ومساحة تخزين كبيرة." }
+                ]
+              },
+
+              {
+                content: "الحاسوب اللوحي (Tablet)",
+                children: [
+                  { content: "جهاز محمول ذو شاشة تعمل باللمس." },
+                  { content: "مكوناته مدمجة في وحدة واحدة." },
+                  { content: "لا يحتاج إلى لوحة مفاتيح مادية." },
+                  { content: "خفيف وسهل الحمل." },
+                  { content: "مناسب أثناء التنقل." }
+                ]
+              },
+
+              {
+                content: "الحاسوب المحمول (Laptop)",
+                children: [
+                  { content: "جهاز شخصي صغير ومحمول." },
+                  { content: "يدمج مكونات الحاسوب الأساسية في وحدة واحدة." },
+                  { content: "خفيف الوزن." },
+                  { content: "يسمح بسهولة نقله واستخدامه في أماكن مختلفة." }
+                ]
+              },
+
+              {
+                content: "الهاتف الذكي (Smartphone)",
+                children: [
+                  { content: "جهاز محمول يجمع بين الهاتف التقليدي ووظائف الحاسوب." },
+                  { content: "شاشة تعمل باللمس." },
+                  { content: "نظام تشغيل متقدم." },
+                  { content: "يدعم تشغيل التطبيقات المختلفة." },
+                  { content: "يستخدم للاتصالات والتعلم والترفيه والإنتاجية." }
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "استخدامات الحاسوب في الحياة",
+            children: [
+
+              {
+                content: "النقل والتوصيل",
+                children: [
+                  { content: "الروبوتات والمركبات الآلية." },
+                  { content: "الطائرات من دون طيار (Drone)." },
+                  { content: "تتبع الشحنات والحمولات." },
+                  { content: "استخدام تقنيات RFID و GPS." },
+                  { content: "زيادة الراحة والأمان والشفافية." }
+                ]
+              },
+
+              {
+                content: "تحليل الأداء الرياضي",
+                children: [
+                  { content: "تحليل أداء الرياضيين أثناء التدريبات والمنافسات." },
+                  { content: "تسجيل البيانات الحركية والفسيولوجية." },
+                  { content: "تحليل الأنماط." },
+                  { content: "إصدار التقارير." },
+                  { content: "مساعدة المدربين على اتخاذ القرارات." },
+                  { content: "تحسين أداء الرياضيين." }
+                ]
+              },
+
+              {
+                content: "مجالات أخرى",
+                children: [
+                  { content: "التعليم" },
+                  { content: "الرعاية الصحية" },
+                  { content: "التجارة" },
+                  { content: "النقل" },
+                  { content: "الترفيه" },
+                  { content: "الصناعة" },
+                  { content: "الإحصاء" },
+                  { content: "الزراعة" },
+                  { content: "التسويق" }
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "المواطنة الرقمية",
+            children: [
+
+              {
+                content: "حماية الخصوصية وأمان المعلومات",
+                children: [
+                  { content: "خصوصًا عند استخدام الحواسيب المشتركة." },
+                  { content: "الانتباه عند استخدام حواسيب الأماكن العامة." }
+                ]
+              },
+
+              {
+                content: "إرشادات مهمة",
+                children: [
+                  { content: "تسجيل الخروج من جميع الحسابات قبل مغادرة الجهاز." },
+                  { content: "عدم السماح للآخرين بالوصول إلى الحسابات والمعلومات الخاصة." },
+                  { content: "عدم إطلاع الآخرين على كلمات المرور." },
+                  { content: "استثناء الأشخاص الموثوق بهم عند الحاجة." }
+                ]
+              }
+
+            ]
+          }
+
+        ]
+
+      },
+
+      {
+        colorFreezeLevel: 2,
+        initialExpandLevel: 2
+      }
+
+    );
+
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "7-1-1mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>

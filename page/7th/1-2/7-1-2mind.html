@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> الدرس الثاني - مكونات الحاسوب المادية 💻 </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+
+    ((l, U, M, R) => {
+
+      const N = l();
+
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+
+    })(
+      () => window.markmap,
+      null,
+
+      {
+
+        content: "مكوّنات الحاسوب المادية (Hardware) 💻",
+
+        children: [
+
+          {
+            content: "المكوّنات المادية (Hardware)",
+            children: [
+              { content: "أجزاء مادية ملموسة في جهاز الحاسوب." },
+              { content: "تعمل معًا لتنفيذ التعليمات والأوامر." },
+              { content: "تتكامل مع البرمجيات (Software)." },
+              {
+                content: "تنقسم إلى قسمين رئيسين",
+                children: [
+                  { content: "المكوّنات الداخلية (Internal Components)" },
+                  { content: "المكوّنات الخارجية / الملحقات (Peripherals)" }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "المكوّنات الخارجية (Peripherals)",
+            children: [
+
+              {
+                content: "وحدات الإدخال (Input Devices)",
+                children: [
+                  {
+                    content: "لوحة المفاتيح (Keyboard)",
+                    children: [
+                      { content: "إدخال النصوص والأوامر." }
+                    ]
+                  },
+                  {
+                    content: "الفأرة (Mouse)",
+                    children: [
+                      { content: "التفاعل مع الواجهات الرسومية." }
+                    ]
+                  },
+                  {
+                    content: "الماسح الضوئي (Scanner)",
+                    children: [
+                      { content: "تحويل الوثائق الورقية إلى صور رقمية." }
+                    ]
+                  },
+                  {
+                    content: "الميكروفون (Microphone)",
+                    children: [
+                      { content: "إدخال الصوت." },
+                      { content: "إجراء المكالمات الصوتية." }
+                    ]
+                  },
+                  { content: "شاشة اللمس (Touch Screen)" },
+                  { content: "أجهزة الاستشعار (Digital Sensors)" },
+                  { content: "القلم الرقمي (Digital Pen)" }
+                ]
+              },
+
+              {
+                content: "وحدات الإخراج (Output Devices)",
+                children: [
+                  {
+                    content: "الشاشة (Monitor / Screen)",
+                    children: [
+                      { content: "عرض المعلومات والصور." },
+                      { content: "تقديم واجهات مرئية للمستخدم." }
+                    ]
+                  },
+                  {
+                    content: "الطابعة (Printer)",
+                    children: [
+                      { content: "طباعة الوثائق والصور على الورق." }
+                    ]
+                  },
+                  {
+                    content: "السماعات (Speakers)",
+                    children: [
+                      { content: "إخراج الصوت من جهاز الحاسوب." }
+                    ]
+                  },
+                  { content: "نظارات الواقع الافتراضي (Virtual Reality Glasses)" }
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "المكوّنات الداخلية (Internal Components)",
+            children: [
+
+              {
+                content: "هيكل الحاسوب (Computer Chassis)",
+                children: [
+                  { content: "هيكل معدني يحتوي المكوّنات الداخلية." },
+                  { content: "يحتوي اللوحة الأم والقرص الصلب ومزوّد الطاقة وغيرها." },
+                  { content: "يتوافر بأشكال وأحجام مختلفة." }
+                ]
+              },
+
+              {
+                content: "اللوحة الأم (Motherboard)",
+                children: [
+                  { content: "الوحدة الأساسية في جهاز الحاسوب." },
+                  { content: "تربط بين المكوّنات الداخلية." },
+                  { content: "تثبّت المكوّنات عليها." },
+                  { content: "توفر الاتصال بين مكوّنات الجهاز والأجهزة الطرفية." },
+                  { content: "تربط المعالج والذاكرة وبطاقة الرسوم ووسائط الاتصال." }
+                ]
+              },
+
+              {
+                content: "وحدة المعالجة المركزية (CPU)",
+                children: [
+                  { content: "تُعد دماغ جهاز الحاسوب." },
+                  { content: "تنفذ العمليات الحسابية والمنطقية." },
+                  { content: "تنفذ عمليات الإدخال والإخراج." },
+                  { content: "تنفذ العمليات التي تصل من نظام التشغيل." },
+                  { content: "تختلف سرعتها حسب طبيعة المهام المطلوب تنفيذها." }
+                ]
+              },
+
+              {
+                content: "الذاكرة الرئيسة (Main Memory)",
+                children: [
+                  { content: "تخزن البيانات والمعلومات داخل جهاز الحاسوب." },
+
+                  {
+                    content: "ذاكرة الوصول العشوائي (RAM)",
+                    children: [
+                      { content: "ذاكرة تخزين قصيرة المدى." },
+                      { content: "تخزن مؤقتًا البيانات التي يحتاج إليها الحاسوب أثناء العمل." },
+                      { content: "تؤثر في سرعة أداء المهام." },
+                      { content: "كلما زاد حجمها زادت سرعة تنفيذ العمليات." }
+                    ]
+                  },
+
+                  {
+                    content: "ذاكرة القراءة فقط (ROM)",
+                    children: [
+                      { content: "تخزن البيانات الأساسية لتشغيل جهاز الحاسوب." },
+                      { content: "تخزن نظام BIOS." },
+                      { content: "تحتفظ بالبيانات بصورة دائمة." }
+                    ]
+                  }
+                ]
+              },
+
+              {
+                content: "القرص الصلب (HDD)",
+                children: [
+                  { content: "وحدة تخزين طويلة المدى." },
+                  { content: "تخزن البيانات والمعلومات التي تمت معالجتها." },
+                  { content: "تخزن البيانات التي يراد الرجوع إليها." },
+                  { content: "تتعدد أنواعه وسعات تخزينه." }
+                ]
+              },
+
+              {
+                content: "بطاقة معالجة الرسوم (GPU)",
+                children: [
+                  { content: "تعالج الرسوم." },
+                  { content: "تعرض الصور ومقاطع الفيديو على الشاشة." },
+                  { content: "قد تكون مدمجة في اللوحة الأم." },
+                  { content: "قد تكون بطاقة منفصلة." },
+                  { content: "زيادة قدرتها تؤدي إلى جودة أفضل للعرض على الشاشة." }
+                ]
+              },
+
+              {
+                content: "مزوّد الطاقة (Power Supply)",
+                children: [
+                  { content: "يوفر الطاقة الكهربائية اللازمة لتشغيل الحاسوب." },
+                  { content: "يغذي الأجزاء الداخلية بالطاقة." },
+                  { content: "يتصل مباشرة بالتيار الكهربائي." },
+                  { content: "تختلف قدرته حسب قدرات الجهاز." }
+                ]
+              },
+
+              {
+                content: "مروحة التبريد (Cooling Fan)",
+                children: [
+                  { content: "توجد داخل هيكل جهاز الحاسوب." },
+                  { content: "تستخدم في تبريد المكوّنات الداخلية." },
+                  { content: "تساعد على تبريد وحدة المعالجة المركزية وبطاقة الرسوم." },
+                  { content: "تمنع ارتفاع درجات الحرارة." },
+                  { content: "تقلل احتمال تلف المكوّنات أو تقليل عمر الجهاز." }
+                ]
+              }
+
+            ]
+          },
+
+          {
+            content: "التكامل الوظيفي بين المكوّنات",
+            children: [
+              { content: "تعمل المكوّنات الداخلية والخارجية معًا بانسجام." },
+              { content: "لكل مكوّن وظيفة محددة." },
+              {
+                content: "مثال: الكتابة على الحاسوب",
+                children: [
+                  { content: "لوحة المفاتيح تستقبل المدخلات." },
+                  { content: "تنتقل المدخلات إلى CPU للمعالجة." },
+                  { content: "تخزن البيانات في وحدات التخزين الرئيسة." },
+                  { content: "ترسل المخرجات إلى الشاشة." },
+                  { content: "الشاشة تعرض الحروف التي تمت كتابتها." }
+                ]
+              },
+              { content: "التكامل بين المكوّنات ضروري لأداء المهام المطلوبة بفاعلية." }
+            ]
+          },
+
+          {
+            content: "إرشادات التعامل مع الحاسوب",
+            children: [
+              { content: "فصل جهاز الحاسوب عن مصدر الطاقة قبل التعامل مع أجزائه الداخلية." },
+              { content: "فك المكوّنات وتركيبها بصورة منظمة." },
+              { content: "استخدام الأدوات المناسبة مثل مفكات البراغي والمشابك." },
+              { content: "التعرف إلى وظيفة كل مكوّن." },
+              { content: "التعامل الصحيح مع معدات الحاسوب للمحافظة عليها." }
+            ]
+          },
+
+          {
+            content: "إعادة تدوير مكوّنات الحاسوب",
+            children: [
+              { content: "إعادة تدوير الأجهزة والمكوّنات التالفة." },
+              { content: "التقليل من آثار النفايات الإلكترونية الضارة بالبيئة." },
+              { content: "المحافظة على الموارد البيئية." },
+              { content: "تشجيع الابتكار والإبداع." },
+              {
+                content: "أمثلة على المكوّنات القابلة للتدوير",
+                children: [
+                  { content: "الفأرة" },
+                  { content: "لوحة المفاتيح" },
+                  { content: "القرص الصلب" }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مصطلحات رئيسة",
+            children: [
+              { content: "Hardware — المعدّات / المكوّنات المادية" },
+              { content: "Input Devices — وحدات الإدخال" },
+              { content: "Output Devices — وحدات الإخراج" },
+              { content: "CPU — وحدة المعالجة المركزية" },
+              { content: "RAM — ذاكرة الوصول العشوائي" },
+              { content: "ROM — ذاكرة القراءة فقط" },
+              { content: "GPU — وحدة معالجة الرسوم" },
+              { content: "HDD — القرص الصلب" },
+              { content: "Motherboard — اللوحة الأم" },
+              { content: "Power Supply — مزوّد الطاقة" },
+              { content: "Cooling Fan — مروحة التبريد" },
+              { content: "Monitor — الشاشة" }
+            ]
+          }
+
+        ]
+
+      },
+
+      {
+        colorFreezeLevel: 2,
+        initialExpandLevel: 2
+      }
+
+    );
+
+  </script>
+
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "7-1-2mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>

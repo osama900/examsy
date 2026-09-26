@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> اصلاح الاعطال </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+    ((l, U, M, R) => {
+      const N = l();
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      )),
+        window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+    })(
+      () => window.markmap,
+      null,
+      {
+        content: "إصلاح الأعطال (Computer Troubleshooting) 🛠️",
+        children: [
+
+          {
+            content: "مفهوم صيانة الحاسوب",
+            children: [
+              { content: "أنشطة وقائية أو تصحيحية للحفاظ على أداء الأجهزة." },
+              { content: "ضمان الاستمرارية والعمل بكفاءة عالية." },
+              { content: "تقليل احتمالات الأعطال بأقل التكاليف." },
+              { content: "تشخيص الأعطال وإصلاحها واستبدال التالف." }
+            ]
+          },
+
+          {
+            content: "أهمية صيانة الحاسوب",
+            children: [
+              { content: "الوقاية من وقوع الأعطال قبل حدوثها." },
+              { content: "توفير الوقت وتقليل التكاليف." },
+              { content: "إطالة العمر التشغيلي وتحسين الأداء." },
+              { content: "الكشف عن الفيروسات والبرامج الضارة." },
+              { content: "التحسين من فاعلية البرمجيات." },
+              { content: "خلق ظروف عمل آمنة." }
+            ]
+          },
+
+          {
+            content: "أنواع صيانة الحاسوب",
+            children: [
+              {
+                content: "1. الصيانة الوقائية (Preventive)",
+                children: [
+                  { content: "إجراءات دورية وفق خطة زمنية محددة." },
+                  {
+                    content: "مكونات مادية",
+                    children: [
+                      { content: "بيئة معتدلة وتجنب الحرارة والرطوبة." },
+                      { content: "تنظيف الغبار بمنفاخ الهواء وFoam Cleaner." },
+                      { content: "فحص الوصلات الكهربائية ومراوح التبريد." },
+                      { content: "تجنب تناول الطعام والشراب بجانب الجهاز." },
+                      { content: "متابعة لمبات البيان واختبارات (POST)." }
+                    ]
+                  },
+                  {
+                    content: "مكونات برمجية",
+                    children: [
+                      { content: "تحديث نظام التشغيل ومضاد الفيروسات." },
+                      { content: "حذف الملفات المؤقتة والبرامج غير الضرورية." },
+                      { content: "عمل نسخ احتياطية للملفات." },
+                      { content: "استخدام أدوات Windows (Defragment, Disk Cleanup)." }
+                    ]
+                  }
+                ]
+              },
+              {
+                content: "2. الصيانة التنبؤية (Predictive)",
+                children: [
+                  { content: "تعتمد على علم البيانات والتحليلات التنبؤية." },
+                  { content: "تقدير وقت توقف المعدات قبل حدوث التلف الكلي." },
+                  { content: "أمثلة: متابعة التحديثات، اختبارات الإجهاد، مراقبة Task Manager." }
+                ]
+              },
+              {
+                content: "3. الصيانة التكيفية (Adaptive)",
+                children: [
+                  { content: "تكييف المكونات المادية والبرمجية مع التغييرات." },
+                  { content: "أمثلة: تحديث تطبيق ليلائم نظام جديد، ترقية وسائط التخزين." }
+                ]
+              },
+              {
+                content: "4. الصيانة العلاجية (Therapeutic)",
+                children: [
+                  { content: "إصلاح الأعطال عند حدوثها فعلياً واستعادة الحالة الطبيعية." },
+                  {
+                    content: "خطوات التنفيذ",
+                    children: [
+                      { content: "تحديد المشكلة." },
+                      { content: "البحث عن حلول." },
+                      { content: "اختيار الحل المناسب." },
+                      { content: "تجربة الحل ومراجعة النتائج." },
+                      { content: "تسجيل إجراءات الحل." }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "إرشادات الأمان العامة",
+            children: [
+              { content: "إغلاق الجهاز وفصل التيار (وإزالة بطارية المحمول)." },
+              { content: "استخدام أساور تفريغ الشحنات (ESD) والمفكات العازلة." },
+              { content: "إنشاء نسخ احتياطية للبيانات قبل الصيانة." },
+              { content: "الحذر عند فك وتركيب القطع وعدم لمس الدوائر مباشرة." },
+              { content: "تجنب المنظفات القابلة للاشتعال وتعديل مسافة ضاغط الهواء." },
+              { content: "مراجعة الكتيبات المرفقة واستشارة المهندس عند الحاجة." }
+            ]
+          }
+
+        ]
+      },
+      { colorFreezeLevel: 2, initialExpandLevel: 2 }
+    );
+  </script>
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "8-1-1mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
