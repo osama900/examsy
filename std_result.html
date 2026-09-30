@@ -302,6 +302,8 @@
                     <option value="7">السابع</option>
                     <option value="8">الثامن</option>
                     <option value="9">التاسع</option>
+                    <option value="10">العاشر</option>
+
                 </select>
             </div>
 
@@ -415,6 +417,7 @@
             if (grade === "7") options = ["أ", "ب"];
             else if (grade === "8") options = ["أ", "ب", "ج", "د", "هـ", "و"];
             else if (grade === "9") options = ["أ", "ب", "ج", "د", "هـ"];
+            else if (grade === "10") options = ["أ", "ب", "ج"];
 
             options.forEach(opt => {
                 let o = document.createElement("option");

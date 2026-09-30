@@ -441,6 +441,10 @@
                 <label for="filterGrade">الصف</label>
                 <select id="filterGrade" class="form-control">
                     <option value="">-- اختر الصف --</option>
+                    <option value="7">الصف 7</option>
+                    <option value="8">الصف 8</option>
+                    <option value="9">الصف 9</option>
+                    <option value="10">الصف 10</option>
                 </select>
             </div>
             <div style="flex: 2;">
@@ -541,27 +545,29 @@
 
         // Load students & Init Filters
         document.addEventListener('DOMContentLoaded', () => {
+            // Pre-populate grades 7, 8, 9, 10 immediately
+            populateGrades();
+
             db.collection("std_id").get().then(snapshot => {
                 allStudents = [];
                 snapshot.forEach(doc => {
                     const s = doc.data();
+                    const gStr = String(s.std_grade || "").trim();
+                    const cStr = String(s.std_class || "").trim();
                     allStudents.push({
                         id: doc.id,
                         name: s.std_name || "بدون اسم",
-                        grade: (s.std_grade || "").trim(), // e.g. "9"
-                        section: (s.std_class || "").trim(), // e.g. "أ"
-                        meta: `${s.std_grade || ""} - ${s.std_class || ""}`
+                        grade: gStr,
+                        section: cStr,
+                        meta: `${gStr} - ${cStr}`
                     });
                 });
 
                 // Sort by Name
                 allStudents.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
-                // Populate Grades Filter
+                // Re-populate Grades Filter (includes grades from DB if any new ones)
                 populateGrades();
-
-                // Wait for search
-                // populateTargetList(allStudents); // Removed to start empty
 
             }).catch(err => console.error("Error loading students:", err));
         });
@@ -573,13 +579,24 @@
         const selectedCountSpan = document.getElementById('selectedCount');
 
         function populateGrades() {
-            const grades = [...new Set(allStudents.map(s => s.grade).filter(g => g))];
-            grades.sort();
+            const defaultGrades = ["7", "8", "9", "10"];
+            const dbGrades = allStudents.map(s => String(s.grade || "").trim()).filter(Boolean);
+            const combined = [...new Set([...defaultGrades, ...dbGrades])];
 
-            grades.forEach(g => {
+            combined.sort((a, b) => {
+                const numA = parseInt(a, 10);
+                const numB = parseInt(b, 10);
+                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                return a.localeCompare(b, 'ar');
+            });
+
+            const currentVal = gradeSelect.value;
+            gradeSelect.innerHTML = '<option value="">-- اختر الصف --</option>';
+            combined.forEach(g => {
                 const opt = document.createElement('option');
                 opt.value = g;
                 opt.textContent = `الصف ${g}`;
+                if (g === currentVal) opt.selected = true;
                 gradeSelect.appendChild(opt);
             });
         }
@@ -597,11 +614,18 @@
                     sections = ["أ", "ب", "ج", "د", "هـ", "و"];
                 } else if (selectedGrade === "9") {
                     sections = ["أ", "ب", "ج", "د", "هـ"];
+                } else if (selectedGrade === "10") {
+                    sections = ["أ", "ب", "ج", "د", "هـ"];
                 } else {
                     sections = [...new Set(allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s))];
-                    sections.sort();
                 }
-                sections.forEach(s => {
+
+                // Also merge any extra sections present in DB for this grade
+                const dbSections = allStudents.filter(s => s.grade === selectedGrade).map(s => s.section).filter(s => s);
+                const allSecs = [...new Set([...sections, ...dbSections])];
+                allSecs.sort();
+
+                allSecs.forEach(s => {
                     const opt = document.createElement('option');
                     opt.value = s;
                     opt.textContent = `شعبة ${s}`;

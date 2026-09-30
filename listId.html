@@ -384,7 +384,16 @@
         }
 
         function populateFilterOptions() {
-            const grades = [...new Set(allStudents.map(s => s.std_grade).filter(Boolean))].sort();
+            const defaultGrades = ["7", "8", "9", "10"];
+            const dbGrades = allStudents.map(s => String(s.std_grade || "").trim()).filter(Boolean);
+            const grades = [...new Set([...defaultGrades, ...dbGrades])];
+
+            grades.sort((a, b) => {
+                const numA = parseInt(a, 10);
+                const numB = parseInt(b, 10);
+                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                return a.localeCompare(b, 'ar');
+            });
 
             const gSelect = document.getElementById('gradeFilter');
             gSelect.innerHTML = '<option value="">اختر الصف...</option>';
@@ -392,7 +401,7 @@
             grades.forEach(g => {
                 const opt = document.createElement('option');
                 opt.value = g;
-                opt.textContent = g;
+                opt.textContent = `الصف ${g}`;
                 gSelect.appendChild(opt);
             });
 
@@ -411,8 +420,10 @@
                 filteredClasses = ["أ", "ب", "ج", "د", "هـ", "و"];
             } else if (grade === "9") {
                 filteredClasses = ["أ", "ب", "ج", "د", "هـ"];
+            } else if (grade === "10") {
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ"];
             } else if (grade) {
-                filteredClasses = [...new Set(allStudents.filter(s => s.std_grade === grade).map(s => s.std_class).filter(Boolean))].sort();
+                filteredClasses = [...new Set(allStudents.filter(s => String(s.std_grade) === grade).map(s => s.std_class).filter(Boolean))].sort();
             } else {
                 filteredClasses = [...new Set(allStudents.map(s => s.std_class).filter(Boolean))].sort();
             }
