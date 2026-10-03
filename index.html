@@ -835,8 +835,8 @@
         let openLessons = 0;
         let completedOpenLessons = 0;
 
-        // Check units (units 3 & 4 for Grade 8/9, all units [1, 2, 3, 4] for others)
-        const unitsToCount = (stdGrade === '8' || stdGrade === '9') ? [3, 4] : [1, 2, 3, 4];
+        // Check units [1, 2, 3, 4] for all grades (consistent with dashboard display)
+        const unitsToCount = [1, 2, 3, 4];
         unitsToCount.forEach(unitNum => {
           const unitLessons = (CURRICULUM[stdGrade] && CURRICULUM[stdGrade][unitNum]) ? CURRICULUM[stdGrade][unitNum] : null;
           if (unitLessons && unitLessons.length > 0) {
@@ -1101,8 +1101,15 @@
 
           // B. Calculate Completion % passing shared settings to avoid re-fetching
           try {
-            const completionData = await calculateStudentCompletion(std.id, std.email, stdGrade, bestScores, sharedVisibilityMap, sharedTimerMap);
-            std.completionPercent = completionData.completionPercent;
+            if (std.id === stdId) {
+              const completionData = await calculateStudentCompletion(std.id, std.email, stdGrade, bestScores, sharedVisibilityMap, sharedTimerMap);
+              std.completionPercent = completionData.completionPercent;
+            } else {
+              // For other students, preserve their saved completionPercent from Firestore
+              if (std.completionPercent === undefined || std.completionPercent === null) {
+                std.completionPercent = 0;
+              }
+            }
           } catch (e) { console.error("Error calculating completion for", std.name, e); }
 
           return std;
@@ -1671,6 +1678,9 @@
         // Update overall percentage based on OPEN lessons
         const percentage = openLessons > 0 ? Math.round((completedOpenLessons / openLessons) * 100) : 0;
         document.getElementById('completionPercentage').textContent = `${percentage}%`;
+        if (stdId) {
+          db.collection('std_id').doc(stdId).set({ completionPercent: percentage }, { merge: true }).catch(() => {});
+        }
 
       } catch (error) {
         console.error("Error loading all units progress:", error);
