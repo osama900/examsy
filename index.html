@@ -1054,15 +1054,21 @@
         });
 
         // 2. Pre-fetch shared settings ONCE for all students
+        const currentSubject = localStorage.getItem('selectedSubject') || 'computer_science';
         let sharedVisibilityMap = {};
         let sharedTimerMap = {};
         try {
-          const [visibilityDoc, timersDoc] = await Promise.all([
+          const [visDoc, timerDoc, oldVisDoc, oldTimerDoc] = await Promise.all([
+            db.collection('settings').doc('lesson_visibility_' + currentSubject).get(),
+            db.collection('settings').doc('lesson_timers_' + currentSubject).get(),
             db.collection('settings').doc('lesson_visibility').get(),
             db.collection('settings').doc('lesson_timers').get()
           ]);
-          if (visibilityDoc.exists) sharedVisibilityMap = visibilityDoc.data();
-          if (timersDoc.exists) sharedTimerMap = timersDoc.data();
+          if (visDoc.exists) sharedVisibilityMap = visDoc.data();
+          else if (oldVisDoc.exists) sharedVisibilityMap = oldVisDoc.data();
+
+          if (timerDoc.exists) sharedTimerMap = timerDoc.data();
+          else if (oldTimerDoc.exists) sharedTimerMap = oldTimerDoc.data();
         } catch (e) { console.error("Error fetching shared settings:", e); }
 
         // 3. Calculate Completion and Scores for each student
