@@ -971,33 +971,67 @@
         const stdGrade = localStorage.getItem('std_grade');
         const stdClass = localStorage.getItem('std_class');
 
-        const classSnapshot = await db.collection('std_id')
-          .where('std_grade', '==', stdGrade)
-          .where('std_class', '==', stdClass)
-          .get();
-
-        // NEW: Fetch completion % and exam scores for all students efficiently
         const studentDataList = [];
         const studentMap = {}; // id -> student data
         const studentNameMap = {}; // name -> student data
         const emailToIdMap = {}; // email -> doc.id
 
-        classSnapshot.forEach(doc => {
-          const data = doc.data();
-          const s = {
-            id: doc.id,
-            name: data.std_name || "بدون اسم",
-            email: data.std_email || "",
-            time: data.totalStudyTimeSeconds || 0,
-            coins: data.coins || 0,
-            completionPercent: 0,
-            totalExamScore: 0
-          };
-          studentDataList.push(s);
-          studentMap[s.id] = s;
-          if (s.name) studentNameMap[s.name] = s;
-          if (s.email) emailToIdMap[s.email.toLowerCase()] = s.id;
-        });
+        if (stdGrade && stdClass) {
+          const numGrade = Number(stdGrade);
+          const queries = [
+            db.collection('std_id').where('std_grade', '==', stdGrade).where('std_class', '==', stdClass).get()
+          ];
+          if (!isNaN(numGrade) && numGrade !== stdGrade) {
+            queries.push(db.collection('std_id').where('std_grade', '==', numGrade).where('std_class', '==', stdClass).get());
+          }
+
+          try {
+            const classSnapshots = await Promise.all(queries);
+            classSnapshots.forEach(snap => {
+              snap.forEach(doc => {
+                if (!studentMap[doc.id]) {
+                  const data = doc.data();
+                  const s = {
+                    id: doc.id,
+                    name: data.std_name || "بدون اسم",
+                    email: data.std_email || "",
+                    time: data.totalStudyTimeSeconds || 0,
+                    coins: data.coins || 0,
+                    completionPercent: data.completionPercent || 0,
+                    totalExamScore: 0
+                  };
+                  studentDataList.push(s);
+                  studentMap[s.id] = s;
+                  if (s.name) studentNameMap[s.name] = s;
+                  if (s.email) emailToIdMap[s.email.toLowerCase()] = s.id;
+                }
+              });
+            });
+          } catch (e) { console.warn("Error querying class snapshot:", e); }
+        }
+
+        // If current student is not in studentMap, fetch current student doc directly to ensure rank works
+        if (!studentMap[stdId]) {
+          try {
+            const currentDoc = await db.collection('std_id').doc(stdId).get();
+            if (currentDoc.exists) {
+              const data = currentDoc.data();
+              const s = {
+                id: currentDoc.id,
+                name: data.std_name || "بدون اسم",
+                email: data.std_email || "",
+                time: data.totalStudyTimeSeconds || 0,
+                coins: data.coins || 0,
+                completionPercent: data.completionPercent || 0,
+                totalExamScore: 0
+              };
+              studentDataList.push(s);
+              studentMap[s.id] = s;
+              if (s.name) studentNameMap[s.name] = s;
+              if (s.email) emailToIdMap[s.email.toLowerCase()] = s.id;
+            }
+          } catch (e) { console.warn("Could not fetch current student doc for rank:", e); }
+        }
 
         // 1. Fetch ALL exam results for this class in ONE query
         const examsSnapshot = await db.collection('examResults').where('class', '==', stdClass).get();
@@ -1078,6 +1112,10 @@
           try {
             const accurateData = await calculateStudentCompletion(stdId, stdEmail, stdGrade, null, sharedVisibilityMap, sharedTimerMap);
             currentStudentEntry.completionPercent = accurateData.completionPercent;
+            // Also update completionPercent in Firestore std_id doc for leaderboard access
+            db.collection('std_id').doc(stdId).set({
+              completionPercent: accurateData.completionPercent
+            }, { merge: true }).catch(e => console.warn('Error saving completionPercent:', e));
           } catch (e) { console.warn('Could not re-calculate current student completion:', e); }
         }
 
@@ -1110,9 +1148,11 @@
           };
           const ordinalText = ordinals[rank] ? ` ( ${ordinals[rank]} )` : '';
           document.getElementById('studentRank').textContent = `${rank} / ${totalCompetitors}${ordinalText}`;
+        } else {
+          document.getElementById('studentRank').textContent = "--";
         }
 
-        // --- Top 3 Students Display (Already Sorted) ---
+        // --- Top 3 Students Display (Requires 100% completion to show name) ---
         const top3Container = document.getElementById('topStudentsList');
         if (top3Container) {
           if (allStudentsData.length > 0) {
