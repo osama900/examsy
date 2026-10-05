@@ -65,8 +65,25 @@
     </div>
   </div>
   <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiJVhRbPOR0ty2Zaoyu4FQj9U4_rpnCf8",
+      authDomain: "examsy-21dc3.firebaseapp.com",
+      projectId: "examsy-21dc3",
+      storageBucket: "examsy-21dc3.firebasestorage.app",
+      messagingSenderId: "357464025229",
+      appId: "1:357464025229:web:b920c8290f985f54339ac4",
+      measurementId: "G-CWZ7MR4V26"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  </script>
   <script src="../../../js/progress_tracker.js"></script>
-
 </body>
 
 </html>

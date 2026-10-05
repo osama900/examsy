@@ -290,7 +290,9 @@
                         <th>البريد الإلكتروني</th>
                         <th>
                             هل تخرج؟
-                            <input type="checkbox" id="selectAllGraduated" onclick="toggleSelectAllGraduated(this)" title="تحديد/إلغاء التخرج للكل" style="margin-right: 5px; cursor: pointer; vertical-align: middle; width: 16px; height: 16px;">
+                            <input type="checkbox" id="selectAllGraduated" onclick="toggleSelectAllGraduated(this)"
+                                title="تحديد/إلغاء التخرج للكل"
+                                style="margin-right: 5px; cursor: pointer; vertical-align: middle; width: 16px; height: 16px;">
                         </th>
                         <th>إجراءات</th>
                     </tr>
@@ -415,13 +417,13 @@
 
             let filteredClasses = [];
             if (grade === "7") {
-                filteredClasses = ["أ", "ب"];
+                filteredClasses = ["أ", "ب", "ن"];
             } else if (grade === "8") {
-                filteredClasses = ["أ", "ب", "ج", "د", "هـ", "و"];
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ", "و", "ن"];
             } else if (grade === "9") {
-                filteredClasses = ["أ", "ب", "ج", "د", "هـ"];
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ", "ن"];
             } else if (grade === "10") {
-                filteredClasses = ["أ", "ب", "ج", "د", "هـ"];
+                filteredClasses = ["أ", "ب", "ج", "د", "هـ", "ن"];
             } else if (grade) {
                 filteredClasses = [...new Set(allStudents.filter(s => String(s.std_grade) === grade).map(s => s.std_class).filter(Boolean))].sort();
             } else {
@@ -507,7 +509,7 @@
                 if (student) {
                     student.std_graduated = isGraduated;
                 }
-                
+
                 // Re-sync the selectAllGraduated header checkbox state
                 const selectAllGraduated = document.getElementById('selectAllGraduated');
                 if (selectAllGraduated) {
@@ -526,11 +528,11 @@
                 master.checked = false;
                 return;
             }
-            
-            const confirmMsg = isGraduated 
+
+            const confirmMsg = isGraduated
                 ? `هل أنت متأكد من تعيين حالة "تخرج" لجميع الطلاب المعروضين في البحث الحالي وعددهم (${filteredStudents.length})؟`
                 : `هل أنت متأكد من إلغاء حالة "تخرج" لجميع الطلاب المعروضين في البحث الحالي وعددهم (${filteredStudents.length})؟`;
-                
+
             if (!confirm(confirmMsg)) {
                 master.checked = !isGraduated;
                 return;
