@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="../../../js/auth_check.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> مكونات الحاسوب البرمجية 💻 </title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../css/style.css" />
+
+  <!-- markmap toolbar css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/style.css" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #mindmap {
+      flex: 1;
+      width: 100%;
+      background-color: #27272a;
+    }
+
+    .instructions {
+      padding: 10px;
+      padding-top: 80px;
+      background-color: #918971;
+      color: #333;
+      font-size: 16px;
+      text-align: center;
+      border-bottom: 1px solid #080606;
+      font-weight: bolder;
+    }
+
+    .markmap-dark {
+      background: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="headerdiv">
+    <header class="main-header">
+      <div class="header-content">
+        <a href="../../../index.html" class="logo-link">
+          <span class="logo-emoji">📚</span>
+          <span class="logo-text">الاختبارات الالكترونية</span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <div class="content">
+    <!-- التعليمات كنص مستقل -->
+    <div class="instructions">
+      📌 التعليمات : يجب النقر على الدائرة الممتلئة لفتح الشرح و يمكن التكبير
+      و التصغير و التحريك
+    </div>
+
+    <!-- mindmap هنا -->
+    <svg id="mindmap"></svg>
+  </div>
+
+  <footer>جميع الحقوق محفوظة © Teacher Osama Omar</footer>
+
+  <!-- مكتبات markmap -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.12/dist/index.js"></script>
+
+  <script>
+    (() => {
+      setTimeout(() => {
+        const { markmap: S, mm: Q } = window,
+          $ = new S.Toolbar();
+        $.attach(Q);
+        const I = $.render();
+        I.setAttribute("style", "position:absolute;bottom:20px;right:20px");
+        document.body.append(I);
+      });
+    })();
+  </script>
+  <script>
+
+    ((l, U, M, R) => {
+      const N = l();
+
+      (window.mm = N.Markmap.create(
+        "svg#mindmap",
+        (U || N.deriveOptions)(R),
+        M
+      ));
+
+      window.matchMedia("(prefers-color-scheme: dark)").matches &&
+        document.documentElement.classList.add("markmap-dark");
+
+    })(
+      () => window.markmap,
+      null,
+
+      {
+        content: "مكوّنات الحاسوب البرمجية (Software) 💻",
+
+        children: [
+
+          {
+            content: "مفهوم البرمجيات",
+            children: [
+              {
+                content: "تعريف البرمجيات (Software)",
+                children: [
+                  { content: "مجموعة من البرامج والتطبيقات." },
+                  { content: "طُوّرت لتنفيذ المهام في أجهزة الحاسوب والأجهزة الذكية." },
+                  { content: "تجعل المكوّنات المادية قادرة على أداء وظائفها." }
+                ]
+              },
+              {
+                content: "تعريف البرنامج",
+                children: [
+                  { content: "مجموعة متسلسلة من التعليمات والأوامر." },
+                  { content: "تهدف إلى تحقيق هدف معيّن." }
+                ]
+              },
+              {
+                content: "تصنيف البرمجيات",
+                children: [
+                  { content: "برامج النظام (System Software)." },
+                  { content: "برامج التطبيقات (Application Software)." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "برامج النظام (System Software)",
+            children: [
+              {
+                content: "وظائفها",
+                children: [
+                  { content: "إدارة عمل جهاز الحاسوب." },
+                  { content: "التحكّم في الجهاز وتشغيله." },
+                  { content: "الوساطة بين المكوّنات المادية والبرامج التطبيقية." },
+                  { content: "التعامل مع المكوّنات المادية بصورة مباشرة." }
+                ]
+              },
+              {
+                content: "أنواعها وأمثلتها",
+                children: [
+                  {
+                    content: "أنظمة التشغيل (Operating Systems)",
+                    children: [
+                      { content: "توفّر واجهة للتفاعل بين المستخدم وجهاز الحاسوب." },
+                      { content: "مايكروسوفت ويندوز (Microsoft Windows)." },
+                      { content: "ماك أو إس (MacOS)." },
+                      { content: "أندرويد (Android)." }
+                    ]
+                  },
+                  {
+                    content: "برامج الخدمات",
+                    children: [
+                      { content: "تُعدّ من برامج النظام." }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "برامج التطبيقات (Application Software)",
+            children: [
+              {
+                content: "تعريفها",
+                children: [
+                  { content: "برامج حاسوبية صُمّمت لأداء مهام محدّدة." },
+                  { content: "ترتبط بحاجات المستخدمين." },
+                  { content: "تُستخدم لأغراض شخصية أو مهنية أو تعليمية." }
+                ]
+              },
+              {
+                content: "أنواع التطبيقات ووظائفها",
+                children: [
+                  {
+                    content: "برامج معالجة النصوص (Word Processing Software)",
+                    children: [
+                      { content: "كتابة النصوص وتحريرها." },
+                      { content: "إعداد المستندات." },
+                      { content: "تنسيق النصوص." },
+                      { content: "إضافة الصور والجداول." }
+                    ]
+                  },
+                  {
+                    content: "برامج جداول البيانات (Spreadsheet Software)",
+                    children: [
+                      { content: "إنشاء جداول البيانات." },
+                      { content: "إجراء الحسابات." },
+                      { content: "تحليل البيانات." },
+                      { content: "إنشاء الرسوم البيانية." }
+                    ]
+                  },
+                  {
+                    content: "برامج العروض التقديمية (Presentation Software)",
+                    children: [
+                      { content: "إنشاء عروض تقديمية." },
+                      { content: "استخدام نصوص وصور." },
+                      { content: "إضافة مقاطع فيديو ورسوم بيانية." },
+                      { content: "استخدام وسائط متعددة." }
+                    ]
+                  },
+                  {
+                    content: "برامج تصفّح الإنترنت (Web Browser)",
+                    children: [
+                      { content: "تصفّح الإنترنت." },
+                      { content: "تحميل الملفات والصور ومقاطع الفيديو." },
+                      { content: "التواصل مع الآخرين." }
+                    ]
+                  },
+                  {
+                    content: "برامج البريد الإلكتروني (Email Software)",
+                    children: [
+                      { content: "تبادل الرسائل والملفات بين المستخدمين." },
+                      { content: "التواصل بين المستخدمين." }
+                    ]
+                  },
+                  {
+                    content: "أمثلة أخرى",
+                    children: [
+                      { content: "قواعد البيانات." },
+                      { content: "ألعاب الحاسوب." }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "التكامل بين المكوّنات المادية والبرمجية",
+            children: [
+              {
+                content: "المكوّنات البرمجية",
+                children: [
+                  { content: "البرامج والتطبيقات." },
+                  { content: "برامج النظام." },
+                  { content: "نظام التشغيل وبرامج الخدمات." }
+                ]
+              },
+              {
+                content: "المكوّنات المادية",
+                children: [
+                  { content: "وحدة المعالجة المركزية." },
+                  { content: "القرص الصلب." },
+                  { content: "الفأرة." },
+                  { content: "الطابعة." }
+                ]
+              },
+              {
+                content: "كيفية التكامل",
+                children: [
+                  { content: "تعمل المكوّنات المادية والبرمجية بتناغم." },
+                  { content: "تحتاج المكوّنات المادية إلى أوامر وتعليمات." },
+                  { content: "تساعد البرمجيات على تنفيذ المهام المطلوبة." },
+                  { content: "التكامل ضروري لإنجاز المهام بكفاءة وسلاسة." }
+                ]
+              },
+              {
+                content: "مثال تطبيقي",
+                children: [
+                  { content: "تشغيل لعبة على جهاز الحاسوب." },
+                  { content: "البرامج المناسبة لتشغيل اللعبة." },
+                  { content: "المكوّنات المادية اللازمة لتشغيلها." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "المواطنة الرقمية والأمان",
+            children: [
+              {
+                content: "المخاطر الرقمية",
+                children: [
+                  { content: "نسخ إلكترونية غير أصلية من التطبيقات." },
+                  { content: "فيروسات وبرمجيات خبيثة." },
+                  { content: "تهديد أمان الجهاز." },
+                  { content: "تهديد خصوصية البيانات الشخصية." },
+                  { content: "انتهاك حقوق الملكية الفكرية." }
+                ]
+              },
+              {
+                content: "إرشادات الأمان",
+                children: [
+                  { content: "تنزيل التطبيقات من مصادر موثوقة." },
+                  { content: "استخدام تطبيقات آمنة وموثوقة." },
+                  { content: "حماية الأجهزة والبيانات الشخصية." }
+                ]
+              },
+              {
+                content: "حقوق الملكية الفكرية",
+                children: [
+                  { content: "احترام حقوق أصحاب البرامج والتطبيقات." },
+                  { content: "تجنّب استخدام النسخ غير الأصلية." },
+                  { content: "دعم المبدعين والمجتمع الرقمي." }
+                ]
+              }
+            ]
+          },
+
+          {
+            content: "مشروع الدرس: الكتيّب التعريفي",
+            children: [
+              { content: "البحث في مصادر إلكترونية موثوقة." },
+              { content: "جمع أمثلة على برامج النظام والتطبيقات." },
+              { content: "ذكر أسماء البرمجيات الموجودة على جهاز الحاسوب." },
+              { content: "إدراج صور وأيقونات واضحة." },
+              {
+                content: "معايير التصميم",
+                children: [
+                  { content: "وضوح المعلومات وسهولة القراءة والفهم." },
+                  { content: "استخدام ألوان وتصاميم جذابة ومتناسقة." },
+                  { content: "استخدام صور وأيقونات مناسبة." },
+                  { content: "التحقّق من دقة المعلومات وتحديثها." }
+                ]
+              }
+            ]
+          }
+
+        ]
+      },
+
+      {
+        colorFreezeLevel: 2,
+        initialExpandLevel: 2
+      }
+    );
+
+  </script>
+
+
+
+
+  <script>
+    const PAGE_TIME_CONFIG = {
+      pageId: "7-1-3mind" // Unique ID for this page
+    };
+  </script>
+  <script src="../../../js/time_tracker.js"></script>
+
+</body>
+
+</html>
