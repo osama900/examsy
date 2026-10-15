@@ -119,29 +119,46 @@
                 return;
             }
 
-            const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            try {
+                // ✅ SECURITY: Get server time from Firestore instead of client clock.
+                // This prevents cheating by changing device date/time.
+                // We write a serverTimestamp to a temp field and read it back immediately.
+                const serverTimeRef = this.db.collection('std_id').doc(this.stdId);
+                await serverTimeRef.set({ _server_time_check: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                const snap = await serverTimeRef.get();
+                const serverNow = snap.data()._server_time_check
+                    ? snap.data()._server_time_check.toDate()
+                    : new Date();
 
-            let lastLogin = 0;
-            if (lastLoginTimestamp) {
-                const d = (typeof lastLoginTimestamp.toDate === 'function') ? lastLoginTimestamp.toDate() : new Date(lastLoginTimestamp);
-                lastLogin = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-            }
+                // Build "today at midnight" using server time
+                const serverToday = new Date(
+                    serverNow.getFullYear(),
+                    serverNow.getMonth(),
+                    serverNow.getDate()
+                ).getTime();
 
-            if (today > lastLogin) {
+                // Build "last login day at midnight" from Firestore stored timestamp
+                let lastLogin = 0;
+                if (lastLoginTimestamp) {
+                    const d = (typeof lastLoginTimestamp.toDate === 'function')
+                        ? lastLoginTimestamp.toDate()
+                        : new Date(lastLoginTimestamp);
+                    lastLogin = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                }
 
                 // Set flag BEFORE awaiting to prevent race conditions
                 sessionStorage.setItem('daily_login_checked', 'true');
 
-                await this.addCoins(COINS_CONFIG.DAILY_LOGIN, "مكافأة الدخول اليومي");
-                this.db.collection('std_id').doc(this.stdId).update({
-                    last_login_date: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(e => {
-                    console.error("Error updating login date", e);
-                    // If update failed, maybe clear flag? No, safer to just try next time.
-                });
-            } else {
-                // Already logged in today
+                if (serverToday > lastLogin) {
+                    await this.addCoins(COINS_CONFIG.DAILY_LOGIN, "مكافأة الدخول اليومي");
+                    serverTimeRef.update({
+                        last_login_date: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(e => console.error("Error updating login date", e));
+                }
+                // else: Already logged in today — no coins
+
+            } catch (e) {
+                console.warn("CoinsManager: checkDailyLogin error", e);
                 sessionStorage.setItem('daily_login_checked', 'true');
             }
         }
